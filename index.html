@@ -1613,6 +1613,97 @@
       color: var(--text-dim);
     }
 
+    .booking-success-inner {
+      text-align: center;
+      padding: 1.5rem 0.5rem;
+    }
+
+    .success-clap {
+      font-size: 3.2rem;
+      margin-bottom: 1rem;
+      display: block;
+      animation: clapBounce 0.6s cubic-bezier(.175,.885,.32,1.275) forwards;
+    }
+
+    @keyframes clapBounce {
+      0%   { transform: scale(0) rotate(-15deg); opacity: 0; }
+      60%  { transform: scale(1.2) rotate(5deg); opacity: 1; }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+
+    .success-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1rem, 3vw, 1.3rem);
+      background: var(--g-chrome);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1.4rem;
+    }
+
+    .success-details-card {
+      background: rgba(56,189,248,0.05);
+      border: 1px solid rgba(56,189,248,0.18);
+      border-radius: 12px;
+      padding: 1.1rem 1.2rem;
+      margin-bottom: 1.4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      text-align: left;
+    }
+
+    .sdc-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      font-size: 0.86rem;
+      color: var(--text-dim);
+      font-family: 'DM Sans', sans-serif;
+      line-height: 1.5;
+    }
+
+    .sdc-icon {
+      flex-shrink: 0;
+      font-size: 1rem;
+      margin-top: 0.05rem;
+    }
+
+    .sdc-text strong {
+      color: var(--cyan);
+      font-weight: 700;
+    }
+
+    .success-ig-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1.4rem;
+      background: rgba(56,189,248,0.08);
+      border: 1px solid rgba(56,189,248,0.25);
+      border-radius: 8px;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.1em;
+      color: var(--cyan);
+      text-decoration: none;
+      transition: all 0.2s;
+      margin-bottom: 1rem;
+    }
+
+    .success-ig-btn:hover {
+      background: rgba(56,189,248,0.15);
+      box-shadow: 0 0 20px rgba(56,189,248,0.2);
+    }
+
+    .success-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-family: 'DM Sans', sans-serif;
+      line-height: 1.6;
+    }
+
     /* ============================================================
        CONTACT / BOOKING
     ============================================================ */
@@ -1752,6 +1843,40 @@
       font-style: italic;
       font-size: 1rem;
       color: #6a8a9a;
+    }
+
+    .hbvr-text {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-style: normal;
+    }
+
+    .hbvr-white {
+      color: #ffffff;
+      font-weight: 500;
+    }
+
+    .hbvr-blue {
+      color: #3a80c0;
+      font-weight: 800;
+    }
+
+    footer .hbvr-text {
+      font-size: 0.95rem;
+    }
+
+    .footer-email {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      letter-spacing: 0.06em;
+      transition: color 0.2s;
+    }
+
+    .footer-email:hover {
+      color: var(--cyan);
     }
 
     .footer-socials {
@@ -2405,10 +2530,7 @@
               <span class="gold">We Create Magic.</span>
             </h2>
             <p>
-              Hyderabad-based cinematic reel studio founded by
-              <strong style="color:var(--cyan)">Bharath (@stvr__bharath)</strong>.
-              We craft viral-first reels for influencers, brands, cars and events —
-              turning ordinary moments into scroll-stopping cinema.
+              We don't shoot videos — we craft moments that stop thumbs mid-scroll. Born in Hyderabad, built on passion, STVR Hands has helped 200+ clients — from luxury car brands to top influencers — turn ordinary moments into cinematic stories that the internet can't ignore.
             </p>
             <div class="about-tags">
               <span class="tag-pill">📍 Hyderabad Based</span>
@@ -2707,7 +2829,7 @@
               <div class="cir-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></div>
               <div class="cir-text">
                 <span class="cir-label">YOUTUBE</span>
-                <span class="cir-value">@stvr__bharath</span>
+                <span class="cir-value">@stvr__hands</span>
               </div>
             </a>
             <a href="https://wa.me/917989079432" target="_blank" rel="noopener" class="contact-info-row">
@@ -2721,7 +2843,7 @@
               <div class="cir-icon">📍</div>
               <div class="cir-text">
                 <span class="cir-label">AVAILABLE IN</span>
-                <span class="cir-value">Hyd • Vizag • Vijayawada • Rajam</span>
+                <span class="cir-value">Hyd • Vizag • Vijayawada • Rajahmundry</span>
               </div>
             </div>
           </div>
@@ -2786,14 +2908,12 @@
               <input class="form-input" id="b-date" type="date" name="date">
             </div>
             <div class="form-group">
-              <label>Shoot Duration</label>
+              <label>Preferred Shoot Time</label>
               <div class="duration-tabs" id="durationTabs">
-                <button type="button" class="dur-tab" data-val="fullday">🌞 Full Day</button>
-                <button type="button" class="dur-tab" data-val="halfday">⏱ Half Day</button>
-                <button type="button" class="dur-tab" data-val="custom">✏️ Custom Time</button>
+                <button type="button" class="dur-tab" data-val="custom" style="display:none;">✏️ Custom Time</button>
               </div>
-              <input type="hidden" id="durationValue" name="duration">
-              <div class="custom-time-wrap" id="customTimeWrap" style="display:none;">
+              <input type="hidden" id="durationValue" name="duration" value="custom">
+              <div class="custom-time-wrap" id="customTimeWrap" style="display:block;">
                 <div class="custom-time-row">
                   <div class="form-group" style="margin-bottom:0;flex:1">
                     <label>Start Time</label>
@@ -2816,9 +2936,28 @@
             <p class="form-bottom-note">🔒 Your details are safe with us. No spam, ever.</p>
           </form>
           <div class="success-msg" id="bookingSuccess">
-            <span class="s-icon">✦</span>
-            <h4>Booking Received!</h4>
-            <p>We'll confirm your shoot within 24 hours.</p>
+            <div class="booking-success-inner">
+              <span class="success-clap">🎬</span>
+              <h4 class="success-title">Booking Request Sent!</h4>
+              <div class="success-details-card">
+                <div class="sdc-row">
+                  <span class="sdc-icon">⚡</span>
+                  <span class="sdc-text">We'll confirm your shoot within <strong>2 hours</strong></span>
+                </div>
+                <div class="sdc-row">
+                  <span class="sdc-icon">📲</span>
+                  <span class="sdc-text">Check your WhatsApp &amp; Instagram DM</span>
+                </div>
+                <div class="sdc-row">
+                  <span class="sdc-icon">🎯</span>
+                  <span class="sdc-text">Our team is already reviewing your request</span>
+                </div>
+              </div>
+              <a href="https://instagram.com/stvr__hands" target="_blank" class="success-ig-btn">
+                📸 Follow us on Instagram
+              </a>
+              <p class="success-sub">Can't wait? DM us directly @stvr__hands for instant response.</p>
+            </div>
           </div>
         </div>
 
@@ -2840,7 +2979,8 @@
             <span>H</span><span>A</span><span>N</span><span>D</span><span>S</span>
           </div>
         </div>
-        <div class="footer-tagline">Magic with Hands</div>
+        <div class="footer-tagline"><span class="hbvr-text"><span class="hbvr-white">HANDS BEHIND </span><span class="hbvr-blue">VIRAL </span><span class="hbvr-white">REELS</span></span></div>
+        <a href="mailto:stvrhands@gmail.com" class="footer-email">stvrhands@gmail.com</a>
       </div>
 
       <div class="footer-socials">
@@ -2854,6 +2994,11 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path
               d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+          </svg>
+        </a>
+        <a href="mailto:stvrhands@gmail.com" class="s-btn" title="Email">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
           </svg>
         </a>
       </div>
@@ -3113,6 +3258,14 @@
         customTimeWrap.style.display = val === 'custom' ? 'block' : 'none';
       });
     });
+
+    // Auto-activate custom time tab on load
+    const customTab = document.querySelector('.dur-tab[data-val="custom"]');
+    if (customTab) {
+      customTab.classList.add('active');
+      if (durationValue) durationValue.value = 'custom';
+      if (customTimeWrap) customTimeWrap.style.display = 'block';
+    }
 
     /* -----------------------------------------------------------
        DYNAMIC PRICING ON EVENT SELECT
