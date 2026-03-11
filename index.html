@@ -1,0 +1,2805 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STVR Hands — Magic with Hands | Cinematic Reels Hyderabad</title>
+  <meta name="description"
+    content="Hyderabad's #1 cinematic reel studio. Viral reels for brands, influencers, cars & events. Book your shoot today.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=Cormorant+Garamond:ital,wght@1,400;1,600&family=Caveat:wght@400;700&family=Great+Vibes&display=swap"
+    rel="stylesheet">
+  <style>
+    /* ============================================================
+       TOKENS
+    ============================================================ */
+    :root {
+      --bg: #05080f;
+      --bg2: #080e1a;
+      --bg3: #0c1525;
+      --cyan: #38bdf8;
+      --cyan-dim: rgba(56, 189, 248, 0.18);
+      --cyan-glow: rgba(56, 189, 248, 0.35);
+      --gold: #c9a84c;
+      --chrome-light: #ffffff;
+      --chrome-mid: #b8ccd8;
+      --chrome-dark: #5a7a8a;
+      --text: #e8f0f7;
+      --text-dim: #8aa0b0;
+      --text-muted: #4a6070;
+      --border: rgba(56, 189, 248, 0.18);
+      --glass-bg: rgba(12, 21, 37, 0.75);
+      --g-chrome: linear-gradient(180deg, #fff 0%, #b8ccd8 45%, #5a7a8a 100%);
+      --g-lens: linear-gradient(135deg, #0a1628, #1565c0, #38bdf8);
+      --g-gold: linear-gradient(135deg, #f5e6a0, #c9a84c, #8a6820);
+    }
+
+    /* ============================================================
+       RESET & BASE
+    ============================================================ */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      line-height: 1.65;
+      /* Film grain pseudo-element */
+      position: relative;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    ul {
+      list-style: none;
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 3px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--cyan);
+      border-radius: 2px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #7dd3fc;
+    }
+
+    ::selection {
+      background: rgba(56, 189, 248, 0.22);
+      color: #fff;
+    }
+
+    /* ============================================================
+       UTILITIES
+    ============================================================ */
+    .chrome {
+      background: var(--g-chrome);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .chrome-deep {
+      background: var(--g-chrome);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter:
+        drop-shadow(0 2px 0 rgba(74, 106, 122, .85)) drop-shadow(0 5px 4px rgba(0, 0, 0, .7)) drop-shadow(0 12px 28px rgba(0, 0, 0, .8));
+    }
+
+    .glass {
+      background: var(--glass-bg);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 8px 40px rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 255, 255, .06);
+      border-radius: 16px;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity .65s ease, transform .65s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    .container {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    .section-label {
+      display: block;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      font-size: .72rem;
+      letter-spacing: .38em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: .75rem;
+    }
+
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(56, 189, 248, .22), transparent);
+    }
+
+    /* Stagger delays for grid children */
+    .stagger>*:nth-child(1) {
+      transition-delay: .04s;
+    }
+
+    .stagger>*:nth-child(2) {
+      transition-delay: .1s;
+    }
+
+    .stagger>*:nth-child(3) {
+      transition-delay: .16s;
+    }
+
+    .stagger>*:nth-child(4) {
+      transition-delay: .22s;
+    }
+
+    .stagger>*:nth-child(5) {
+      transition-delay: .28s;
+    }
+
+    .stagger>*:nth-child(6) {
+      transition-delay: .34s;
+    }
+
+
+    /* ============================================================
+       STVR LOGO (CSS — no image)
+    ============================================================ */
+    .stvr-logo {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      text-decoration: none;
+      cursor: pointer;
+      transition: opacity .25s ease;
+    }
+
+    .stvr-logo:hover {
+      opacity: .85;
+    }
+
+    .logo-bar {
+      width: 4px;
+      height: 2.2em;
+      background: #E63232;
+      border-radius: 2px;
+      margin-right: 14px;
+      flex-shrink: 0;
+    }
+
+    .logo-text {
+      font-family: 'Caveat', cursive;
+      font-weight: 700;
+      font-size: 1.6rem;
+      letter-spacing: 0.12em;
+      line-height: 1;
+      color: #ffffff;
+      display: flex;
+      align-items: baseline;
+    }
+
+    .logo-text span {
+      color: #ffffff;
+    }
+
+    .logo-v {
+      color: #4A90D9 !important;
+    }
+
+    .logo-space {
+      width: 0.45em;
+      display: inline-block;
+    }
+
+    /* Navbar (small) */
+    #nav .stvr-logo .logo-text {
+      font-size: 1.55rem;
+    }
+
+    #nav .stvr-logo .logo-bar {
+      height: 2.2em;
+    }
+
+    /* Intro overlay (large) */
+    #intro .stvr-logo {
+      opacity: 0;
+      animation: fadeUp .6s ease 1.1s forwards;
+      margin-bottom: .8rem;
+    }
+
+    #intro .stvr-logo .logo-text {
+      font-size: 2.6rem;
+    }
+
+    #intro .stvr-logo .logo-bar {
+      height: 2.4em;
+      width: 5px;
+      margin-right: 18px;
+    }
+
+    /* Founder card (medium-small) */
+    .founder-card .stvr-logo {
+      margin-bottom: 1.6rem;
+    }
+
+    .founder-card .stvr-logo .logo-text {
+      font-size: 1.35rem;
+    }
+
+    .founder-card .stvr-logo .logo-bar {
+      height: 2.2em;
+      width: 4px;
+      margin-right: 12px;
+    }
+
+    /* Footer (medium) */
+    footer .stvr-logo {
+      justify-content: center;
+      margin-bottom: .5rem;
+    }
+
+    footer .stvr-logo .logo-text {
+      font-size: 1.9rem;
+    }
+
+    footer .stvr-logo .logo-bar {
+      height: 2.2em;
+    }
+
+    /* ============================================================
+       NAVBAR
+    ============================================================ */
+    #nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      padding: .9rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background .35s, backdrop-filter .35s, box-shadow .35s;
+    }
+
+    #nav.scrolled {
+      background: rgba(5, 8, 15, .88);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 1px 0 rgba(56, 189, 248, .12), 0 6px 28px rgba(0, 0, 0, .6);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2.2rem;
+    }
+
+    .nav-links a {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      font-size: .88rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      transition: color .2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--cyan);
+    }
+
+    .nav-cta {
+      padding: .48rem 1.3rem;
+      border: 1.5px solid var(--cyan);
+      color: var(--cyan) !important;
+      border-radius: 5px;
+      transition: background .2s, box-shadow .2s !important;
+    }
+
+    .nav-cta:hover {
+      background: rgba(56, 189, 248, .1) !important;
+      box-shadow: 0 0 20px var(--cyan-glow) !important;
+    }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .hamburger span {
+      width: 24px;
+      height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+      transition: all .3s;
+    }
+
+    .hamburger.open span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+
+    .hamburger.open span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .hamburger.open span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+
+    /* ============================================================
+       HERO
+    ============================================================ */
+    #hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8rem 2rem 5rem;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse 120% 80% at 50% 100%, rgba(14, 30, 54, .95) 0%, transparent 60%),
+        radial-gradient(ellipse 80% 60% at 15% 50%, rgba(10, 25, 47, .7) 0%, transparent 55%),
+        radial-gradient(ellipse 60% 50% at 85% 30%, rgba(8, 20, 40, .6) 0%, transparent 55%),
+        linear-gradient(170deg, #05080f 0%, #070d1a 35%, #050911 65%, #05080f 100%);
+    }
+
+    /* Grid lines */
+    #hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(56, 189, 248, .018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(56, 189, 248, .018) 1px, transparent 1px);
+      background-size: 52px 52px;
+    }
+
+    #grainCanvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+      opacity: .055;
+      mix-blend-mode: screen;
+    }
+
+    .hero-light-leak {
+      position: absolute;
+      top: -30%;
+      left: -20%;
+      width: 140%;
+      height: 160%;
+      background: conic-gradient(from 220deg at 30% 40%,
+          transparent 0deg,
+          transparent 55deg,
+          rgba(56, 189, 248, .018) 65deg,
+          rgba(56, 189, 248, .035) 75deg,
+          rgba(100, 210, 255, .025) 85deg,
+          transparent 100deg,
+          transparent 360deg);
+      animation: lightLeakDrift 25s ease-in-out infinite alternate;
+      pointer-events: none;
+      z-index: 1;
+      mix-blend-mode: screen;
+    }
+
+    @keyframes lightLeakDrift {
+      0% {
+        transform: rotate(-8deg) scale(1);
+        opacity: .6;
+      }
+
+      33% {
+        transform: rotate(0deg) scale(1.05);
+        opacity: 1;
+      }
+
+      66% {
+        transform: rotate(6deg) scale(.98);
+        opacity: .7;
+      }
+
+      100% {
+        transform: rotate(-4deg) scale(1.02);
+        opacity: .9;
+      }
+    }
+
+    #bokeh {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .hero-vignette {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 75% 70% at 50% 45%,
+          transparent 0%,
+          transparent 40%,
+          rgba(3, 5, 10, .4) 65%,
+          rgba(2, 4, 8, .75) 85%,
+          rgba(1, 2, 5, .92) 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 980px;
+    }
+
+
+    .hero-eyebrow {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      font-size: .78rem;
+      letter-spacing: .4em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 1.2rem;
+      opacity: 0;
+      animation: fadeUp .7s ease .18s forwards;
+    }
+
+    /* ---- Hero logo component ---- */
+    .hero-logo-img {
+      width: clamp(320px, 62vw, 720px);
+      max-width: 92%;
+      height: auto;
+      object-fit: contain;
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: crisp-edges;
+      transform: translateZ(0);
+      backface-visibility: hidden;
+      margin-bottom: .8rem;
+      opacity: 0;
+      animation: fadeUp .9s ease .4s forwards;
+      filter:
+        drop-shadow(0 0 40px rgba(56, 189, 248, .18)) drop-shadow(0 0 80px rgba(56, 189, 248, .10)) drop-shadow(0 24px 48px rgba(0, 0, 0, .65));
+    }
+
+
+    .hands-viral-line {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      font-size: clamp(.8rem, 1.8vw, 1.1rem);
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      text-align: center;
+      margin-bottom: 1.6rem;
+      opacity: 0;
+      animation: fadeUp .7s ease .95s forwards;
+    }
+
+    .hvl-blue {
+      color: #38bdf8;
+      font-weight: 900;
+    }
+
+    .hvl-white {
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    .hero-bullets {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+      opacity: 0;
+      animation: fadeUp .7s ease 1s forwards;
+    }
+
+    .bullet-item {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: .82rem;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: #ffffff;
+      padding: 0 .2rem;
+    }
+
+    .bullet-item.highlight {
+      background: #E63232;
+      color: #ffffff;
+      padding: .22rem .85rem;
+      border-radius: 4px;
+      font-weight: 800;
+    }
+
+    .bullet-sep {
+      width: 1px;
+      height: 14px;
+      background: rgba(255, 255, 255, .2);
+      margin: 0 1rem;
+      flex-shrink: 0;
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 3.5rem;
+      opacity: 0;
+      animation: fadeUp .7s ease .82s forwards;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .9rem 2.2rem;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      border-radius: 6px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: all .3s ease;
+    }
+
+    .btn::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -120%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .28), transparent);
+      transform: skewX(-15deg);
+      transition: left .55s ease;
+    }
+
+    .btn:hover::after {
+      left: 140%;
+    }
+
+    .btn-solid {
+      background: var(--cyan);
+      color: #05080f;
+      border: none;
+      box-shadow: 0 4px 22px rgba(56, 189, 248, .32);
+    }
+
+    .btn-solid:hover {
+      box-shadow: 0 6px 34px rgba(56, 189, 248, .6);
+      transform: translateY(-3px);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--cyan);
+      border: 1.5px solid var(--cyan);
+    }
+
+    .btn-ghost:hover {
+      background: rgba(56, 189, 248, .08);
+      box-shadow: 0 0 28px rgba(56, 189, 248, .2);
+      transform: translateY(-3px);
+    }
+
+    .hero-stat-strip {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp .7s ease 1.02s forwards;
+    }
+
+    .h-stat {
+      padding: .6rem 2rem;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.15rem;
+      letter-spacing: .1em;
+      color: var(--text-dim);
+      border-right: 1px solid rgba(56, 189, 248, .2);
+    }
+
+    .h-stat:last-child {
+      border-right: none;
+    }
+
+    .h-stat strong {
+      color: #e8f0f7;
+      font-weight: 700;
+      font-size: 1.3rem;
+    }
+
+    /* ============================================================
+       MARQUEE
+    ============================================================ */
+    .marquee-section {
+      overflow: hidden;
+      border-top: 1px solid rgba(56, 189, 248, .14);
+      border-bottom: 1px solid rgba(56, 189, 248, .14);
+      padding: .9rem 0;
+      background: var(--bg);
+    }
+
+    .marquee-track {
+      display: flex;
+      width: max-content;
+      white-space: nowrap;
+      animation: marqueeScroll 32s linear infinite;
+    }
+
+    .marquee-track:hover {
+      animation-play-state: paused;
+    }
+
+    .m-item {
+      display: inline-block;
+      padding: 0 1.8rem;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      font-size: .8rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      background: var(--g-chrome);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    @keyframes marqueeScroll {
+      from {
+        transform: translateX(0);
+      }
+
+      to {
+        transform: translateX(-50%);
+      }
+    }
+
+    /* ============================================================
+       ABOUT
+    ============================================================ */
+    #about {
+      padding: 7rem 2rem;
+      background: var(--bg2);
+      position: relative;
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+
+    .about-left {
+      position: relative;
+      min-height: 380px;
+      display: flex;
+      align-items: center;
+    }
+
+    .about-watermark {
+      position: absolute;
+      top: 50%;
+      left: -4%;
+      transform: translateY(-50%);
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: clamp(6rem, 12vw, 11rem);
+      background: var(--g-chrome);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      opacity: .04;
+      letter-spacing: -.05em;
+      user-select: none;
+      pointer-events: none;
+      white-space: nowrap;
+      line-height: 1;
+    }
+
+    .about-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .about-inner h2 {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: clamp(2rem, 4.5vw, 3.2rem);
+      line-height: 1.15;
+      color: var(--text);
+      margin-bottom: 1.2rem;
+    }
+
+    .about-inner h2 .gold {
+      background: var(--g-gold);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .about-inner p {
+      font-size: 1rem;
+      color: var(--text-dim);
+      line-height: 1.85;
+      margin-bottom: 2rem;
+      max-width: 480px;
+    }
+
+    .about-tags {
+      display: flex;
+      gap: .75rem;
+      flex-wrap: wrap;
+    }
+
+    .tag-pill {
+      padding: .45rem 1rem;
+      background: rgba(56, 189, 248, .07);
+      border: 1px solid rgba(56, 189, 248, .22);
+      border-radius: 100px;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      font-size: .8rem;
+      letter-spacing: .08em;
+      color: var(--text);
+    }
+
+    /* Founder card */
+    .founder-card {
+      padding: 2.2rem;
+    }
+
+    .founder-card-logo {
+      height: 52px;
+      object-fit: contain;
+      border-radius: 8px;
+      margin-bottom: 1.6rem;
+      border: 1px solid rgba(56, 189, 248, .18);
+    }
+
+    .founder-badge {
+      display: inline-block;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: .68rem;
+      letter-spacing: .35em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: .9rem;
+      padding: .28rem .9rem;
+      background: rgba(56, 189, 248, .08);
+      border: 1px solid rgba(56, 189, 248, .22);
+      border-radius: 4px;
+    }
+
+    .founder-name {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: clamp(1.8rem, 3vw, 2.4rem);
+      background: var(--g-chrome);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: .35rem;
+    }
+
+    .founder-handle {
+      font-size: .88rem;
+      color: var(--cyan);
+      margin-bottom: .3rem;
+    }
+
+    .founder-role {
+      font-size: .82rem;
+      color: var(--text-muted);
+      letter-spacing: .06em;
+      margin-bottom: 1.6rem;
+    }
+
+    .founder-locations {
+      margin-bottom: 1.4rem;
+    }
+
+    .locations-label {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: .72rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: .6rem;
+    }
+
+    .locations-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+    }
+
+    .location-tag {
+      padding: .35rem .85rem;
+      background: rgba(56, 189, 248, .07);
+      border: 1px solid rgba(56, 189, 248, .22);
+      border-radius: 100px;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      font-size: .82rem;
+      letter-spacing: .06em;
+      color: var(--cyan);
+      transition: all .2s;
+    }
+
+    .location-tag:hover {
+      background: rgba(56, 189, 248, .15);
+      border-color: rgba(56, 189, 248, .5);
+      box-shadow: 0 0 12px rgba(56, 189, 248, .15);
+    }
+
+    .contact-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: .6rem;
+      font-size: .85rem;
+      color: var(--text);
+      padding: .5rem .9rem;
+      background: rgba(56, 189, 248, .06);
+      border: 1px solid rgba(56, 189, 248, .15);
+      border-radius: 8px;
+      transition: all .2s;
+      width: fit-content;
+    }
+
+    .contact-chip:hover {
+      border-color: rgba(56, 189, 248, .38);
+      background: rgba(56, 189, 248, .1);
+      color: var(--cyan);
+    }
+
+    .founder-social-btns {
+      display: flex;
+      gap: .75rem;
+    }
+
+    .founder-social-btn {
+      flex: 1;
+      padding: .6rem 1rem;
+      text-align: center;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: .82rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-dim);
+      transition: all .2s;
+    }
+
+    .founder-social-btn:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+      background: rgba(56, 189, 248, .07);
+      box-shadow: 0 0 16px rgba(56, 189, 248, .15);
+    }
+
+    /* ============================================================
+       SERVICES
+    ============================================================ */
+    #services {
+      padding: 7rem 2rem;
+      background: var(--bg);
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 3.8rem;
+    }
+
+    .section-header h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: clamp(2rem, 5vw, 3.6rem);
+      line-height: 1.1;
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+    }
+
+    .svc-card {
+      padding: 2.2rem 1.8rem;
+      border-radius: 16px;
+      cursor: default;
+      transition: all .35s ease;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .svc-card .svc-desc {
+      flex: 1;
+    }
+
+    .svc-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+      opacity: 0;
+      transition: opacity .35s ease;
+    }
+
+    .svc-card:hover::after {
+      opacity: 1;
+    }
+
+    .svc-card:hover {
+      transform: translateY(-6px) scale(1.025);
+      border-color: rgba(56, 189, 248, .42);
+      box-shadow: 0 18px 55px rgba(0, 0, 0, .65), 0 0 40px rgba(56, 189, 248, .1);
+    }
+
+    .svc-icon-wrap {
+      width: 58px;
+      height: 58px;
+      border-radius: 14px;
+      background: rgba(56, 189, 248, .07);
+      border: 1px solid rgba(56, 189, 248, .16);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      margin-bottom: 1.3rem;
+      transition: all .35s ease;
+    }
+
+    .svc-card:hover .svc-icon-wrap {
+      background: rgba(56, 189, 248, .13);
+      border-color: rgba(56, 189, 248, .38);
+      box-shadow: 0 0 22px rgba(56, 189, 248, .22);
+      transform: scale(1.08);
+    }
+
+    .svc-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--text);
+      margin-bottom: .4rem;
+      letter-spacing: .03em;
+    }
+
+    .svc-desc {
+      font-size: .86rem;
+      color: var(--text-dim);
+      line-height: 1.65;
+    }
+
+    /* ============================================================
+       STATS
+    ============================================================ */
+    #stats {
+      padding: 6rem 2rem;
+      background: var(--bg2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    #stats::before,
+    #stats::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(56, 189, 248, .22), transparent);
+    }
+
+    #stats::before {
+      top: 0;
+    }
+
+    #stats::after {
+      bottom: 0;
+    }
+
+    /* Dot grid */
+    #stats .stat-bg {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image: radial-gradient(rgba(56, 189, 248, .12) 1px, transparent 1px);
+      background-size: 26px 26px;
+      opacity: .4;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .stat-num {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: clamp(2.8rem, 6vw, 4.4rem);
+      line-height: 1;
+      background: var(--g-chrome);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 3px 12px rgba(0, 0, 0, .55));
+      margin-bottom: .55rem;
+    }
+
+    .stat-lbl {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      font-size: .82rem;
+      letter-spacing: .24em;
+      text-transform: uppercase;
+      color: var(--cyan);
+    }
+
+    /* ============================================================
+       CATEGORIES
+    ============================================================ */
+    #categories {
+      padding: 7rem 2rem;
+      background: var(--bg);
+    }
+
+    .cat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    .cat-card {
+      position: relative;
+      border-radius: 20px;
+      overflow: hidden;
+      padding: 3rem 2.4rem;
+      min-height: 320px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      cursor: pointer;
+      transition: transform .35s, box-shadow .35s;
+    }
+
+    .cat-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .7);
+    }
+
+    .cat-girl {
+      background: linear-gradient(148deg, #180430 0%, #48107a 48%, #b21b5a 100%);
+    }
+
+    .cat-vd {
+      background: linear-gradient(148deg, #0a1520 0%, #0f3c82 48%, #e58000 100%);
+    }
+
+    /* Story ring gradient border */
+    .cat-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 20px;
+      padding: 2px;
+      background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: destination-out;
+      mask-composite: exclude;
+      pointer-events: none;
+      opacity: .85;
+    }
+
+    .cat-vd::before {
+      background: linear-gradient(135deg, #FFD700, #FF8F00, #0ea5e9, #38bdf8);
+    }
+
+    .cat-overlay {
+      position: absolute;
+      inset: 0;
+      border-radius: 20px;
+      background: linear-gradient(to top, rgba(0, 0, 0, .75) 0%, transparent 65%);
+    }
+
+    .cat-bg-icon {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.8rem;
+      font-size: 3.8rem;
+      opacity: .14;
+      pointer-events: none;
+    }
+
+    .cat-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .cat-tag {
+      display: inline-block;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: .68rem;
+      letter-spacing: .3em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, .65);
+      padding: .28rem .9rem;
+      border: 1px solid rgba(255, 255, 255, .2);
+      border-radius: 20px;
+      margin-bottom: .6rem;
+    }
+
+    .cat-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: clamp(1.6rem, 3.2vw, 2.2rem);
+      color: #fff;
+      margin-bottom: .6rem;
+    }
+
+    .cat-desc {
+      font-size: .86rem;
+      color: rgba(255, 255, 255, .58);
+      line-height: 1.65;
+    }
+
+    .cat-link {
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      margin-top: 1rem;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      font-size: .82rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, .7);
+      transition: color .2s;
+    }
+
+    .cat-link:hover {
+      color: #fff;
+    }
+
+    /* ============================================================
+       CREATORS
+    ============================================================ */
+    #creators {
+      padding: 7rem 2rem;
+      background: radial-gradient(ellipse 90% 80% at 50% 50%, #0a1828 0%, var(--bg) 70%);
+      position: relative;
+    }
+
+    #creators::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 700px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+      opacity: .3;
+    }
+
+    .creators-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .creators-header h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: clamp(1.8rem, 5vw, 3.6rem);
+      line-height: 1.1;
+      margin-bottom: 1.2rem;
+    }
+
+    .creators-header p {
+      font-size: 1rem;
+      color: var(--text-dim);
+      max-width: 560px;
+      margin: 0 auto;
+      line-height: 1.8;
+    }
+
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 4rem;
+    }
+
+    .benefit-card {
+      padding: 2.2rem 1.8rem;
+      text-align: center;
+      transition: all .35s ease;
+    }
+
+    .benefit-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(56, 189, 248, .4);
+      box-shadow: 0 14px 44px rgba(0, 0, 0, .6), 0 0 30px rgba(56, 189, 248, .1);
+    }
+
+    .benefit-icon {
+      font-size: 2.4rem;
+      margin-bottom: 1.2rem;
+      display: block;
+      transition: transform .3s, filter .3s;
+    }
+
+    .benefit-card:hover .benefit-icon {
+      transform: scale(1.12);
+      filter: drop-shadow(0 0 14px rgba(56, 189, 248, .7));
+    }
+
+    .benefit-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 1.12rem;
+      color: var(--text);
+      margin-bottom: .5rem;
+    }
+
+    .benefit-desc {
+      font-size: .86rem;
+      color: var(--text-dim);
+      line-height: 1.65;
+    }
+
+    /* Creator form */
+    .creator-form-panel {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 2.8rem;
+    }
+
+    .creator-form-panel h3 {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      font-size: clamp(1.2rem, 2.5vw, 1.7rem);
+      background: var(--g-chrome);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      font-size: .76rem;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: .45rem;
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+      width: 100%;
+      padding: .82rem 1rem;
+      background: rgba(8, 14, 26, .85);
+      border: 1px solid rgba(56, 189, 248, .15);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: .9rem;
+      outline: none;
+      transition: border-color .25s, box-shadow .25s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .form-select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2338bdf8' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      background-color: rgba(8, 14, 26, .92);
+      padding-right: 2.8rem;
+    }
+
+    .form-select option {
+      background: #0c1525;
+      color: var(--text);
+    }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, .12);
+      background: rgba(8, 14, 26, .98);
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 96px;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 1rem;
+      background: var(--cyan);
+      color: #05080f;
+      border: none;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      font-size: .88rem;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      border-radius: 8px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: all .3s ease;
+      box-shadow: 0 4px 24px rgba(56, 189, 248, .35);
+      margin-top: .5rem;
+    }
+
+    .btn-submit::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -120%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .32), transparent);
+      transform: skewX(-15deg);
+      transition: left .55s ease;
+    }
+
+    .btn-submit:hover::after {
+      left: 140%;
+    }
+
+    .btn-submit:hover {
+      background: #7dd3fc;
+      box-shadow: 0 6px 34px rgba(56, 189, 248, .58);
+      transform: translateY(-2px);
+    }
+
+    .pricing-reveal {
+      margin-top: .6rem;
+      padding: 1rem 1.2rem;
+      background: rgba(56,189,248,.05);
+      border: 1px solid rgba(56,189,248,.25);
+      border-radius: 10px;
+      animation: fadeUp .3s ease forwards;
+    }
+    .pr-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .pr-left { display: flex; flex-direction: column; gap: .2rem; }
+    .pr-label {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: .68rem;
+      letter-spacing: .25em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .pr-amount {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: 1.8rem;
+      background: var(--g-chrome);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+    }
+    .pr-note {
+      font-size: .78rem;
+      color: var(--cyan);
+      font-family: 'DM Sans', sans-serif;
+      margin-top: .2rem;
+    }
+    .pr-right {
+      font-size: .82rem;
+      color: var(--text-dim);
+      font-family: 'DM Sans', sans-serif;
+      line-height: 1.7;
+      text-align: right;
+    }
+    .pr-dm-msg {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .5rem 1rem;
+      background: rgba(56,189,248,.08);
+      border: 1px solid rgba(56,189,248,.22);
+      border-radius: 8px;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      font-size: .82rem;
+      letter-spacing: .08em;
+      color: var(--cyan);
+      text-decoration: none;
+      transition: all .2s;
+    }
+    .pr-dm-msg:hover {
+      background: rgba(56,189,248,.15);
+      box-shadow: 0 0 16px rgba(56,189,248,.2);
+    }
+
+    .duration-tabs {
+      display: flex;
+      gap: .6rem;
+      flex-wrap: wrap;
+      margin-bottom: .75rem;
+    }
+    .dur-tab {
+      flex: 1;
+      min-width: 100px;
+      padding: .7rem .8rem;
+      background: rgba(8,14,26,.85);
+      border: 1px solid rgba(56,189,248,.18);
+      border-radius: 8px;
+      color: var(--text-dim);
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      font-size: .88rem;
+      letter-spacing: .06em;
+      cursor: pointer;
+      transition: all .22s;
+      text-align: center;
+    }
+    .dur-tab:hover {
+      border-color: rgba(56,189,248,.4);
+      color: var(--text);
+      background: rgba(56,189,248,.06);
+    }
+    .dur-tab.active {
+      background: rgba(56,189,248,.12);
+      border-color: var(--cyan);
+      color: var(--cyan);
+      box-shadow: 0 0 16px rgba(56,189,248,.15);
+    }
+    .custom-time-wrap { margin-top: .75rem; }
+    .custom-time-row { display: flex; gap: .8rem; }
+    .time-hint {
+      font-size: .75rem;
+      color: var(--text-muted);
+      margin-top: .5rem;
+      font-family: 'DM Sans', sans-serif;
+    }
+    input[type="time"].form-input { color-scheme: dark; }
+
+    .hiring-banner {
+      overflow: hidden;
+      background: rgba(220,38,38,.08);
+      border: 1px solid rgba(220,38,38,.25);
+      border-radius: 8px;
+      padding: .6rem 0;
+      margin-bottom: 1.8rem;
+    }
+    .hiring-scroll-track {
+      display: flex;
+      white-space: nowrap;
+      animation: hiringScroll 22s linear infinite;
+    }
+    .hiring-scroll-text {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      font-size: .8rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: #f87171;
+      padding: 0 2rem;
+      flex-shrink: 0;
+    }
+    @keyframes hiringScroll {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    .success-msg {
+      display: none;
+      text-align: center;
+      padding: 2.5rem 1rem;
+    }
+
+    .success-msg .s-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      display: block;
+      color: var(--cyan);
+    }
+
+    .success-msg h4 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.2rem;
+      background: var(--g-chrome);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: .7rem;
+    }
+
+    .success-msg p {
+      font-size: .9rem;
+      color: var(--text-dim);
+    }
+
+    /* ============================================================
+       CONTACT / BOOKING
+    ============================================================ */
+    #contact {
+      padding: 7rem 2rem;
+      background: var(--bg2);
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 4rem;
+      align-items: start;
+    }
+
+    .contact-left {
+      position: sticky;
+      top: 6rem;
+    }
+
+    .contact-info-rows {
+      display: flex;
+      flex-direction: column;
+      gap: .55rem;
+      margin-top: 1.5rem;
+    }
+
+    .contact-info-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: .85rem 1rem;
+      border-radius: 10px;
+      background: rgba(56, 189, 248, .03);
+      border: 1px solid rgba(56, 189, 248, .1);
+      text-decoration: none;
+      color: inherit;
+      transition: all .22s;
+    }
+
+    .contact-info-row:hover {
+      border-color: rgba(56, 189, 248, .32);
+      background: rgba(56, 189, 248, .07);
+      transform: translateX(4px);
+    }
+
+    .cir-icon {
+      width: 38px;
+      height: 38px;
+      background: rgba(56, 189, 248, .08);
+      border: 1px solid rgba(56, 189, 248, .18);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .cir-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .cir-label {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: .62rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      line-height: 1;
+    }
+
+    .cir-value {
+      font-size: .9rem;
+      color: var(--text);
+      font-weight: 500;
+      line-height: 1.3;
+    }
+
+    .response-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      margin-top: 1.2rem;
+      padding: .5rem 1.1rem;
+      background: rgba(56, 189, 248, .06);
+      border: 1px solid rgba(56, 189, 248, .18);
+      border-radius: 100px;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      font-size: .8rem;
+      letter-spacing: .1em;
+      color: var(--cyan);
+    }
+
+    .booking-panel {
+      padding: 2rem 1.8rem;
+    }
+
+    .form-bottom-note {
+      text-align: center;
+      font-size: .75rem;
+      color: var(--text-muted);
+      margin-top: .8rem;
+    }
+
+    /* ============================================================
+       FOOTER
+    ============================================================ */
+    footer {
+      padding: 3.5rem 2rem;
+      background: var(--bg);
+      border-top: 1px solid rgba(56, 189, 248, .1);
+    }
+
+    .footer-inner {
+      max-width: 1160px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.8rem;
+      text-align: center;
+    }
+
+    .footer-logo-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .4rem;
+    }
+
+    .footer-tagline {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1rem;
+      color: #6a8a9a;
+    }
+
+    .footer-socials {
+      display: flex;
+      gap: .8rem;
+    }
+
+    .s-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .03);
+      border: 1px solid rgba(56, 189, 248, .14);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-dim);
+      transition: all .2s;
+    }
+
+    .s-btn:hover {
+      color: var(--cyan);
+      border-color: var(--cyan);
+      box-shadow: 0 0 16px rgba(56, 189, 248, .2);
+    }
+
+    .footer-nav {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .footer-nav a {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: .82rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      transition: color .2s;
+    }
+
+    .footer-nav a:hover {
+      color: var(--cyan);
+    }
+
+    .footer-copy {
+      font-size: .76rem;
+      color: var(--text-muted);
+      letter-spacing: .04em;
+    }
+
+    /* ============================================================
+       ANIMATIONS
+    ============================================================ */
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ============================================================
+       RESPONSIVE
+    ============================================================ */
+    @media(max-width:960px) {
+      .about-grid {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+      }
+
+      .services-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .benefits-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+    }
+
+    @media(max-width:860px) {
+      .contact-grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+
+      .contact-left {
+        position: static;
+      }
+    }
+
+    @media(max-width:768px) {
+      .nav-links {
+        display: none;
+        position: fixed;
+        top: 64px;
+        left: 0;
+        right: 0;
+        background: rgba(5, 8, 15, .97);
+        backdrop-filter: blur(20px);
+        flex-direction: column;
+        padding: 1.6rem 2rem;
+        gap: 1.2rem;
+        z-index: 999;
+        border-bottom: 1px solid rgba(56, 189, 248, .1);
+      }
+
+      .nav-links.open {
+        display: flex;
+      }
+
+      .hamburger {
+        display: flex;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+      }
+
+      .cat-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .benefits-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-grid-2 {
+        grid-template-columns: 1fr;
+      }
+
+      .stvr-white,
+      .stvr-blue {
+        font-size: clamp(2.5rem, 16vw, 5rem);
+      }
+    }
+
+    @media(max-width:540px) {
+      .services-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .hero-ctas {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .hero-stat-strip {
+        flex-direction: column;
+        gap: .4rem;
+      }
+
+      .h-stat {
+        border-right: none;
+        border-bottom: 1px solid rgba(56, 189, 248, .12);
+      }
+
+      .h-stat:last-child {
+        border-bottom: none;
+      }
+
+      .bullet-sep {
+        display: none;
+      }
+
+      .hero-bullets {
+        gap: .6rem;
+      }
+
+      .bullet-item {
+        padding: .15rem .5rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+
+  <!-- ============================================================
+     SHARED SVG DEFS
+============================================================ -->
+  <svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true">
+    <defs>
+      <radialGradient id="lc" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#000507" />
+        <stop offset="55%" stop-color="#071020" />
+        <stop offset="100%" stop-color="#1565c0" />
+      </radialGradient>
+      <filter id="bg" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="2" result="b" />
+        <feMerge>
+          <feMergeNode in="b" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+    </defs>
+  </svg>
+
+  <!-- ============================================================
+     NAVBAR
+============================================================ -->
+  <nav id="nav">
+    <a href="#hero" aria-label="STVR Hands Home" style="text-decoration:none;">
+      <div class="stvr-logo">
+        <div class="logo-bar"></div>
+        <div class="logo-text">
+          <span>S</span><span>T</span><span class="logo-v">V</span><span>R</span>
+          <span class="logo-space"> </span>
+          <span>H</span><span>A</span><span>N</span><span>D</span><span>S</span>
+        </div>
+      </div>
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#hero">Home</a></li>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#categories">Work</a></li>
+      <li><a href="#creators">Creators</a></li>
+      <li><a href="#contact">Contact</a></li>
+      <li><a href="#contact" class="nav-cta">Book a Shoot</a></li>
+    </ul>
+    <div class="hamburger" id="hamburger" aria-label="Menu" role="button" tabindex="0">
+      <span></span><span></span><span></span>
+    </div>
+  </nav>
+
+  <!-- ============================================================
+     HERO
+============================================================ -->
+  <section id="hero">
+    <canvas id="grainCanvas" aria-hidden="true"></canvas>
+    <div class="hero-light-leak"></div>
+    <canvas id="bokeh" aria-hidden="true"></canvas>
+    <div class="hero-vignette"></div>
+    <div class="hero-content">
+
+      <div class="hero-eyebrow">SHOOT &nbsp;·&nbsp; TODAY &nbsp;·&nbsp; VIRAL &nbsp;·&nbsp; REELS</div>
+
+      <img src="assets/Untitled.png" alt="STVR Hands Logo" class="hero-logo-img">
+
+      <div class="hands-viral-line">
+        <span class="hvl-blue">HANDS</span>
+        <span class="hvl-white"> BEHIND </span>
+        <span class="hvl-blue">VIRAL</span>
+        <span class="hvl-white"> REELS</span>
+      </div>
+
+      <div class="hero-bullets">
+        <span class="bullet-item">• 24HRS DELIVERY</span>
+        <span class="bullet-sep" aria-hidden="true"></span>
+        <span class="bullet-item highlight">• HIGH QUALITY</span>
+        <span class="bullet-sep" aria-hidden="true"></span>
+        <span class="bullet-item">• TREND CREATORS</span>
+      </div>
+
+      <div class="hero-ctas">
+        <a href="#contact" class="btn btn-solid">Book Your Shoot →</a>
+        <a href="https://www.youtube.com/@stvr__bharath" target="_blank" rel="noopener" class="btn btn-ghost">▶ Watch
+          Reels</a>
+      </div>
+      <div class="hero-stat-strip">
+        <div class="h-stat"><strong>165</strong> Posts</div>
+        <div class="h-stat"><strong>31.6K</strong> Followers</div>
+        <div class="h-stat"><strong>✔</strong> Verified</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+     MARQUEE STRIP
+============================================================ -->
+  <div class="marquee-section" aria-hidden="true">
+    <div class="marquee-track">
+      <span class="m-item">BRANDS •</span><span class="m-item">CARS •</span>
+      <span class="m-item">PARTIES •</span><span class="m-item">INFLUENCERS •</span><span class="m-item">CELEBRITIES
+        •</span>
+      <span class="m-item">WEDDINGS •</span><span class="m-item">EVENTS •</span>
+      <span class="m-item">CINEMATIC REELS •</span><span class="m-item">VIRAL CONTENT •</span>
+      <!-- Duplicate for seamless loop -->
+      <span class="m-item">BRANDS •</span><span class="m-item">CARS •</span>
+      <span class="m-item">PARTIES •</span><span class="m-item">INFLUENCERS •</span><span class="m-item">CELEBRITIES
+        •</span>
+      <span class="m-item">WEDDINGS •</span><span class="m-item">EVENTS •</span>
+      <span class="m-item">CINEMATIC REELS •</span><span class="m-item">VIRAL CONTENT •</span>
+    </div>
+  </div>
+
+  <!-- ============================================================
+     ABOUT
+============================================================ -->
+  <section id="about">
+    <div class="container">
+      <div class="about-grid">
+
+        <div class="about-left reveal">
+          <span class="about-watermark" aria-hidden="true">STVR</span>
+          <div class="about-inner">
+            <h2>
+              We Don't Just Shoot.<br>
+              <span class="gold">We Create Magic.</span>
+            </h2>
+            <p>
+              Hyderabad-based cinematic reel studio founded by
+              <strong style="color:var(--cyan)">Bharath (@stvr__bharath)</strong>.
+              We craft viral-first reels for influencers, brands, cars and events —
+              turning ordinary moments into scroll-stopping cinema.
+            </p>
+            <div class="about-tags">
+              <span class="tag-pill">📍 Hyderabad Based</span>
+              <span class="tag-pill">✔ Instagram Verified</span>
+              <span class="tag-pill">🎬 31.6K+ Followers</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="reveal" style="transition-delay:.16s">
+          <div class="founder-card glass">
+            <div class="stvr-logo" aria-label="STVR Hands">
+              <div class="logo-bar"></div>
+              <div class="logo-text">
+                <span>S</span><span>T</span><span class="logo-v">V</span><span>R</span>
+                <span class="logo-space"> </span>
+                <span>H</span><span>A</span><span>N</span><span>D</span><span>S</span>
+              </div>
+            </div>
+            <span class="founder-badge">Founder</span>
+            <h3 class="founder-name chrome-deep">Bharath</h3>
+            <p class="founder-handle">@stvr__bharath</p>
+            <p class="founder-role">Lead Creator &amp; Director</p>
+            <div class="founder-locations">
+              <p class="locations-label">📍 Available In</p>
+              <div class="locations-grid">
+                <span class="location-tag">Hyderabad</span>
+                <span class="location-tag">Vizag</span>
+                <span class="location-tag">Vijayawada</span>
+                <span class="location-tag">Rajahmundry</span>
+              </div>
+            </div>
+            <div class="founder-social-btns">
+              <a href="https://www.instagram.com/stvr__hands/" target="_blank" rel="noopener"
+                class="founder-social-btn">
+                📸 Instagram
+              </a>
+              <a href="https://www.youtube.com/@stvr__bharath" target="_blank" rel="noopener"
+                class="founder-social-btn">
+                ▶ YouTube
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ============================================================
+     SERVICES
+============================================================ -->
+  <section id="services">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-label">What We Shoot</span>
+        <h2 class="reveal">
+          <span class="chrome-deep">Every Frame.</span>
+          <span style="color:var(--gold);font-family:'Orbitron',sans-serif;font-weight:900;"> A Story.</span>
+        </h2>
+      </div>
+      <div class="services-grid stagger">
+        <div class="svc-card glass reveal">
+          <div class="svc-icon-wrap">🎬</div>
+          <div class="svc-title">Cinematic Reels</div>
+          <p class="svc-desc">Portrait &amp; Landscape — scroll-stopping reels crafted with a cinematic eye in every
+            frame and format</p>
+        </div>
+        <div class="svc-card glass reveal">
+          <div class="svc-icon-wrap">💍</div>
+          <div class="svc-title">Wedding &amp; Pre-Wedding</div>
+          <p class="svc-desc">Forever moments, forever beautiful</p>
+        </div>
+        <div class="svc-card glass reveal">
+          <div class="svc-icon-wrap">🏍️</div>
+          <div class="svc-title">Car &amp; Bike Deliveries</div>
+          <p class="svc-desc">Your new ride deserves the spotlight</p>
+        </div>
+        <div class="svc-card glass reveal">
+          <div class="svc-icon-wrap">📸</div>
+          <div class="svc-title">Car &amp; Bike Shoots</div>
+          <p class="svc-desc">High-octane visuals for every machine</p>
+        </div>
+        <div class="svc-card glass reveal">
+          <div class="svc-icon-wrap">🏢</div>
+          <div class="svc-title">Brand &amp; Products</div>
+          <p class="svc-desc">Scroll-stopping content for your brand</p>
+        </div>
+        <div class="svc-card glass reveal">
+          <div class="svc-icon-wrap">🎂</div>
+          <div class="svc-title">Birthdays &amp; Parties</div>
+          <p class="svc-desc">Celebrations turned cinematic</p>
+        </div>
+        <div class="svc-card glass reveal">
+          <div class="svc-icon-wrap">👗</div>
+          <div class="svc-title">Influencer Content</div>
+          <p class="svc-desc">Reels that make brands fall in love</p>
+        </div>
+        <div class="svc-card glass reveal">
+          <div class="svc-icon-wrap">🎉</div>
+          <div class="svc-title">Festival Content</div>
+          <p class="svc-desc">Festive energy captured with cinematic flair</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+     STATS
+============================================================ -->
+  <section id="stats">
+    <div class="stat-bg" aria-hidden="true"></div>
+    <div class="container">
+      <div class="stats-grid stagger">
+        <div class="reveal" style="text-align:center">
+          <div class="stat-num" data-target="165" data-suffix="+">0+</div>
+          <div class="stat-lbl">Reels Delivered</div>
+        </div>
+        <div class="reveal" style="text-align:center;transition-delay:.14s">
+          <div class="stat-num" data-target="31.6" data-suffix="K+" data-dec="1">0K+</div>
+          <div class="stat-lbl">Instagram Followers</div>
+        </div>
+        <div class="reveal" style="text-align:center;transition-delay:.28s">
+          <div class="stat-num" data-target="100" data-suffix="%">0%</div>
+          <div class="stat-lbl">Viral-Ready Quality</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ============================================================
+     CONTENT CATEGORIES
+============================================================ -->
+  <section id="categories">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-label">Featured Reels</span>
+        <h2 class="section-header-title chrome-deep reveal"
+          style="font-family:'Orbitron',sans-serif;font-weight:900;font-size:clamp(2rem,5vw,3.6rem);">
+          Our Signature Work
+        </h2>
+      </div>
+      <div class="cat-grid">
+        <div class="cat-card cat-girl reveal">
+          <div class="cat-overlay"></div>
+          <div class="cat-bg-icon" aria-hidden="true">✨</div>
+          <div class="cat-content">
+            <span class="cat-tag">Trending Now</span>
+            <div class="cat-title">🎬 Girl Reels</div>
+            <p class="cat-desc">Lifestyle &amp; fashion reels that captivate — crafted for maximum reach and engagement.
+            </p>
+            <a href="https://www.instagram.com/stvr__hands/" target="_blank" rel="noopener" class="cat-link">View on
+              Instagram →</a>
+          </div>
+        </div>
+        <div class="cat-card cat-vd reveal" style="transition-delay:.14s">
+          <div class="cat-overlay"></div>
+          <div class="cat-bg-icon" aria-hidden="true">🚗</div>
+          <div class="cat-content">
+            <span class="cat-tag">Most Popular</span>
+            <div class="cat-title">🚗 VD Reels</div>
+            <p class="cat-desc">Luxury car reveals &amp; delivery moments — shot with cinematic precision and raw
+              energy.</p>
+            <a href="https://www.instagram.com/stvr__hands/" target="_blank" rel="noopener" class="cat-link">View on
+              Instagram →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+     JOIN AS CREATOR
+============================================================ -->
+  <section id="creators">
+    <div class="container">
+      <div class="creators-header">
+        <span class="section-label">For Creators</span>
+        <h2 class="reveal">
+          <span class="chrome-deep">Turn Your Phone Into</span><br>
+          <span class="chrome-deep">A Money Machine</span>
+        </h2>
+        <p class="reveal" style="transition-delay:.12s;margin-top:1rem;">
+          Join the STVR Hands creator network. Shoot reels. Get paid.
+        </p>
+      </div>
+
+      <div class="benefits-grid stagger">
+        <div class="benefit-card glass reveal">
+          <span class="benefit-icon">📱</span>
+          <h3 class="benefit-title">Shoot With Your Phone</h3>
+          <p class="benefit-desc">No expensive gear needed. Just your smartphone and your talent.</p>
+        </div>
+        <div class="benefit-card glass reveal">
+          <span class="benefit-icon">💰</span>
+          <h3 class="benefit-title">Earn Per Shoot</h3>
+          <p class="benefit-desc">Get paid for every reel you deliver. The more you shoot, the more you earn.</p>
+        </div>
+        <div class="benefit-card glass reveal">
+          <span class="benefit-icon">🚀</span>
+          <h3 class="benefit-title">Grow Your Portfolio</h3>
+          <p class="benefit-desc">Build a professional reel portfolio under the STVR brand name.</p>
+        </div>
+      </div>
+
+      <div class="creator-form-panel glass reveal">
+        <!-- ADMIN NOTE: To enable hiring, change hiringOpen = false to hiringOpen = true in the script below -->
+        <div class="hiring-banner" id="hiringBanner">
+          <div class="hiring-scroll-track">
+            <span class="hiring-scroll-text">
+              🚫 Applications Currently Closed &nbsp;•&nbsp; We Are Not Hiring At This Moment &nbsp;•&nbsp; Stay Tuned For Updates &nbsp;•&nbsp; Follow @stvr__hands For Announcements &nbsp;•&nbsp; 🚫 Applications Currently Closed &nbsp;•&nbsp; We Are Not Hiring At This Moment &nbsp;•&nbsp; Stay Tuned For Updates &nbsp;•&nbsp; Follow @stvr__hands For Announcements &nbsp;•&nbsp;
+            </span>
+          </div>
+        </div>
+        <h3>Apply to Join Our Creator Team</h3>
+        <form id="creatorForm" novalidate>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label for="c-name">Full Name</label>
+              <input class="form-input" id="c-name" type="text" name="name" placeholder="Your full name" required>
+            </div>
+            <div class="form-group">
+              <label for="c-phone">Phone Number</label>
+              <input class="form-input" id="c-phone" type="tel" name="phone" placeholder="+91 XXXXX XXXXX" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="c-email">Email Address</label>
+            <input class="form-input" id="c-email" type="email" name="email" placeholder="yourname@email.com" required>
+          </div>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label for="c-insta">Instagram Profile Link</label>
+              <input class="form-input" id="c-insta" type="url" name="instagram" placeholder="https://instagram.com/yourhandle" required>
+            </div>
+            <div class="form-group">
+              <label for="c-city">Your Location</label>
+              <select class="form-select" id="c-city" name="city" required>
+                <option value="" disabled selected>Select your city</option>
+                <option value="hyderabad">Hyderabad</option>
+                <option value="vizag">Vizag</option>
+                <option value="vijayawada">Vijayawada</option>
+                <option value="rajahmundry">Rajahmundry</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="c-work">Your Work</label>
+            <input class="form-input" id="c-work" type="url" name="work" placeholder="Paste your best reel or portfolio link here" required>
+          </div>
+          <button type="submit" class="btn-submit">Submit Application →</button>
+        </form>
+        <div class="success-msg" id="creatorSuccess">
+          <span class="s-icon">✦</span>
+          <h4>Application Received!</h4>
+          <p>We'll reach out within 24 hours.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ============================================================
+     CONTACT / BOOKING
+============================================================ -->
+  <section id="contact">
+    <div class="container">
+      <div class="contact-grid">
+
+        <div class="contact-left reveal">
+          <span class="section-label">GET IN TOUCH</span>
+          <h2 style="font-family:'Orbitron',sans-serif;font-weight:900;font-size:clamp(2.2rem,5vw,3.8rem);line-height:1.05;margin-top:.6rem;" class="chrome-deep">
+            Ready to Go<br>Viral?
+          </h2>
+          <p style="font-size:1rem;color:var(--text-dim);line-height:1.8;margin-top:1rem;">
+            Tell us about your shoot and we'll make it happen. Fast turnaround, cinematic quality — every time.
+          </p>
+          <div class="section-divider" style="margin:1.8rem 0;"></div>
+          <div class="contact-info-rows">
+            <a href="https://www.instagram.com/stvr__hands/" target="_blank" rel="noopener" class="contact-info-row">
+              <div class="cir-icon">📸</div>
+              <div class="cir-text">
+                <span class="cir-label">INSTAGRAM</span>
+                <span class="cir-value">@stvr__hands</span>
+              </div>
+            </a>
+            <a href="https://www.youtube.com/@stvr__bharath" target="_blank" rel="noopener" class="contact-info-row">
+              <div class="cir-icon">▶</div>
+              <div class="cir-text">
+                <span class="cir-label">YOUTUBE</span>
+                <span class="cir-value">@stvr__bharath</span>
+              </div>
+            </a>
+            <a href="https://wa.me/917989079432" target="_blank" rel="noopener" class="contact-info-row">
+              <div class="cir-icon">💬</div>
+              <div class="cir-text">
+                <span class="cir-label">WHATSAPP</span>
+                <span class="cir-value">Chat with us</span>
+              </div>
+            </a>
+            <div class="contact-info-row">
+              <div class="cir-icon">📍</div>
+              <div class="cir-text">
+                <span class="cir-label">AVAILABLE IN</span>
+                <span class="cir-value">Hyd • Vizag • Vijayawada • Rajam</span>
+              </div>
+            </div>
+          </div>
+          <div class="response-badge">⚡ We respond within 2 hours</div>
+        </div>
+
+        <div class="booking-panel glass reveal" style="transition-delay:.16s">
+          <form id="bookingForm" novalidate>
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label for="b-name">Your Name</label>
+                <input class="form-input" id="b-name" type="text" name="name" placeholder="Full name" required>
+              </div>
+              <div class="form-group">
+                <label for="b-phone">Phone Number</label>
+                <input class="form-input" id="b-phone" type="tel" name="phone" placeholder="+91 XXXXX XXXXX" required>
+              </div>
+            </div>
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label for="eventTypeSelect">Event Type</label>
+                <select class="form-select" id="eventTypeSelect" name="event_type" required>
+                  <option value="" disabled selected>Select shoot type</option>
+                  <option value="portrait-1">Portrait Reel (1 Reel)</option>
+                  <option value="landscape-1">Landscape Reel (1 Reel)</option>
+                  <option value="portrait-3">3 Portrait Reels</option>
+                  <option value="landscape-3">3 Landscape Reels</option>
+                  <option value="perday-3-reels">Per Day — 3 Reels</option>
+                  <option value="combo-2p1l">2 Portrait + 1 Landscape</option>
+                  <option value="combo-2l1p">2 Landscape + 1 Portrait</option>
+                  <option value="car-bike-delivery">Car / Bike Delivery</option>
+                  <option value="more-than-3">More Than 3 Reels</option>
+                  <option value="wedding">Wedding &amp; Pre-Wedding</option>
+                  <option value="birthday">Birthday &amp; Parties</option>
+                  <option value="brand">Brand &amp; Product Shoot</option>
+                  <option value="event">Event Coverage</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Shoot Location</label>
+                <select class="form-select" name="location">
+                  <option value="" disabled selected>Select your city</option>
+                  <option value="hyderabad">Hyderabad</option>
+                  <option value="vizag">Vizag</option>
+                  <option value="vijayawada">Vijayawada</option>
+                  <option value="rajahmundry">Rajahmundry</option>
+                </select>
+              </div>
+            </div>
+            <div class="pricing-reveal" id="pricingReveal" style="display:none;">
+              <div class="pr-inner">
+                <div class="pr-left">
+                  <span class="pr-label">PACKAGE PRICE</span>
+                  <span class="pr-amount" id="prAmount">₹0</span>
+                  <span class="pr-note" id="prNote"></span>
+                </div>
+                <div class="pr-right" id="prDetails"></div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="b-date">Preferred Date</label>
+              <input class="form-input" id="b-date" type="date" name="date">
+            </div>
+            <div class="form-group">
+              <label>Shoot Duration</label>
+              <div class="duration-tabs" id="durationTabs">
+                <button type="button" class="dur-tab" data-val="fullday">🌞 Full Day</button>
+                <button type="button" class="dur-tab" data-val="halfday">⏱ Half Day</button>
+                <button type="button" class="dur-tab" data-val="custom">✏️ Custom Time</button>
+              </div>
+              <input type="hidden" id="durationValue" name="duration">
+              <div class="custom-time-wrap" id="customTimeWrap" style="display:none;">
+                <div class="custom-time-row">
+                  <div class="form-group" style="margin-bottom:0;flex:1">
+                    <label>Start Time</label>
+                    <input type="time" class="form-input" id="startTime">
+                  </div>
+                  <div class="form-group" style="margin-bottom:0;flex:1">
+                    <label>End Time</label>
+                    <input type="time" class="form-input" id="endTime">
+                  </div>
+                </div>
+                <p class="time-hint">💡 Minimum 2 hours recommended per reel</p>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="b-msg">Message / Requirements</label>
+              <textarea class="form-textarea" id="b-msg" name="message"
+                placeholder="Tell us your vision, location, and any special requirements…" rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn-submit">Book Now →</button>
+            <p class="form-bottom-note">🔒 Your details are safe with us. No spam, ever.</p>
+          </form>
+          <div class="success-msg" id="bookingSuccess">
+            <span class="s-icon">✦</span>
+            <h4>Booking Received!</h4>
+            <p>We'll confirm your shoot within 24 hours.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+     FOOTER
+============================================================ -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo-wrap">
+        <div class="stvr-logo" aria-label="STVR Hands">
+          <div class="logo-bar"></div>
+          <div class="logo-text">
+            <span>S</span><span>T</span><span class="logo-v">V</span><span>R</span>
+            <span class="logo-space"> </span>
+            <span>H</span><span>A</span><span>N</span><span>D</span><span>S</span>
+          </div>
+        </div>
+        <div class="footer-tagline">Magic with Hands</div>
+      </div>
+
+      <div class="footer-socials">
+        <a href="https://www.instagram.com/stvr__hands/" target="_blank" rel="noopener" class="s-btn" title="Instagram">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path
+              d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+          </svg>
+        </a>
+        <a href="https://www.youtube.com/@stvr__bharath" target="_blank" rel="noopener" class="s-btn" title="YouTube">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path
+              d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+          </svg>
+        </a>
+      </div>
+
+      <nav class="footer-nav" aria-label="Footer navigation">
+        <a href="#hero">Home</a>
+        <a href="#about">About</a>
+        <a href="#services">Services</a>
+        <a href="#categories">Work</a>
+        <a href="#creators">Creators</a>
+        <a href="#contact">Contact</a>
+      </nav>
+
+      <p class="footer-copy">© 2025 STVR Hands. All Rights Reserved. | Hyderabad, India</p>
+    </div>
+  </footer>
+
+  <!-- ============================================================
+     JAVASCRIPT
+============================================================ -->
+  <script>
+    'use strict';
+
+
+    /* -----------------------------------------------------------
+       ANIMATED GRAIN CANVAS
+    ----------------------------------------------------------- */
+    (function () {
+      const canvas = document.getElementById('grainCanvas');
+      const ctx = canvas.getContext('2d');
+      let frame = 0;
+
+      function resize() {
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+      }
+
+      function generateGrain() {
+        const w = canvas.width, h = canvas.height;
+        const imageData = ctx.createImageData(w, h);
+        const data = imageData.data;
+        for (let i = 0; i < data.length; i += 4) {
+          const v = Math.random() * 255;
+          data[i] = v; data[i + 1] = v; data[i + 2] = v;
+          data[i + 3] = 18;
+        }
+        ctx.putImageData(imageData, 0, 0);
+      }
+
+      function loop() {
+        if (frame % 3 === 0) generateGrain();
+        frame++;
+        requestAnimationFrame(loop);
+      }
+
+      window.addEventListener('resize', resize, { passive: true });
+      resize();
+      loop();
+    })();
+
+    /* -----------------------------------------------------------
+       BOKEH CANVAS
+    ----------------------------------------------------------- */
+    (function () {
+      const cv = document.getElementById('bokeh');
+      const ctx = cv.getContext('2d');
+      let pts = [];
+
+      function resize() {
+        cv.width = cv.offsetWidth;
+        cv.height = cv.offsetHeight;
+      }
+
+      const COLS = [
+        [56, 189, 248],   // cyan
+        [255, 255, 255],  // white
+        [186, 230, 253],  // light blue
+        [14, 165, 233],   // blue
+        [201, 168, 76],   // gold
+        [180, 200, 220],  // silver
+      ];
+
+      function Pt() { this.reset(true); }
+      Pt.prototype.reset = function (scatter) {
+        this.x = Math.random() * cv.width;
+        this.y = scatter ? Math.random() * cv.height : cv.height + 12;
+        this.r = Math.random() * 5 + 1.5;
+        this.a = Math.random() * .18 + .03;
+        this.vx = (Math.random() - .5) * .18;
+        this.vy = -(Math.random() * .18 + .04);
+        this.c = COLS[Math.floor(Math.random() * COLS.length)];
+      };
+      Pt.prototype.draw = function () {
+        const g = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.r * 2.5);
+        g.addColorStop(0, `rgba(${this.c},${this.a})`);
+        g.addColorStop(1, `rgba(${this.c},0)`);
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.r * 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = g;
+        ctx.fill();
+      };
+      Pt.prototype.tick = function () {
+        this.x += this.vx; this.y += this.vy;
+        if (this.y < -15 || this.x < -15 || this.x > cv.width + 15) this.reset(false);
+      };
+
+      function init() {
+        pts = [];
+        const n = Math.min(110, Math.floor(cv.width * cv.height / 9000));
+        for (let i = 0; i < n; i++) pts.push(new Pt());
+      }
+
+      function loop() {
+        ctx.clearRect(0, 0, cv.width, cv.height);
+        pts.forEach(p => { p.tick(); p.draw(); });
+        requestAnimationFrame(loop);
+      }
+
+      window.addEventListener('resize', () => { resize(); init(); }, { passive: true });
+      resize(); init(); loop();
+    })();
+
+    /* -----------------------------------------------------------
+       NAVBAR SCROLL FROST
+    ----------------------------------------------------------- */
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 60);
+    }, { passive: true });
+
+    /* -----------------------------------------------------------
+       SCROLL REVEAL
+    ----------------------------------------------------------- */
+    const revObs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: .1, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.reveal').forEach(el => revObs.observe(el));
+
+    /* -----------------------------------------------------------
+       STAT COUNTERS
+    ----------------------------------------------------------- */
+    function countUp(el) {
+      const target = parseFloat(el.dataset.target);
+      const suffix = el.dataset.suffix || '';
+      const dec = parseInt(el.dataset.dec) || 0;
+      const dur = 1800;
+      const t0 = performance.now();
+
+      function tick(now) {
+        const p = Math.min((now - t0) / dur, 1);
+        const e = 1 - Math.pow(1 - p, 3);
+        el.textContent = (dec ? (target * e).toFixed(dec) : Math.floor(target * e)) + suffix;
+        if (p < 1) requestAnimationFrame(tick);
+        else el.textContent = (dec ? target.toFixed(dec) : target) + suffix;
+      }
+      requestAnimationFrame(tick);
+    }
+
+    const statObs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        e.target.querySelectorAll('.stat-num[data-target]').forEach(el => {
+          if (!el.dataset.counted) { el.dataset.counted = '1'; countUp(el); }
+        });
+      });
+    }, { threshold: .35 });
+
+    const statsEl = document.getElementById('stats');
+    if (statsEl) statObs.observe(statsEl);
+
+    /* -----------------------------------------------------------
+       HAMBURGER
+    ----------------------------------------------------------- */
+    const hbg = document.getElementById('hamburger');
+    const nls = document.getElementById('navLinks');
+
+    hbg.addEventListener('click', () => {
+      hbg.classList.toggle('open');
+      nls.classList.toggle('open');
+    });
+    hbg.addEventListener('keydown', e => { if (e.key === 'Enter') hbg.click(); });
+
+    nls.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => {
+        hbg.classList.remove('open');
+        nls.classList.remove('open');
+      });
+    });
+
+    /* -----------------------------------------------------------
+       SMOOTH SCROLL
+    ----------------------------------------------------------- */
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const target = document.querySelector(a.getAttribute('href'));
+        if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+      });
+    });
+
+    /* -----------------------------------------------------------
+       CREATOR FORM
+    ----------------------------------------------------------- */
+    document.getElementById('creatorForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      this.style.display = 'none';
+      document.getElementById('creatorSuccess').style.display = 'block';
+    });
+
+    /* -----------------------------------------------------------
+       BOOKING FORM
+    ----------------------------------------------------------- */
+    document.getElementById('bookingForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      this.style.display = 'none';
+      document.getElementById('bookingSuccess').style.display = 'block';
+    });
+
+    /* -----------------------------------------------------------
+       HIRING TOGGLE (Admin Control)
+       Set hiringOpen = true  to open applications
+       Set hiringOpen = false to show "not hiring" banner
+    ----------------------------------------------------------- */
+    const hiringOpen = false;
+    const hiringBanner = document.getElementById('hiringBanner');
+    const creatorFormFields = document.getElementById('creatorForm');
+
+    if (hiringOpen) {
+      if (hiringBanner) hiringBanner.style.display = 'none';
+    } else {
+      const submitBtn = creatorFormFields.querySelector('.btn-submit');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.4';
+        submitBtn.style.cursor = 'not-allowed';
+        submitBtn.textContent = 'Applications Closed';
+      }
+    }
+
+    /* -----------------------------------------------------------
+       DURATION TAB TOGGLE
+    ----------------------------------------------------------- */
+    const durTabs = document.querySelectorAll('.dur-tab');
+    const durationValue = document.getElementById('durationValue');
+    const customTimeWrap = document.getElementById('customTimeWrap');
+
+    durTabs.forEach(tab => {
+      tab.addEventListener('click', function () {
+        durTabs.forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        const val = this.dataset.val;
+        durationValue.value = val;
+        customTimeWrap.style.display = val === 'custom' ? 'block' : 'none';
+      });
+    });
+
+    /* -----------------------------------------------------------
+       DYNAMIC PRICING ON EVENT SELECT
+    ----------------------------------------------------------- */
+    const pricingData = {
+      'portrait-1':      { price: '₹2,000', note: 'Portrait Reel — 1 Min Video',      details: '• 1 Portrait Reel\n• Edited & Delivered\n• Within 24 Hours' },
+      'landscape-1':     { price: '₹3,000', note: 'Landscape Reel — 1 Min Video',     details: '• 1 Landscape Reel\n• Edited & Delivered\n• Within 24 Hours' },
+      'portrait-3':      { price: '₹5,000', note: '3 Portrait Reels Package',          details: '• 3 Portrait Reels\n• Full Editing & Music\n• Delivered Within 24 Hrs' },
+      'landscape-3':     { price: '₹7,000', note: '3 Landscape Reels Package',         details: '• 3 Landscape Reels\n• Full Editing & Music\n• Delivered Within 24 Hrs' },
+      'perday-3-reels':  { price: 'Per Day', note: 'Choose combo below',               details: '• 3 Reels Per Day\n• See combo options below' },
+      'combo-2p1l':      { price: '₹5,000', note: '2 Portrait + 1 Landscape',          details: '• 3 Reels Per Day\n• 2 Portrait + 1 Landscape\n• Full Edit & Delivery' },
+      'combo-2l1p':      { price: '₹6,000', note: '2 Landscape + 1 Portrait',          details: '• 3 Reels Per Day\n• 2 Landscape + 1 Portrait\n• Full Edit & Delivery' },
+      'car-bike-delivery':{ price: '₹2,600', note: 'Delivery within 24 Hours',         details: '• 1 Min Delivery Video\n• Pics Included\n• Editing Included\n• Delivered in 24 Hrs' },
+      'more-than-3':     { price: 'Custom',  note: 'Please DM for pricing',             details: 'dm', isDM: true },
+      'wedding':         { price: 'Custom',  note: 'Contact for pricing',               details: 'dm', isDM: true },
+      'birthday':        { price: 'Custom',  note: 'Contact for pricing',               details: 'dm', isDM: true },
+      'brand':           { price: 'Custom',  note: 'Contact for pricing',               details: 'dm', isDM: true },
+      'event':           { price: 'Custom',  note: 'Contact for pricing',               details: 'dm', isDM: true }
+    };
+
+    const eventSelect   = document.getElementById('eventTypeSelect');
+    const pricingReveal = document.getElementById('pricingReveal');
+    const prAmount      = document.getElementById('prAmount');
+    const prNote        = document.getElementById('prNote');
+    const prDetails     = document.getElementById('prDetails');
+
+    if (eventSelect) {
+      eventSelect.addEventListener('change', function () {
+        const data = pricingData[this.value];
+        if (!data) { pricingReveal.style.display = 'none'; return; }
+        prAmount.textContent = data.price;
+        prNote.textContent   = data.note;
+        prDetails.innerHTML  = data.isDM
+          ? `<a href="https://instagram.com/stvr__hands" target="_blank" class="pr-dm-msg">📩 DM @stvr__hands for pricing</a>`
+          : data.details.split('\n').map(l => `<div>${l}</div>`).join('');
+        pricingReveal.style.display = 'block';
+      });
+    }
+  </script>
+
+</body>
+
+</html>
