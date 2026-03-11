@@ -3350,6 +3350,10 @@
       const location = this.querySelector('select[name="location"]');
       if (!location.value) showError(location, 'Please select your city.');
 
+      // Date
+      const date = document.getElementById('b-date');
+      if (!date.value) showError(date, 'Please select a preferred date.');
+
       // Start Time
       const startTime = document.getElementById('startTime');
       if (!startTime.value) showError(startTime, 'Please enter a start time.');
@@ -3369,7 +3373,7 @@
     });
 
     // Clear error state as user corrects each field
-    ['b-name', 'b-phone', 'eventTypeSelect', 'startTime', 'endTime'].forEach(id => {
+    ['b-name', 'b-phone', 'eventTypeSelect', 'b-date', 'startTime', 'endTime'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.addEventListener('input', function () {
         this.classList.remove('error');
