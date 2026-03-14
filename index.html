@@ -2557,6 +2557,204 @@
         gap: 1.5rem;
       }
     }
+
+    /* ============================================================
+       TERMS & CONDITIONS MODAL
+    ============================================================ */
+    .tc-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 8, 15, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .tc-modal-overlay.open {
+      display: flex;
+      opacity: 1;
+    }
+
+    .tc-modal {
+      background: var(--bg2);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 800px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transform: translateY(20px);
+      transition: transform 0.3s ease;
+    }
+
+    .tc-modal-overlay.open .tc-modal {
+      transform: translateY(0);
+    }
+
+    .tc-modal-header {
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .tc-modal-header h3 {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      font-size: 1.3rem;
+      color: var(--cyan);
+      margin: 0;
+    }
+
+    .tc-close {
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      color: var(--text);
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: all 0.2s;
+    }
+
+    .tc-close:hover {
+      background: rgba(248, 113, 113, 0.15);
+      border-color: rgba(248, 113, 113, 0.4);
+      color: #f87171;
+    }
+
+    .tc-modal-body {
+      padding: 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .tc-section {
+      margin-bottom: 2rem;
+    }
+    
+    .tc-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .tc-section h4 {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.2rem;
+      color: var(--text);
+      margin-bottom: 1rem;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 0.5rem;
+    }
+
+    .tc-section ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+
+    .tc-section ul li {
+      position: relative;
+      padding-left: 1.2rem;
+      margin-bottom: 0.8rem;
+      font-size: 0.88rem;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+
+    .tc-section ul li::before {
+      content: '•';
+      position: absolute;
+      left: 0;
+      color: var(--cyan);
+      font-weight: bold;
+    }
+
+    /* Form checkbox styling */
+    .checkbox-group {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.8rem;
+      margin-bottom: 1.2rem;
+      position: relative;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      background: rgba(8, 14, 26, 0.85);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 4px;
+      cursor: pointer;
+      position: relative;
+      flex-shrink: 0;
+      margin-top: 0.15rem;
+      transition: all 0.2s;
+    }
+
+    .checkbox-group input[type="checkbox"]:checked {
+      background: var(--cyan);
+      border-color: var(--cyan);
+    }
+
+    .checkbox-group input[type="checkbox"]:checked::after {
+      content: '';
+      position: absolute;
+      left: 5px;
+      top: 2px;
+      width: 4px;
+      height: 8px;
+      border: solid #05080f;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+
+    .checkbox-group input[type="checkbox"]:focus {
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.12);
+      outline: none;
+    }
+    
+    .checkbox-group input[type="checkbox"].error {
+      border-color: #f87171 !important;
+      background: rgba(248, 113, 113, 0.05) !important;
+    }
+
+    .checkbox-group label {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      line-height: 1.5;
+      cursor: pointer;
+      text-transform: none;
+      letter-spacing: normal;
+      font-weight: 400;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .tc-link {
+      color: var(--cyan);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      transition: color 0.2s;
+    }
+
+    .tc-link:hover {
+      color: #7dd3fc;
+    }
   </style>
 </head>
 
@@ -2961,6 +3159,10 @@
             <input class="form-input" id="c-work" type="url" name="work"
               placeholder="Paste your best reel or portfolio link here" required>
           </div>
+          <div class="checkbox-group">
+            <input type="checkbox" id="c-terms" name="terms" required>
+            <label for="c-terms">I have read and agree to the <a href="#" class="tc-link" onclick="openTCModal(event, 'creator')">Terms and Conditions</a></label>
+          </div>
           <button type="submit" class="btn-submit">Submit Application →</button>
         </form>
         <div class="success-msg" id="creatorSuccess">
@@ -3115,6 +3317,10 @@
               <textarea class="form-textarea" id="b-msg" name="message"
                 placeholder="Tell us your vision, location, and any special requirements…" rows="3"></textarea>
             </div>
+            <div class="checkbox-group">
+              <input type="checkbox" id="b-terms" name="terms" required>
+              <label for="b-terms">I have read and agree to the <a href="#" class="tc-link" onclick="openTCModal(event, 'booking')">Terms and Conditions</a></label>
+            </div>
             <button type="submit" class="btn-submit">Book Now →</button>
             <p class="form-bottom-note">🔒 Your details are safe with us. No spam, ever.</p>
           </form>
@@ -3206,8 +3412,104 @@
   </footer>
 
   <!-- ============================================================
+     TERMS & CONDITIONS MODAL
+  ============================================================ -->
+  <div class="tc-modal-overlay" id="tcModal">
+    <div class="tc-modal" onclick="event.stopPropagation()">
+      <div class="tc-modal-header">
+        <h3>STVR Hands Policies</h3>
+        <button class="tc-close" onclick="closeTCModal()" aria-label="Close modal">×</button>
+      </div>
+      <div class="tc-modal-body">
+        
+        <div class="tc-section" id="tc-section-general">
+          <h4>Terms and Conditions</h4>
+          <ul>
+            <li>A booking is considered confirmed only after payment of the required advance amount and confirmation from the STVR Hands team.</li>
+            <li>STVR Hands reserves the right to decline or cancel any booking due to operational limitations, unforeseen circumstances, or violation of company policies.</li>
+            <li>Clients must provide accurate event details including location, date, and timing at the time of booking. STVR Hands will not be responsible for any issues caused by incorrect or incomplete information provided by the client.</li>
+            <li>Clients must ensure cooperation during the shoot and provide necessary access or permissions required for the shooting location.</li>
+            <li>The scope of service will be based on the selected package or mutually agreed service details.</li>
+            <li>The final editing style, music, transitions, and creative approach will follow STVR Hands production standards unless specific requirements are agreed upon before the shoot.</li>
+            <li>Clients are entitled to a maximum of two revision requests after the initial delivery of the edited reel or video. Revision requests must be communicated within three days of delivery.</li>
+            <li>Additional revisions beyond the two included revisions may incur additional charges. Revisions apply only to minor adjustments and do not include complete re-editing or reshooting.</li>
+            <li>Edited reels or videos will be delivered within the agreed timeframe depending on the complexity of the project. Minor delays may occur due to editing workload, technical issues, or unforeseen circumstances.</li>
+            <li>The remaining balance payment must be completed before the final edited files are delivered to the client.</li>
+            <li>STVR Hands reserves the right to share preview versions with watermarks until full payment is received.</li>
+            <li>Clients agree not to directly engage or hire any creators introduced through STVR Hands for future work without the company’s approval. All future collaborations must be coordinated through STVR Hands.</li>
+            <li>STVR Hands may use the captured photos or videos for portfolio, promotional, marketing, or social media purposes unless the client specifically requests otherwise in writing before delivery.</li>
+            <li>STVR Hands will not be responsible for delays or service limitations caused by weather conditions, location restrictions, client delays, or other circumstances beyond reasonable control.</li>
+            <li>By booking the service, clients acknowledge that they have read, understood, and agreed to these terms and conditions.</li>
+          </ul>
+        </div>
+
+        <div class="tc-section" id="tc-section-creators">
+          <h4>Terms and Conditions for Reel Creators</h4>
+          <ul>
+            <li>All reel creators working with STVR Hands must follow the company’s service standards and professional guidelines while representing the brand during any shoot or client interaction.</li>
+            <li>Creators must arrive on time at the assigned shoot location and be fully prepared with the required equipment to complete the assigned work.</li>
+            <li>Creators must maintain professional, respectful, and courteous behaviour with clients at all times. Any misconduct, inappropriate behaviour, or unprofessional conduct may lead to immediate removal from the STVR Hands creator network.</li>
+            <li>Creators must follow a professional dress code during assignments, including wearing the STVR Hands company shirt or t-shirt, proper pants, and shoes. Unprofessional attire such as shorts or slippers is not permitted.</li>
+            <li>Creators must ensure high-quality footage, proper framing, stable recording, and professional shooting practices according to STVR Hands production standards.</li>
+            <li>Creators must not charge or request any additional payments directly from the client beyond the service agreed through STVR Hands. Any additional requests from the client must be communicated to STVR Hands for approval.</li>
+            <li>Creators must not directly contact, approach, or accept work from clients introduced through STVR Hands for personal or external projects without company approval. All future collaborations must be coordinated through STVR Hands.</li>
+            <li>Creators must not promote their personal brand, services, or contact details to clients during the assignment unless authorized by STVR Hands.</li>
+            <li>All captured raw footage and content from the shoot must be submitted to STVR Hands within the required timeframe as instructed by the company.</li>
+            <li>Creators must not use, publish, sell, or distribute client content captured during assignments without prior approval from STVR Hands.</li>
+            <li>Creators are responsible for handling their equipment carefully and ensuring proper functioning during the shoot. STVR Hands will not be responsible for losses or damages to personal equipment.</li>
+            <li>Creators must follow the assigned shoot brief, instructions, and client requirements provided by STVR Hands for each project.</li>
+            <li>Creators must inform STVR Hands in advance if they are unable to attend a scheduled shoot so that arrangements can be made. Last-minute cancellations without valid reason may result in penalties or removal from future assignments.</li>
+            <li>Any violation of STVR Hands policies, including bypassing the company for direct deals with clients or requesting additional payments, may result in immediate termination from the creator network and withholding of payments if necessary.</li>
+            <li>Creators associated with STVR Hands are expected to work with professionalism and dedication towards the growth of the organization. Working with competing organizations without informing STVR Hands may lead to immediate termination of the association.</li>
+            <li>Creators must include the official STVR Hands Instagram page link in their personal Instagram bio while they are associated with the organization.</li>
+            <li>Creators must share at least one reel or content related to their work or experience with STVR Hands on the official STVR Hands Instagram page with prior approval from the management.</li>
+            <li>By working with STVR Hands, creators acknowledge that they have read, understood, and agreed to comply with these terms and conditions.</li>
+          </ul>
+        </div>
+
+        <div class="tc-section" id="tc-section-refund">
+          <h4>Cancellation & Refund Policy</h4>
+          <ul>
+            <li>A booking is confirmed only after the required advance payment is received.</li>
+            <li>Clients may cancel their booking within 48 hours before the scheduled shoot and will be eligible for a partial refund excluding the booking or processing charges.</li>
+            <li>If a cancellation is made within 48 hours of the scheduled shoot, the advance payment will be non-refundable.</li>
+            <li>Clients may request rescheduling of the shoot depending on availability. Rescheduling requests must be made at least 24 hours before the scheduled shoot.</li>
+            <li>Only one reschedule request is allowed per booking. Additional rescheduling may incur extra charges or may not be accommodated.</li>
+            <li>If STVR Hands cancels a booking due to unavoidable circumstances such as operational issues or emergencies, the client will be offered either a reschedule or a full refund of the advance payment.</li>
+            <li>Refunds will be processed within 7–10 working days through the original mode of payment where applicable.</li>
+            <li>Refunds will not be provided in the following situations:
+              <ul style="margin-top:0.5rem">
+                <li>Client absence during the scheduled shoot</li>
+                <li>Delays caused by the client</li>
+                <li>Weather conditions affecting outdoor shoots</li>
+                <li>Dissatisfaction based on personal creative preferences after the service has been delivered</li>
+              </ul>
+            </li>
+            <li>By booking the service, clients acknowledge and agree to the STVR Hands cancellation and refund policy.</li>
+          </ul>
+        </div>
+
+        <div class="tc-section" id="tc-section-privacy">
+          <h4>Privacy Policy</h4>
+          <ul>
+            <li>STVR Hands respects the privacy of its clients and is committed to protecting personal information collected during the booking and service process.</li>
+            <li>We may collect basic information such as name, phone number, email address, and event or location details for the purpose of providing our services.</li>
+            <li>The collected information is used only for booking confirmation, service coordination, communication, and customer support.</li>
+            <li>STVR Hands does not sell, rent, or share client personal information with third parties unless required for service delivery or by law.</li>
+            <li>Any photos or videos captured during the service may be used by STVR Hands for portfolio, marketing, promotional materials, or social media, unless the client specifically requests otherwise in writing before delivery.</li>
+            <li>We take reasonable measures to protect personal information from unauthorized access, misuse, or disclosure.</li>
+            <li>Clients may contact STVR Hands if they wish to update, correct, or request removal of their personal information from our records where applicable.</li>
+            <li>By using the services of STVR Hands, clients acknowledge and agree to the collection and use of information as described in this privacy policy.</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
      JAVASCRIPT
-============================================================ -->
+  ============================================================ -->
   <script>
     'use strict';
 
@@ -3393,10 +3695,64 @@
     });
 
     /* -----------------------------------------------------------
+       TERMS AND CONDITIONS MODAL
+    ----------------------------------------------------------- */
+    const tcModal = document.getElementById('tcModal');
+    
+    function openTCModal(e, type) {
+      if (e) e.preventDefault();
+      
+      const tcGeneral = document.getElementById('tc-section-general');
+      const tcCreators = document.getElementById('tc-section-creators');
+      const tcRefund = document.getElementById('tc-section-refund');
+      const tcPrivacy = document.getElementById('tc-section-privacy');
+
+      if (type === 'creator') {
+        if (tcGeneral) tcGeneral.style.display = 'none';
+        if (tcRefund) tcRefund.style.display = 'none';
+        if (tcPrivacy) tcPrivacy.style.display = 'none';
+        if (tcCreators) tcCreators.style.display = 'block';
+      } else if (type === 'booking') {
+        if (tcGeneral) tcGeneral.style.display = 'block';
+        if (tcRefund) tcRefund.style.display = 'block';
+        if (tcPrivacy) tcPrivacy.style.display = 'block';
+        if (tcCreators) tcCreators.style.display = 'none';
+      }
+
+      tcModal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      
+      // Reset scroll position
+      const modalBody = tcModal.querySelector('.tc-modal-body');
+      if (modalBody) modalBody.scrollTop = 0;
+    }
+    
+    function closeTCModal() {
+      tcModal.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    tcModal.addEventListener('click', closeTCModal);
+
+    /* -----------------------------------------------------------
        CREATOR FORM
     ----------------------------------------------------------- */
     document.getElementById('creatorForm').addEventListener('submit', function (e) {
       e.preventDefault();
+      
+      this.querySelectorAll('.field-error').forEach(el => el.remove());
+      this.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
+      
+      const cTerms = document.getElementById('c-terms');
+      if (!cTerms.checked) {
+        cTerms.classList.add('error');
+        const err = document.createElement('span');
+        err.className = 'field-error';
+        err.textContent = 'You must agree to the Terms and Conditions before applying.';
+        cTerms.parentNode.appendChild(err);
+        return;
+      }
+      
       this.style.display = 'none';
       document.getElementById('creatorSuccess').style.display = 'block';
     });
@@ -3454,6 +3810,17 @@
       // End Time
       const endTime = document.getElementById('endTime');
       if (!endTime.value) showError(endTime, 'Please enter an end time.');
+      
+      // Terms and Conditions checkbox
+      const bTerms = document.getElementById('b-terms');
+      if (!bTerms.checked) {
+        bTerms.classList.add('error');
+        const err = document.createElement('span');
+        err.className = 'field-error';
+        err.textContent = 'You must agree to the Terms and Conditions to book.';
+        bTerms.parentNode.appendChild(err);
+        valid = false;
+      }
 
       if (!valid) {
         const firstError = this.querySelector('.error');
@@ -3466,7 +3833,7 @@
     });
 
     // Clear error state as user corrects each field
-    ['b-name', 'b-phone', 'eventTypeSelect', 'b-date', 'startTime', 'endTime'].forEach(id => {
+    ['b-name', 'b-phone', 'eventTypeSelect', 'b-date', 'startTime', 'endTime', 'b-terms', 'c-terms'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.addEventListener('input', function () {
         this.classList.remove('error');
