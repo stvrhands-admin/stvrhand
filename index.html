@@ -3514,8 +3514,38 @@
   <!-- ============================================================
      JAVASCRIPT
   ============================================================ -->
-  <script>
-    'use strict';
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
+    import { getFirestore, collection, addDoc, getDoc, doc, serverTimestamp }
+      from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
+
+    /* ============================================================
+       FIREBASE CONFIG
+       Replace each placeholder with values from
+       console.firebase.google.com → Project Settings → Your apps
+    ============================================================ */
+    const firebaseConfig = {
+      apiKey:            "PASTE_YOUR_API_KEY",
+      authDomain:        "PASTE_YOUR_AUTH_DOMAIN",
+      projectId:         "PASTE_YOUR_PROJECT_ID",
+      storageBucket:     "PASTE_YOUR_STORAGE_BUCKET",
+      messagingSenderId: "PASTE_YOUR_SENDER_ID",
+      appId:             "PASTE_YOUR_APP_ID",
+      measurementId:     "PASTE_YOUR_MEASUREMENT_ID"
+    };
+    const _fbApp = initializeApp(firebaseConfig);
+    const db     = getFirestore(_fbApp);
+
+    /* Price map used when writing booking to Firestore */
+    function getPriceFromPackage(pkg) {
+      const prices = {
+        'portrait-1': 2000,  'landscape-1': 3000,
+        'portrait-3': 5000,  'landscape-3': 7000,
+        'combo-2p1l': 5000,  'combo-2l1p':  6000,
+        'car-bike-delivery': 2600,
+      };
+      return prices[pkg] || 0;
+    }
 
 
     /* -----------------------------------------------------------
@@ -3738,15 +3768,20 @@
 
     tcModal.addEventListener('click', closeTCModal);
 
+    /* Expose TC modal functions for inline onclick handlers
+       (required when script uses type="module") */
+    window.openTCModal  = openTCModal;
+    window.closeTCModal = closeTCModal;
+
     /* -----------------------------------------------------------
        CREATOR FORM
     ----------------------------------------------------------- */
-    document.getElementById('creatorForm').addEventListener('submit', function (e) {
+    document.getElementById('creatorForm').addEventListener('submit', async function (e) {
       e.preventDefault();
-      
+
       this.querySelectorAll('.field-error').forEach(el => el.remove());
       this.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
-      
+
       const cTerms = document.getElementById('c-terms');
       if (!cTerms.checked) {
         cTerms.classList.add('error');
@@ -3756,15 +3791,37 @@
         cTerms.parentNode.appendChild(err);
         return;
       }
-      
-      this.style.display = 'none';
-      document.getElementById('creatorSuccess').style.display = 'block';
+
+      const submitBtn = this.querySelector('.btn-submit');
+      const origText  = submitBtn.textContent;
+      submitBtn.textContent = 'Submitting…';
+      submitBtn.disabled    = true;
+
+      try {
+        await addDoc(collection(db, 'creator_applications'), {
+          name:      document.getElementById('c-name').value.trim(),
+          phone:     document.getElementById('c-phone').value.trim(),
+          email:     document.getElementById('c-email').value.trim(),
+          instagram: document.getElementById('c-insta').value.trim(),
+          location:  document.getElementById('c-city').value,
+          workLink:  document.getElementById('c-work').value.trim(),
+          status:    'pending',
+          createdAt: serverTimestamp()
+        });
+        this.style.display = 'none';
+        document.getElementById('creatorSuccess').style.display = 'block';
+      } catch (err) {
+        submitBtn.textContent = origText;
+        submitBtn.disabled    = false;
+        alert('Something went wrong. Please DM us @stvr__hands.');
+        console.error(err);
+      }
     });
 
     /* -----------------------------------------------------------
        BOOKING FORM
     ----------------------------------------------------------- */
-    document.getElementById('bookingForm').addEventListener('submit', function (e) {
+    document.getElementById('bookingForm').addEventListener('submit', async function (e) {
       e.preventDefault();
 
       // Clear previous errors
@@ -3783,16 +3840,16 @@
       }
 
       // Name
-      const name = document.getElementById('b-name');
-      if (!name.value.trim()) showError(name, 'Please enter your full name.');
+      const nameEl = document.getElementById('b-name');
+      if (!nameEl.value.trim()) showError(nameEl, 'Please enter your full name.');
 
       // Phone — must be at least 10 digits
-      const phone = document.getElementById('b-phone');
-      const digits = phone.value.replace(/\D/g, '');
-      if (!phone.value.trim()) {
-        showError(phone, 'Please enter your phone number.');
+      const phoneEl = document.getElementById('b-phone');
+      const digits  = phoneEl.value.replace(/\D/g, '');
+      if (!phoneEl.value.trim()) {
+        showError(phoneEl, 'Please enter your phone number.');
       } else if (digits.length < 10) {
-        showError(phone, 'Please enter a valid 10-digit phone number.');
+        showError(phoneEl, 'Please enter a valid 10-digit phone number.');
       }
 
       // Event Type
@@ -3800,12 +3857,12 @@
       if (!eventType.value) showError(eventType, 'Please select a shoot type.');
 
       // Location
-      const location = this.querySelector('select[name="location"]');
-      if (!location.value) showError(location, 'Please select your city.');
+      const locationEl = this.querySelector('select[name="location"]');
+      if (!locationEl.value) showError(locationEl, 'Please select your city.');
 
       // Date
-      const date = document.getElementById('b-date');
-      if (!date.value) showError(date, 'Please select a preferred date.');
+      const dateEl = document.getElementById('b-date');
+      if (!dateEl.value) showError(dateEl, 'Please select a preferred date.');
 
       // Start Time
       const startTime = document.getElementById('startTime');
@@ -3814,7 +3871,7 @@
       // End Time
       const endTime = document.getElementById('endTime');
       if (!endTime.value) showError(endTime, 'Please enter an end time.');
-      
+
       // Terms and Conditions checkbox
       const bTerms = document.getElementById('b-terms');
       if (!bTerms.checked) {
@@ -3832,8 +3889,38 @@
         return;
       }
 
-      this.style.display = 'none';
-      document.getElementById('bookingSuccess').style.display = 'block';
+      const submitBtn = this.querySelector('.btn-submit');
+      submitBtn.textContent = 'Sending…';
+      submitBtn.disabled    = true;
+
+      try {
+        await addDoc(collection(db, 'bookings'), {
+          name:          nameEl.value.trim(),
+          phone:         phoneEl.value.trim(),
+          email:         '',
+          package:       eventType.options[eventType.selectedIndex].text,
+          location:      locationEl.value,
+          date:          dateEl.value,
+          startTime:     startTime.value,
+          endTime:       endTime.value,
+          totalAmount:   getPriceFromPackage(eventType.value),
+          bookingPaid:   false,
+          bookingAmount: 0,
+          finalPaid:     false,
+          assignedCreator: '',
+          reelLink:      '',
+          status:        'New',
+          notes:         document.getElementById('b-msg').value.trim(),
+          createdAt:     serverTimestamp()
+        });
+        this.style.display = 'none';
+        document.getElementById('bookingSuccess').style.display = 'block';
+      } catch (err) {
+        submitBtn.textContent = 'Book Now →';
+        submitBtn.disabled    = false;
+        alert('Something went wrong. Please try again or DM us @stvr__hands.');
+        console.error(err);
+      }
     });
 
     // Clear error state as user corrects each field
@@ -3853,25 +3940,43 @@
     });
 
     /* -----------------------------------------------------------
-       HIRING TOGGLE (Admin Control)
-       Set hiringOpen = true  to open applications
-       Set hiringOpen = false to show "not hiring" banner
+       HIRING STATUS — live from Firestore settings/hiring
+       Controlled by Admin Panel → Settings → Hiring Toggle
     ----------------------------------------------------------- */
-    const hiringOpen = false;
-    const hiringBanner = document.getElementById('hiringBanner');
-    const creatorFormFields = document.getElementById('creatorForm');
+    (async function checkHiringStatus() {
+      const hiringBanner  = document.getElementById('hiringBanner');
+      const creatorFormEl = document.getElementById('creatorForm');
+      const submitBtn     = creatorFormEl ? creatorFormEl.querySelector('.btn-submit') : null;
 
-    if (hiringOpen) {
-      if (hiringBanner) hiringBanner.style.display = 'none';
-    } else {
-      const submitBtn = creatorFormFields.querySelector('.btn-submit');
-      if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.style.opacity = '0.4';
-        submitBtn.style.cursor = 'not-allowed';
-        submitBtn.textContent = 'Applications Closed';
+      const applyDisabled = () => {
+        if (submitBtn) {
+          submitBtn.disabled       = true;
+          submitBtn.style.opacity  = '0.4';
+          submitBtn.style.cursor   = 'not-allowed';
+          submitBtn.textContent    = 'Applications Closed';
+        }
+      };
+
+      try {
+        const snap   = await getDoc(doc(db, 'settings', 'hiring'));
+        const isOpen = snap.exists() ? snap.data().open : false;
+
+        if (isOpen) {
+          if (hiringBanner) hiringBanner.style.display = 'none';
+          if (submitBtn) {
+            submitBtn.disabled       = false;
+            submitBtn.style.opacity  = '1';
+            submitBtn.style.cursor   = 'pointer';
+            submitBtn.textContent    = 'Submit Application →';
+          }
+        } else {
+          applyDisabled();
+        }
+      } catch (err) {
+        console.log('Could not load hiring status:', err);
+        applyDisabled(); // default: closed on error
       }
-    }
+    })();
 
     /* -----------------------------------------------------------
        DURATION TAB TOGGLE
