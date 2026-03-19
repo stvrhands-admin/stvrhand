@@ -1,8 +1,19 @@
+<!--
+  STVR Hands — Admin Panel
+  Version: 2.0
+  Last updated: March 2026
+  Firebase: Connected
+  Access: Bharath + Team only
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+<meta name="theme-color" content="#05080f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="robots" content="noindex, nofollow">
 <title>STVR Hands — Admin Panel</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -13,7 +24,9 @@
   --border:rgba(56,189,248,0.18);--glass:rgba(12,21,37,0.75);
   --green:#22c55e;--red:#f87171;--orange:#fb923c;--purple:#a78bfa;
 }
-html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);overflow:hidden}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);overflow:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
+button,a,[role="button"],.card,.booking-card,.shoot-card{touch-action:manipulation;-webkit-tap-highlight-color:rgba(56,189,248,0.15)}
+.modal,.modal-overlay,[style*="overflow"]{overscroll-behavior:contain}
 
 /* ===== LOGIN ===== */
 #login-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .5s}
@@ -328,6 +341,7 @@ textarea{resize:vertical;min-height:80px}
 </style>
 </head>
 <body>
+<div id="offlineBanner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:9999;background:#e63232;color:white;text-align:center;padding:0.5rem;font-family:'Rajdhani',sans-serif;font-size:0.85rem;letter-spacing:0.1em;">&#x26A0;&#xFE0F; YOU ARE OFFLINE — Changes will sync when back online</div>
 
 <!-- ===== LOGIN ===== -->
 <div id="login-screen">
@@ -362,15 +376,15 @@ textarea{resize:vertical;min-height:80px}
       </div>
     </div>
     <nav id="sidebar-nav">
-      <div class="nav-item active" data-page="dashboard"><span class="nav-icon">&#x1F4CA;</span>Dashboard</div>
-      <div class="nav-item" data-page="bookings"><span class="nav-icon">&#x1F4CB;</span>Bookings</div>
-      <div class="nav-item" data-page="creators"><span class="nav-icon">&#x1F465;</span>Creators</div>
-      <div class="nav-item" data-page="shoots"><span class="nav-icon">&#x1F3AC;</span>Shoots</div>
-      <div class="nav-item" data-page="payments"><span class="nav-icon">&#x1F4B0;</span>Payments</div>
-      <div class="nav-item" data-page="settings"><span class="nav-icon">&#x2699;&#xFE0F;</span>Settings</div>
+      <div class="nav-item active" data-page="dashboard"><span class="nav-icon">📊</span>Dashboard</div>
+      <div class="nav-item" data-page="bookings"><span class="nav-icon">📋</span>Bookings</div>
+      <div class="nav-item" data-page="creators"><span class="nav-icon">👥</span>Creators</div>
+      <div class="nav-item" data-page="shoots"><span class="nav-icon">🎬</span>Shoots</div>
+      <div class="nav-item" data-page="payments"><span class="nav-icon">💰</span>Payments</div>
+      <div class="nav-item" data-page="settings"><span class="nav-icon">⚙️</span>Settings</div>
     </nav>
     <div class="sidebar-bottom">
-      <button class="btn-logout" id="logout-btn">Logout</button>
+      <button class="btn-logout" id="logout-btn">⏻ Logout</button>
     </div>
   </aside>
 
@@ -378,7 +392,7 @@ textarea{resize:vertical;min-height:80px}
   <div id="main">
     <!-- TOPBAR -->
     <div id="topbar">
-      <button id="hamburger">&#x2630;</button>
+      <button id="hamburger">☰</button>
       <div id="page-title">Dashboard</div>
       <div class="topbar-right" style="position:relative">
         <div class="clock-wrap">
@@ -386,7 +400,7 @@ textarea{resize:vertical;min-height:80px}
           <div id="clock-date">---</div>
         </div>
         <button class="notif-btn" id="notif-btn" title="Notifications">
-          &#x1F514;
+          🔔
           <span class="notif-badge hidden" id="notif-badge">0</span>
         </button>
         <!-- Notification Dropdown -->
@@ -445,6 +459,11 @@ textarea{resize:vertical;min-height:80px}
             <tbody id="bk-tbody"></tbody>
           </table>
         </div>
+        <div id="bookings-pagination" style="display:flex;align-items:center;justify-content:center;gap:1rem;padding:1rem;font-family:'Rajdhani',sans-serif;">
+          <button id="btn-prev-page" class="btn btn-ghost" onclick="prevPage()" style="padding:0.4rem 1rem">← Prev</button>
+          <span id="page-indicator" style="color:var(--cyan)">Page 1</span>
+          <button id="btn-next-page" class="btn btn-ghost" onclick="nextPage()" style="padding:0.4rem 1rem">Next →</button>
+        </div>
       </div>
 
       <!-- PAGE: CREATORS -->
@@ -467,8 +486,8 @@ textarea{resize:vertical;min-height:80px}
       <!-- PAGE: SHOOTS -->
       <div class="page" id="page-shoots">
         <div class="toggle-bar">
-          <button class="toggle-btn active" id="shoot-list-btn" onclick="setShootView('list')">&#x1F4CB; List</button>
-          <button class="toggle-btn" id="shoot-cal-btn" onclick="setShootView('calendar')">&#x1F4C5; Calendar</button>
+          <button class="toggle-btn active" id="shoot-list-btn" onclick="setShootView('list')">📋 List</button>
+          <button class="toggle-btn" id="shoot-cal-btn" onclick="setShootView('calendar')">📅 Calendar</button>
         </div>
         <div id="shoot-list-view">
           <div class="table-wrap">
@@ -540,10 +559,7 @@ textarea{resize:vertical;min-height:80px}
             <div class="form-group"><label>Payment Request</label><textarea id="tpl-payment" rows="4"></textarea></div>
             <div class="form-group"><label>Reel Delivered</label><textarea id="tpl-delivered" rows="4"></textarea></div>
           </div>
-          <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
-            <button class="btn btn-cyan" onclick="saveTemplates()">Save Templates</button>
-            <button class="btn btn-ghost" onclick="resetDefaultTemplates()" title="Reset all templates to factory defaults">&#8635; Reset to Defaults</button>
-          </div>
+          <div style="margin-top:16px"><button class="btn btn-cyan" onclick="saveTemplates()">Save Templates</button></div>
         </div>
 
         <div class="settings-section">
@@ -559,23 +575,52 @@ textarea{resize:vertical;min-height:80px}
         <div class="settings-section">
           <h3>Data Management</h3>
           <div style="display:flex;gap:12px;flex-wrap:wrap">
-            <button class="btn btn-ghost" onclick="exportCSV('bookings')">&#x1F4E5; Export Bookings CSV</button>
-            <button class="btn btn-ghost" onclick="exportCSV('payments')">&#x1F4E5; Export Payments CSV</button>
-            <button class="btn btn-red" onclick="clearAllData()">&#x1F5D1; Clear All Data</button>
+            <button class="btn btn-ghost" onclick="exportCSV('bookings')">📥 Export Bookings CSV</button>
+            <button class="btn btn-ghost" onclick="exportCSV('payments')">📥 Export Payments CSV</button>
+            <button class="btn btn-red" onclick="clearAllData()">🗑 Clear All Data</button>
           </div>
         </div>
 
       </div>
+<!--
+IMPORTANT: Set these Firestore rules in Firebase Console → Firestore → Rules:
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /bookings/{id} {
+      allow create: if true;
+      allow read, update, delete: if request.auth != null;
+    }
+    match /creators/{id} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null;
+    }
+    match /settings/{id} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /creator_applications/{id} {
+      allow create: if true;
+      allow read, update, delete: if request.auth != null;
+    }
+    match /stats/{id} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+  }
+}
+-->
     </div><!-- /content -->
   </div><!-- /main -->
 
   <!-- BOTTOM TAB -->
   <div id="bottom-tab">
-    <div class="tab-item active" data-page="dashboard"><div class="tab-icon">&#x1F4CA;</div>Dash</div>
-    <div class="tab-item" data-page="bookings"><div class="tab-icon">&#x1F4CB;</div>Book</div>
-    <div class="tab-item" data-page="creators"><div class="tab-icon">&#x1F465;</div>Crew</div>
-    <div class="tab-item" data-page="shoots"><div class="tab-icon">&#x1F3AC;</div>Shoots</div>
-    <div class="tab-item" data-page="payments"><div class="tab-icon">&#x1F4B0;</div>Pay</div>
+    <div class="tab-item active" data-page="dashboard"><div class="tab-icon">📊</div>Dash</div>
+    <div class="tab-item" data-page="bookings"><div class="tab-icon">📋</div>Book</div>
+    <div class="tab-item" data-page="creators"><div class="tab-icon">👥</div>Crew</div>
+    <div class="tab-item" data-page="shoots"><div class="tab-icon">🎬</div>Shoots</div>
+    <div class="tab-item" data-page="payments"><div class="tab-icon">💰</div>Pay</div>
   </div>
 </div>
 
@@ -596,19 +641,19 @@ textarea{resize:vertical;min-height:80px}
         <div class="form-group"><label>Package *</label>
           <select id="bk-package">
             <option value="">Select Package</option>
-            <option value="portrait-1">Portrait Reel (1 Reel)</option>
-            <option value="landscape-1">Landscape Reel (1 Reel)</option>
-            <option value="portrait-3">3 Portrait Reels</option>
-            <option value="landscape-3">3 Landscape Reels</option>
-            <option value="perday-3-reels">Per Day - 3 Reels (combo)</option>
-            <option value="combo-2p1l">2 Portrait + 1 Landscape</option>
-            <option value="combo-2l1p">2 Landscape + 1 Portrait</option>
-            <option value="car-bike-delivery">Car / Bike Delivery</option>
-            <option value="more-than-3">Custom (3+ Reels)</option>
-            <option value="wedding">Wedding &amp; Pre-Wedding</option>
-            <option value="birthday">Birthday &amp; Parties</option>
-            <option value="brand">Brand &amp; Product Shoot</option>
-            <option value="event">Event Coverage</option>
+            <option>Portrait Reel (1 Reel) — ₹2,000</option>
+            <option>Landscape Reel (1 Reel) — ₹3,000</option>
+            <option>3 Portrait Reels — ₹5,000</option>
+            <option>3 Landscape Reels — ₹7,000</option>
+            <option>Per Day — 3 Reels (combo)</option>
+            <option>2 Portrait + 1 Landscape — ₹5,000</option>
+            <option>2 Landscape + 1 Portrait — ₹6,000</option>
+            <option>Car / Bike Delivery — ₹2,600</option>
+            <option>More Than 3 Reels (Custom)</option>
+            <option>Wedding &amp; Pre-Wedding</option>
+            <option>Birthday &amp; Parties</option>
+            <option>Brand &amp; Product Shoot</option>
+            <option>Event Coverage</option>
           </select>
           <div class="field-err" id="err-bk-package"></div>
         </div>
@@ -622,12 +667,12 @@ textarea{resize:vertical;min-height:80px}
         <div class="form-group"><label>Shoot Date *</label><input type="date" id="bk-date"><div class="field-err" id="err-bk-date"></div></div>
         <div class="form-group"><label>Start Time</label><input type="time" id="bk-start-time"></div>
         <div class="form-group"><label>End Time</label><input type="time" id="bk-end-time"></div>
-        <div class="form-group"><label>Total Amount (&#x20B9;)</label><input type="number" id="bk-total" min="0"></div>
+        <div class="form-group"><label>Total Amount (₹)</label><input type="number" id="bk-total" min="0"></div>
         <div class="form-group">
           <label>Booking Amount</label>
           <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
             <label class="form-check"><input type="checkbox" id="bk-booking-paid-check"> Paid</label>
-            <input type="number" id="bk-booking-amount" min="0" placeholder="Rs. amount" style="flex:1;min-width:100px">
+            <input type="number" id="bk-booking-amount" min="0" placeholder="₹ amount" style="flex:1;min-width:100px">
           </div>
         </div>
         <div class="form-group" style="justify-content:flex-end">
@@ -719,7 +764,7 @@ textarea{resize:vertical;min-height:80px}
     <div class="modal-body" id="assign-modal-body"></div>
     <div class="modal-footer" id="assign-wa-footer" style="display:none;flex-direction:column;align-items:stretch;gap:10px">
       <div class="wa-msg-box" id="assign-wa-msg"></div>
-      <button class="btn btn-green" id="assign-wa-btn">&#x1F4AC; Open WhatsApp</button>
+      <button class="btn btn-green" id="assign-wa-btn">💬 Open WhatsApp</button>
     </div>
   </div>
 </div>
@@ -740,23 +785,66 @@ textarea{resize:vertical;min-height:80px}
 <!-- TOAST -->
 <div id="toast-container"></div>
 
+<!-- GENERIC CONFIRM MODAL -->
+<div id="confirmModal" class="modal-overlay" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.7);align-items:center;justify-content:center">
+  <div class="confirm-box glass" style="max-width:380px;width:90%;text-align:center;padding:2rem;border-radius:16px">
+    <p id="confirmMessage" style="margin-bottom:1.5rem;font-size:1rem;color:var(--text)">Are you sure?</p>
+    <div style="display:flex;gap:1rem">
+      <button id="confirmNo" onclick="document.getElementById('confirmModal').style.display='none'" style="flex:1;padding:0.75rem;background:transparent;border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:white;cursor:pointer">Cancel</button>
+      <button id="confirmYes" style="flex:1;padding:0.75rem;background:#e63232;border:none;border-radius:8px;color:white;cursor:pointer;font-weight:600">Confirm</button>
+    </div>
+  </div>
+</div>
+
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
 import {
   getFirestore, collection, addDoc, getDocs, getDoc, setDoc,
   updateDoc, deleteDoc, doc, query, orderBy, onSnapshot,
-  serverTimestamp
+  serverTimestamp, limit
 } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
 import {
   getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged,
   updatePassword, reauthenticateWithCredential, EmailAuthProvider
 } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
 
-/* ============================================================
-   FIREBASE CONFIG
-   Replace placeholder values with your actual Firebase config
-   from console.firebase.google.com → Project Settings → Your apps
-============================================================ */
+/*
+FIRESTORE INDEXES TO CREATE:
+Go to Firebase Console → Firestore → Indexes → Composite
+
+1. Collection: bookings — Fields: assignedCreator ASC, createdAt DESC
+2. Collection: bookings — Fields: status ASC, createdAt DESC
+3. Collection: bookings — Fields: location ASC, date ASC
+4. Collection: bookings — Fields: assignedCreator ASC, status ASC, date ASC
+
+Create these to prevent slow queries when you have 1000+ bookings.
+*/
+
+/*
+FIRESTORE SECURITY RULES (copy to Firebase Console → Firestore → Rules):
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /bookings/{id} {
+      allow create: if true;
+      allow read, update, delete: if request.auth != null;
+    }
+    match /creators/{id} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null;
+    }
+    match /settings/{id} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+  }
+}
+*/
+
+// ── FIREBASE CONFIG ──
+// Replace with your actual values
+// Never commit real keys to GitHub
+// Use environment variables in production
 const firebaseConfig = {
   apiKey:            "PASTE_YOUR_API_KEY",
   authDomain:        "PASTE_YOUR_AUTH_DOMAIN",
@@ -767,8 +855,146 @@ const firebaseConfig = {
   measurementId:     "PASTE_YOUR_MEASUREMENT_ID"
 };
 const _fbApp = initializeApp(firebaseConfig);
+if (!firebaseConfig.apiKey || firebaseConfig.apiKey === 'YOUR_API_KEY') {
+  console.error('Firebase not configured. Add your Firebase config.');
+}
 const db     = getFirestore(_fbApp);
 const auth   = getAuth(_fbApp);
+
+// ============================================================
+// DEV LOGGING
+// ============================================================
+const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+function devLog(...args) { if (isDev) console.log(...args); }
+
+// ============================================================
+// SANITIZE (XSS prevention)
+// ============================================================
+function sanitize(str) {
+  if (!str && str !== 0) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#x27;');
+}
+
+// ── SAFE LOCAL STORAGE ──
+function safeGetStorage(key, fallback) {
+  if (fallback === undefined) fallback = null;
+  try { const d = localStorage.getItem(key); return d ? JSON.parse(d) : fallback; }
+  catch(e) { console.error('Storage parse error:', key, e); return fallback; }
+}
+
+// ── DEBOUNCE ──
+function debounce(fn, delay) {
+  let timer;
+  return function(...args) { clearTimeout(timer); timer = setTimeout(() => fn.apply(this, args), delay); };
+}
+
+// ── BOOKING STATUS CONSTANTS ──
+const BOOKING_STATUS = {
+  NEW: 'New', CONFIRMED: 'Confirmed', ASSIGNED: 'Assigned',
+  CREATOR_CONFIRMED: 'Creator Confirmed', SHOOT_DONE: 'Shoot Done',
+  REEL_READY: 'Reel Ready', PAYMENT_PENDING: 'Payment Pending',
+  DELIVERED: 'Delivered', CANCELLED: 'Cancelled'
+};
+const CREATOR_STATUS = { PENDING: 'pending', ACCEPTED: 'accepted', REJECTED: 'rejected' };
+
+// ── PAGINATION CONSTANTS ──
+const PAGE_SIZE = 20; let currentPage = 0; let _lastVisible = null;
+
+// ── FIRESTORE READ COUNTER ──
+let _firestoreReads = 0;
+function trackRead(count) { _firestoreReads += (count || 1); if (_firestoreReads > 5000) console.warn('High Firestore read count:', _firestoreReads); }
+
+// ── OFFLINE DETECTION ──
+function setOfflineMode(isOffline) {
+  const banner = document.getElementById('offlineBanner');
+  if (banner) banner.style.display = isOffline ? 'block' : 'none';
+}
+window.addEventListener('online', () => { setOfflineMode(false); showToast('Back online! Syncing data...', 'success'); });
+window.addEventListener('offline', () => { setOfflineMode(true); showToast('You are offline. Changes will sync when connection is restored.', 'info'); });
+if (!navigator.onLine) setOfflineMode(true);
+
+// ── BUTTON LOADING ──
+function setButtonLoading(btn, isLoading, loadingText) {
+  if (!btn) return;
+  if (isLoading) {
+    btn.dataset.originalText = btn.innerHTML;
+    btn.innerHTML = loadingText || 'Loading...';
+    btn.disabled = true;
+    btn.style.opacity = '0.7';
+  } else {
+    btn.innerHTML = btn.dataset.originalText || 'Submit';
+    btn.disabled = false;
+    btn.style.opacity = '1';
+  }
+}
+
+// ── CONFIRM ACTION (generic modal) ──
+function confirmAction(message, onConfirm) {
+  const modal = document.getElementById('confirmModal');
+  document.getElementById('confirmMessage').textContent = message;
+  modal.style.display = 'flex';
+  document.getElementById('confirmYes').onclick = () => { modal.style.display = 'none'; onConfirm(); };
+}
+
+// ── FORMAT HELPERS ──
+function formatDate(dateStr) {
+  if (!dateStr) return 'Not set';
+  try { return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }); }
+  catch(e) { return dateStr; }
+}
+function formatTime(timeStr) {
+  if (!timeStr) return 'Not set';
+  try { const [h,m] = timeStr.split(':'); const d = new Date(); d.setHours(+h,+m); return d.toLocaleTimeString('en-IN', { hour:'numeric', minute:'2-digit', hour12:true }); }
+  catch(e) { return timeStr; }
+}
+function formatAmount(amount) {
+  if (!amount && amount !== 0) return '&#x20B9;0';
+  return '&#x20B9;' + Number(amount).toLocaleString('en-IN');
+}
+
+// ── BATCH UPDATE ──
+async function batchUpdate(bookingIds, updateData) {
+  if (!bookingIds || !bookingIds.length) return;
+  const { writeBatch: wb, doc: fsDoc2 } = await import('https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js');
+  const batch = wb(db);
+  bookingIds.forEach(id => batch.update(fsDoc2(db, 'bookings', id), updateData));
+  await batch.commit();
+}
+
+// ── IN-MEMORY SEARCH ──
+function searchBookings(query, allBookings) {
+  if (!query) return allBookings;
+  const q = query.toLowerCase();
+  return allBookings.filter(b =>
+    (b.name || '').toLowerCase().includes(q) ||
+    (b.phone || '').includes(q) ||
+    (b.location || '').toLowerCase().includes(q) ||
+    (b.id || '').toLowerCase().includes(q)
+  );
+}
+
+// ── PREV/NEXT PAGE (in-memory) ──
+function prevPage() {
+  if (currentPage > 0) { currentPage--; renderBookings(); }
+}
+function nextPage() {
+  const filtered = getFilteredBookings();
+  if ((currentPage + 1) * PAGE_SIZE < filtered.length) { currentPage++; renderBookings(); }
+}
+function getFilteredBookings() {
+  const search = $('bk-search') ? $('bk-search').value.toLowerCase() : '';
+  const statusF = $('bk-status-filter') ? $('bk-status-filter').value : '';
+  const locF = $('bk-loc-filter') ? $('bk-loc-filter').value : '';
+  let bookings = getBookings();
+  if (search) bookings = searchBookings(search, bookings);
+  if (statusF) bookings = bookings.filter(b => (b.status || '') === statusF);
+  if (locF) bookings = bookings.filter(b => (b.location || '') === locF);
+  bookings.sort((a, b) => new Date(b.date || '') - new Date(a.date || ''));
+  return bookings;
+}
+
+// ── UNSUBSCRIBERS ──
+const _unsubscribers = [];
 
 // ============================================================
 // UTILS
@@ -798,26 +1024,7 @@ function todayStr(){
 }
 function monthStr(){return todayStr().slice(0,7)}
 
-function rupees(n){return '\u20B9'+Number(n||0).toLocaleString('en-IN')}
-
-function getPackageName(val){
-  const packages={
-    'portrait-1':       'Portrait Reel',
-    'landscape-1':      'Landscape Reel',
-    'portrait-3':       '3 Portrait Reels',
-    'landscape-3':      '3 Landscape Reels',
-    'perday-3-reels':   'Per Day - 3 Reels',
-    'combo-2p1l':       '2 Portrait + 1 Landscape',
-    'combo-2l1p':       '2 Landscape + 1 Portrait',
-    'car-bike-delivery':'Car / Bike Delivery',
-    'more-than-3':      'Custom (3+ Reels)',
-    'wedding':          'Wedding & Pre-Wedding',
-    'birthday':         'Birthday & Parties',
-    'brand':            'Brand & Product Shoot',
-    'event':            'Event Coverage'
-  };
-  return packages[val] || val || '—';
-}
+function rupees(n){return '₹'+Number(n||0).toLocaleString('en-IN')}
 
 function badgeClass(status){
   const map={'New':'badge-new','Confirmed':'badge-confirmed','Assigned':'badge-assigned','Shoot Done':'badge-shoot-done','Reel Ready':'badge-reel-ready','Delivered':'badge-delivered'};
@@ -843,39 +1050,6 @@ function getNotifs()    { return _notifs;    }
 function saveNotifs(a)  { _notifs = a; }   // ephemeral — not persisted to Firestore
 
 // ============================================================
-// DEFAULT TEMPLATES  (pure Unicode escapes — no emoji literals
-// in source so encoding of the .html file cannot corrupt them)
-// ============================================================
-function getDefaultTemplates(){
-  // All emoji/special chars as \u{} escapes so the source bytes
-  // are plain ASCII regardless of how the file is encoded/served.
-  // \u{1F3AC}=🎬  \u{1F4C5}=📅  \u23F0=⏰  \u{1F4CD}=📍
-  // \u{1F3A5}=🎥  \u{1F389}=🎉  \u{1F64F}=🙏  \u2014=—  \u20B9=₹
-  return {
-    confirmation:
-      'Hi {name}! \u{1F3AC} Your booking with STVR Hands is confirmed!\n\n' +
-      '\u{1F4C5} Date: {date}\n\u23F0 Time: {start} - {end}\n' +
-      '\u{1F4CD} Location: {city}\n\u{1F3A5} Package: {package}\n\n' +
-      "We'll be in touch. \u2014 STVR Hands",
-
-    reminder:
-      'Hi {name}! \u{1F3AC} Reminder: Your shoot with STVR Hands is TOMORROW!\n\n' +
-      '\u{1F4C5} Date: {date}\n\u23F0 Time: {start}\n\u{1F4CD} Location: {city}\n\n' +
-      'Please be ready on time. \u2014 STVR Hands',
-
-    payment:
-      'Hi {name}! Your reel is ready \u{1F3AC}\n' +
-      'Please pay \u20B9{balance} to receive your final files.\n\n' +
-      'UPI: {upi}\n\u2014 STVR Hands',
-
-    delivered:
-      'Hi {name}! \u{1F389} Your reels have been delivered!\n' +
-      'Thank you for choosing STVR Hands.\n\n' +
-      'Links: {link}\n\nPlease share feedback & tag us @stvrhands \u{1F64F}'
-  };
-}
-
-// ============================================================
 // SAMPLE DATA SEED  (runs once if Firestore is empty)
 // ============================================================
 async function seedSampleData(){
@@ -897,7 +1071,7 @@ async function seedSampleData(){
 
   await addDoc(collection(db,'bookings'),{
     name:'Rahul Sharma',phone:'9876543210',email:'rahul@gmail.com',
-    package:'portrait-3',location:'Hyderabad',
+    package:'3 Portrait Reels — ₹5,000',location:'Hyderabad',
     date:today,startTime:'10:00',endTime:'14:00',
     totalAmount:5000,bookingPaid:true,bookingAmount:2000,finalPaid:false,
     status:'Assigned',assignedCreator:cr1.id,
@@ -906,7 +1080,7 @@ async function seedSampleData(){
   });
   await addDoc(collection(db,'bookings'),{
     name:'Priya Reddy',phone:'9123456780',email:'priya@gmail.com',
-    package:'wedding',location:'Vizag',
+    package:'Wedding & Pre-Wedding',location:'Vizag',
     date:addDays(today,3),startTime:'09:00',endTime:'18:00',
     totalAmount:15000,bookingPaid:true,bookingAmount:5000,finalPaid:false,
     status:'Confirmed',assignedCreator:'',
@@ -915,20 +1089,11 @@ async function seedSampleData(){
   });
   await addDoc(collection(db,'bookings'),{
     name:'Karan Mehta',phone:'9988776655',email:'',
-    package:'car-bike-delivery',location:'Hyderabad',
+    package:'Car / Bike Delivery — ₹2,600',location:'Hyderabad',
     date:addDays(today,-2),startTime:'11:00',endTime:'13:00',
     totalAmount:2600,bookingPaid:true,bookingAmount:1300,finalPaid:true,
     status:'Delivered',assignedCreator:'',
     notes:'Lamborghini delivery shoot',
-    createdAt:serverTimestamp()
-  });
-  await addDoc(collection(db,'bookings'),{
-    name:'Shankar',phone:'9700000001',email:'',
-    package:'portrait-1',location:'Hyderabad',
-    date:addDays(today,2),startTime:'12:00',endTime:'14:00',
-    totalAmount:2000,bookingPaid:false,bookingAmount:0,finalPaid:false,
-    status:'New',assignedCreator:'',
-    notes:'Portrait session near studio',
     createdAt:serverTimestamp()
   });
 
@@ -936,7 +1101,12 @@ async function seedSampleData(){
     studioName:'STVR Hands',whatsapp:'9000000000',
     upi:'stvrhands@upi',instagram:'@stvrhands'
   });
-  await setDoc(doc(db,'settings','templates'), getDefaultTemplates());
+  await setDoc(doc(db,'settings','templates'),{
+    confirmation:'Hi {name}! 🎬 Your booking with STVR Hands is confirmed!\n\n📅 Date: {date}\n⏰ Time: {start} - {end}\n📍 Location: {city}\n🎥 Package: {package}\n\nWe\'ll be in touch. — STVR Hands',
+    reminder:'Hi {name}! 🎬 Reminder: Your shoot with STVR Hands is TOMORROW!\n\n📅 Date: {date}\n⏰ Time: {start}\n📍 Location: {city}\n\nPlease be ready on time. — STVR Hands',
+    payment:'Hi {name}! Your reel is ready 🎬\nPlease pay ₹{balance} to receive your final files.\n\nUPI: {upi}\n— STVR Hands',
+    delivered:'Hi {name}! 🎉 Your reels have been delivered!\nThank you for choosing STVR Hands.\n\nLinks: {link}\n\nPlease share feedback & tag us @stvrhands 🙏'
+  });
   await setDoc(doc(db,'settings','hiring'),{ open:true });
 }
 
@@ -960,10 +1130,23 @@ function initLogin(){
   $('login-email').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
 }
 
+// ── BRUTE FORCE PROTECTION ──
+let _loginAttempts = 0;
+let _loginLockedUntil = 0;
+const MAX_LOGIN_ATTEMPTS = 5;
+const LOGIN_LOCKOUT_MS  = 5 * 60 * 1000; // 5 minutes
+
 async function doLogin(){
   const email = $('login-email').value.trim();
   const pass  = $('login-pass').value;
   $('login-error').textContent = '';
+
+  // Lockout check
+  if(Date.now() < _loginLockedUntil) {
+    const secs = Math.ceil((_loginLockedUntil - Date.now()) / 1000);
+    $('login-error').textContent = `Too many attempts. Try again in ${secs}s.`;
+    return;
+  }
 
   if(!email || !pass){
     $('login-error').textContent = 'Enter your email and password.';
@@ -972,13 +1155,24 @@ async function doLogin(){
 
   try {
     await signInWithEmailAndPassword(auth, email, pass);
+    _loginAttempts = 0; // reset on success
     // onAuthStateChanged above handles showing the app
   } catch(err) {
+    _loginAttempts++;
     const inp = $('login-pass');
     inp.classList.add('shake');
-    $('login-error').textContent = 'Invalid email or password. Try again.';
     inp.value = '';
     setTimeout(()=>inp.classList.remove('shake'), 500);
+    if(_loginAttempts >= MAX_LOGIN_ATTEMPTS) {
+      _loginLockedUntil = Date.now() + LOGIN_LOCKOUT_MS;
+      _loginAttempts = 0;
+      $('login-error').textContent = 'Too many failed attempts. Locked for 5 minutes.';
+      $('login-btn').disabled = true;
+      setTimeout(()=>{ $('login-btn').disabled = false; $('login-error').textContent = ''; }, LOGIN_LOCKOUT_MS);
+    } else {
+      const remaining = MAX_LOGIN_ATTEMPTS - _loginAttempts;
+      $('login-error').textContent = `Invalid email or password. ${remaining} attempt${remaining!==1?'s':''} remaining.`;
+    }
   }
 }
 
@@ -1007,15 +1201,28 @@ function initApp(){
 
   // Logout
   $('logout-btn').addEventListener('click', async ()=>{
+    _unsubscribers.forEach(fn => fn()); _unsubscribers.length = 0;
     await signOut(auth);
     location.reload();
   });
 
   // ── Real-time Firestore listeners ──────────────────────────
+  const debouncedRenderBookings = debounce(() => {
+    const pgRefresh = {dashboard:renderDashboard, bookings:renderBookings,
+                       shoots:renderShoots, payments:renderPayments};
+    if(pgRefresh[_currentPage]) pgRefresh[_currentPage]();
+    generateNotifications();
+    renderNotifications();
+  }, 300);
+  const debouncedRenderCreators = debounce(() => {
+    if(_currentPage==='creators') renderCreators();
+  }, 300);
+
   // Bookings
-  onSnapshot(
-    query(collection(db,'bookings'), orderBy('createdAt','desc')),
+  const _unsubBookings = onSnapshot(
+    query(collection(db,'bookings'), orderBy('createdAt','desc'), limit(500)),
     snap => {
+      trackRead(snap.size);
       _bookings = snap.docs.map(d => {
         const data = d.data();
         // Convert Firestore Timestamp to ms for existing logic
@@ -1026,20 +1233,18 @@ function initApp(){
       // Seed sample data only once, when collection is empty
       if(!_seeded){ _seeded=true; if(_bookings.length===0) seedSampleData(); }
 
-      // Refresh active page
-      const pgRefresh = {dashboard:renderDashboard, bookings:renderBookings,
-                         shoots:renderShoots, payments:renderPayments};
-      if(pgRefresh[_currentPage]) pgRefresh[_currentPage]();
-      generateNotifications();
-      renderNotifications();
+      debouncedRenderBookings();
     }
   );
+  _unsubscribers.push(_unsubBookings);
 
   // Creators
-  onSnapshot(collection(db,'creators'), snap => {
+  const _unsubCreators = onSnapshot(query(collection(db,'creators'), limit(100)), snap => {
+    trackRead(snap.size);
     _creators = snap.docs.map(d => ({ id:d.id, ...d.data() }));
-    if(_currentPage==='creators') renderCreators();
+    debouncedRenderCreators();
   });
+  _unsubscribers.push(_unsubCreators);
 
   // Hamburger
   $('hamburger').addEventListener('click',()=>{
@@ -1121,17 +1326,17 @@ function generateNotifications(){
   bookings.forEach(b=>{
     // Shoot today
     if(b.date===today && b.status!=='Delivered'){
-      notifs.push({id:uid(),msg:`Shoot today: ${b.name} at ${fmtTime(b.startTime)||b.startTime}`,type:'today',bookingId:b.id,read:false,ts:now});
+      notifs.push({id:uid(),msg:`Shoot today: ${sanitize(b.name||'')} at ${fmtTime(b.startTime)||b.startTime}`,type:'today',bookingId:b.id,read:false,ts:now});
     }
     // Reel not received
     if(b.date<today && b.status==='Assigned' && b.assignedCreator){
       const cr=getCreators().find(c=>c.id===b.assignedCreator);
-      notifs.push({id:uid(),msg:`Reel not received from ${cr?cr.name:'creator'} for ${b.name}'s shoot`,type:'reel',bookingId:b.id,read:false,ts:now});
+      notifs.push({id:uid(),msg:`Reel not received from ${sanitize(cr?cr.name:'creator')} for ${sanitize(b.name||'')}\'s shoot`,type:'reel',bookingId:b.id,read:false,ts:now});
     }
     // Pending payment > 48hrs
     if(!b.finalPaid && b.createdAt && (now-b.createdAt)>172800000){
       const balance=(b.totalAmount||0)-(b.bookingAmount||0);
-      if(balance>0) notifs.push({id:uid(),msg:`Payment pending: ${b.name} owes ${rupees(balance)}`,type:'payment',bookingId:b.id,read:false,ts:now});
+      if(balance>0) notifs.push({id:uid(),msg:`Payment pending: ${sanitize(b.name||'')} owes ${rupees(balance)}`,type:'payment',bookingId:b.id,read:false,ts:now});
     }
   });
 
@@ -1153,7 +1358,7 @@ function renderNotifications(){
   if(!notifs.length){list.innerHTML='<div class="notif-empty">No notifications</div>';return;}
   list.innerHTML=notifs.map(n=>`
     <div class="notif-item ${n.read?'read':''}" data-notif-id="${n.id}">
-      ${n.msg}
+      ${sanitize(n.msg||'')}
     </div>
   `).join('');
   qsa('.notif-item',list).forEach(item=>{
@@ -1169,7 +1374,7 @@ function renderNotifications(){
 // TOAST
 // ============================================================
 function showToast(msg,type='info'){
-  const icons={success:'\u2705',error:'\u274C',info:'\u2139\uFE0F'};
+  const icons={success:'✅',error:'❌',info:'ℹ️'};
   const div=document.createElement('div');
   div.className=`toast toast-${type}`;
   div.innerHTML=`<span class="toast-icon">${icons[type]}</span><span>${msg}</span>`;
@@ -1218,28 +1423,28 @@ function renderDashboard(){
   const activeC=creators.filter(c=>c.status==='Available').length;
 
   $('dash-stats').innerHTML=`
-    ${statCard('\u{1F4CB}','Total Bookings',total,'blue')}
-    ${statCard('\u23F3','Pending Shoots',pending,'gold')}
-    ${statCard('\u{1F4C5}','Shoots Today',todayS,'orange')}
-    ${statCard('\u2705','Completed This Month',completed,'green')}
-    ${statCard('\u{1F4B0}','Pending Payments',pendingPay,'red')}
-    ${statCard('\u{1F465}','Active Creators',activeC,'purple')}
+    ${statCard('📋','Total Bookings',total,'blue')}
+    ${statCard('⏳','Pending Shoots',pending,'gold')}
+    ${statCard('📅','Shoots Today',todayS,'orange')}
+    ${statCard('✅','Completed This Month',completed,'green')}
+    ${statCard('💰','Pending Payments',pendingPay,'red')}
+    ${statCard('👥','Active Creators',activeC,'purple')}
   `;
 
   const recent=bookings.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,5);
   const tbody=$('dash-tbody');
   if(!recent.length){
-    tbody.innerHTML=`<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">&#x1F4CB;</div><div class="empty-text">No bookings yet</div></div></td></tr>`;
+    tbody.innerHTML=`<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">No bookings yet</div></div></td></tr>`;
     return;
   }
   tbody.innerHTML=recent.map(b=>`
     <tr>
-      <td data-label="Name">${b.name}</td>
-      <td data-label="Package">${getPackageName(b.package)}</td>
-      <td data-label="Location">${b.location}</td>
+      <td data-label="Name">${sanitize(b.name || 'Unknown')}</td>
+      <td data-label="Package">${sanitize(b.package || '')}</td>
+      <td data-label="Location">${sanitize(b.location || 'TBD')}</td>
       <td data-label="Date">${fmtDate(b.date)}</td>
-      <td data-label="Status"><span class="badge ${badgeClass(b.status)}">${b.status}</span></td>
-      <td data-label="Action"><button class="btn btn-ghost btn-sm" onclick="viewBooking('${b.id}')">&#x1F441; View</button></td>
+      <td data-label="Status"><span class="badge ${badgeClass(b.status || 'New')}">${sanitize(b.status || 'New')}</span></td>
+      <td data-label="Action"><button class="btn btn-ghost btn-sm" onclick="viewBooking('${b.id}')">👁 View</button></td>
     </tr>
   `).join('');
 }
@@ -1258,50 +1463,48 @@ function statCard(icon,label,num,color){
 let editingBookingId=null;
 
 function renderBookings(){
-  const search=$('bk-search').value.toLowerCase();
-  const statusF=$('bk-status-filter').value;
-  const locF=$('bk-loc-filter').value;
-  let bookings=getBookings();
-
-  if(search) bookings=bookings.filter(b=>b.name.toLowerCase().includes(search)||b.phone.includes(search));
-  if(statusF) bookings=bookings.filter(b=>b.status===statusF);
-  if(locF) bookings=bookings.filter(b=>b.location===locF);
-
-  bookings.sort((a,b)=>new Date(b.date)-new Date(a.date));
+  const allFiltered = getFilteredBookings();
+  const startIdx = currentPage * PAGE_SIZE;
+  const bookings = allFiltered.slice(startIdx, startIdx + PAGE_SIZE);
 
   const tbody=$('bk-tbody');
-  if(!bookings.length){
-    tbody.innerHTML=`<tr><td colspan="10"><div class="empty-state"><div class="empty-icon">&#x1F4CB;</div><div class="empty-text">No bookings found</div></div></td></tr>`;
+  if(!allFiltered.length){
+    tbody.innerHTML=`<tr><td colspan="10"><div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">No bookings found</div></div></td></tr>`;
+    const pi = $('page-indicator'); if(pi) pi.textContent = 'Page 1';
     return;
   }
+
+  // Update pagination indicator
+  const pi = $('page-indicator');
+  if(pi) pi.textContent = `Page ${currentPage + 1} of ${Math.ceil(allFiltered.length / PAGE_SIZE)}`;
 
   const creators=getCreators();
   tbody.innerHTML=bookings.map((b,i)=>{
     const cr=creators.find(c=>c.id===b.assignedCreator);
     return `<tr>
-      <td data-label="#">${i+1}</td>
-      <td data-label="Name">${b.name}</td>
-      <td data-label="Phone">${b.phone}</td>
-      <td data-label="Package">${getPackageName(b.package)}</td>
-      <td data-label="Location">${b.location}</td>
+      <td data-label="#">${startIdx + i + 1}</td>
+      <td data-label="Name">${sanitize(b.name || 'Unknown')}</td>
+      <td data-label="Phone">${sanitize(b.phone || '')}</td>
+      <td data-label="Package" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${sanitize(b.package || '')}</td>
+      <td data-label="Location">${sanitize(b.location || 'TBD')}</td>
       <td data-label="Date">${fmtDate(b.date)}</td>
       <td data-label="Time">${fmtTime(b.startTime)}</td>
-      <td data-label="Status"><span class="badge ${badgeClass(b.status)}">${b.status}</span></td>
-      <td data-label="Assigned To">${cr?cr.name:'—'}</td>
+      <td data-label="Status"><span class="badge ${badgeClass(b.status || 'New')}">${sanitize(b.status || 'New')}</span></td>
+      <td data-label="Assigned To">${cr ? sanitize(cr.name) : '—'}</td>
       <td data-label="Actions" style="white-space:nowrap">
-        <button class="btn btn-ghost btn-icon btn-sm" onclick="viewBooking('${b.id}')" title="View">&#x1F441;</button>
-        <button class="btn btn-ghost btn-icon btn-sm" onclick="editBooking('${b.id}')" title="Edit">&#x270F;&#xFE0F;</button>
-        <button class="btn btn-ghost btn-icon btn-sm" onclick="openAssign('${b.id}')" title="Assign">&#x1F3AC;</button>
-        <a class="btn btn-ghost btn-icon btn-sm" href="https://wa.me/91${b.phone}?text=Hi+${encodeURIComponent(b.name)}%2C+this+is+STVR+Hands" target="_blank" title="WhatsApp">&#x1F4AC;</a>
-        <button class="btn btn-red btn-icon btn-sm" onclick="deleteBooking('${b.id}')" title="Delete">&#x1F5D1;</button>
+        <button class="btn btn-ghost btn-icon btn-sm" onclick="viewBooking('${b.id}')" title="View">👁</button>
+        <button class="btn btn-ghost btn-icon btn-sm" onclick="editBooking('${b.id}')" title="Edit">✏️</button>
+        <button class="btn btn-ghost btn-icon btn-sm" onclick="openAssign('${b.id}')" title="Assign">🎬</button>
+        <a class="btn btn-ghost btn-icon btn-sm" href="https://wa.me/91${encodeURIComponent(b.phone || '')}?text=Hi+${encodeURIComponent(b.name || '')}%2C+this+is+STVR+Hands" target="_blank" title="WhatsApp">💬</a>
+        <button class="btn btn-red btn-icon btn-sm" onclick="deleteBooking('${b.id}')" title="Delete">🗑</button>
       </td>
     </tr>`;
   }).join('');
 
   // Bind filter events
-  $('bk-search').oninput=renderBookings;
-  $('bk-status-filter').onchange=renderBookings;
-  $('bk-loc-filter').onchange=renderBookings;
+  $('bk-search').oninput=debounce(()=>{ currentPage=0; renderBookings(); }, 300);
+  $('bk-status-filter').onchange=()=>{ currentPage=0; renderBookings(); };
+  $('bk-loc-filter').onchange=()=>{ currentPage=0; renderBookings(); };
 }
 
 function openBookingModal(id=null){
@@ -1427,33 +1630,33 @@ function viewBooking(id){
   $('view-modal-body').innerHTML=`
     <div class="timeline">${timeline}</div>
     <div class="view-detail">
-      <div class="vd-item"><label>Customer</label><div class="vd-val">${b.name}</div></div>
-      <div class="vd-item"><label>Phone</label><div class="vd-val"><a href="tel:${b.phone}" style="color:var(--cyan)">${b.phone}</a></div></div>
-      <div class="vd-item"><label>Email</label><div class="vd-val">${b.email||'—'}</div></div>
-      <div class="vd-item"><label>Package</label><div class="vd-val">${getPackageName(b.package)}</div></div>
-      <div class="vd-item"><label>Location</label><div class="vd-val">${b.location}</div></div>
+      <div class="vd-item"><label>Customer</label><div class="vd-val">${sanitize(b.name || 'Unknown')}</div></div>
+      <div class="vd-item"><label>Phone</label><div class="vd-val"><a href="tel:${sanitize(b.phone || '')}" style="color:var(--cyan)">${sanitize(b.phone || '')}</a></div></div>
+      <div class="vd-item"><label>Email</label><div class="vd-val">${sanitize(b.email || '—')}</div></div>
+      <div class="vd-item"><label>Package</label><div class="vd-val">${sanitize(b.package || '')}</div></div>
+      <div class="vd-item"><label>Location</label><div class="vd-val">${sanitize(b.location || 'TBD')}</div></div>
       <div class="vd-item"><label>Date</label><div class="vd-val">${fmtDate(b.date)}</div></div>
       <div class="vd-item"><label>Time</label><div class="vd-val">${fmtTime(b.startTime)}${b.endTime?' – '+fmtTime(b.endTime):''}</div></div>
-      <div class="vd-item"><label>Total Amount</label><div class="vd-val">${rupees(b.totalAmount)}</div></div>
-      <div class="vd-item"><label>Booking Paid</label><div class="vd-val">${b.bookingPaid?'\u2705 '+rupees(b.bookingAmount):'\u274C Pending'}</div></div>
+      <div class="vd-item"><label>Total Amount</label><div class="vd-val">${rupees(b.totalAmount||0)}</div></div>
+      <div class="vd-item"><label>Booking Paid</label><div class="vd-val">${b.bookingPaid?'✅ '+rupees(b.bookingAmount||0):'❌ Pending'}</div></div>
       <div class="vd-item"><label>Balance</label><div class="vd-val">${rupees(balance)}</div></div>
-      <div class="vd-item"><label>Final Paid</label><div class="vd-val">${b.finalPaid?'\u2705 Paid':'\u274C Pending'}</div></div>
-      ${cr?`<div class="vd-item"><label>Assigned Creator</label><div class="vd-val">${cr.name} · ${cr.phone}</div></div>`:''}
-      ${b.reelLink?`<div class="vd-item full"><label>Reel Link</label><div class="vd-val"><a href="${b.reelLink}" target="_blank" style="color:var(--cyan)">${b.reelLink}</a></div></div>`:''}
+      <div class="vd-item"><label>Final Paid</label><div class="vd-val">${b.finalPaid?'✅ Paid':'❌ Pending'}</div></div>
+      ${cr?`<div class="vd-item"><label>Assigned Creator</label><div class="vd-val">${sanitize(cr.name)} · ${sanitize(cr.phone)}</div></div>`:''}
+      ${b.reelLink?`<div class="vd-item full"><label>Reel Link</label><div class="vd-val"><a href="${sanitize(b.reelLink)}" target="_blank" style="color:var(--cyan)">${sanitize(b.reelLink)}</a></div></div>`:''}
     </div>
     <div class="form-group">
       <label>Internal Notes</label>
-      <textarea id="view-notes" rows="3">${b.notes||''}</textarea>
+      <textarea id="view-notes" rows="3">${sanitize(b.notes||'')}</textarea>
     </div>
-    ${b.reelReceived?`<div class="form-group" style="margin-top:12px"><label>Drive Link</label><input type="text" id="view-reel-link" value="${b.reelLink||''}" placeholder="Paste Google Drive link"></div>`:''}
+    ${b.reelReceived?`<div class="form-group" style="margin-top:12px"><label>Drive Link</label><input type="text" id="view-reel-link" value="${sanitize(b.reelLink||'')}" placeholder="Paste Google Drive link"></div>`:''}
   `;
 
   const footer=$('view-modal-footer');
   const nextStatus=curIdx<statusSteps.length-1?statusSteps[curIdx+1]:null;
   footer.innerHTML=`
     <button class="btn btn-ghost" onclick="closeModal('view-modal-overlay')">Close</button>
-    <button class="btn btn-ghost" onclick="saveViewNotes('${id}')">\u{1F4BE} Save Notes</button>
-    ${nextStatus?`<button class="btn btn-cyan" onclick="moveStatus('${id}','${nextStatus}')">Move to: ${nextStatus} \u2192</button>`:'<span style="color:var(--green);font-family:Rajdhani,sans-serif;font-weight:700">\u2705 Delivered</span>'}
+    <button class="btn btn-ghost" onclick="saveViewNotes('${id}')">💾 Save Notes</button>
+    ${nextStatus?`<button class="btn btn-cyan" onclick="moveStatus('${id}','${nextStatus}')">Move to: ${nextStatus} →</button>`:'<span style="color:var(--green);font-family:Rajdhani,sans-serif;font-weight:700">✅ Delivered</span>'}
   `;
 
   openModal('view-modal-overlay');
@@ -1497,7 +1700,7 @@ function renderCreators(){
 
   const grid=$('creators-grid');
   if(!creators.length){
-    grid.innerHTML=`<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">&#x1F465;</div><div class="empty-text">No creators added yet. Add your first creator.</div></div>`;
+    grid.innerHTML=`<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">👥</div><div class="empty-text">No creators added yet. Add your first creator.</div></div>`;
     return;
   }
 
@@ -1505,21 +1708,21 @@ function renderCreators(){
   grid.innerHTML=creators.map(c=>{
     const shoots=bookings.filter(b=>b.assignedCreator===c.id).length;
     const dotCls=c.status==='Available'?'available':c.status==='Busy'?'busy':'off';
-    const specs=(c.specialities||[]).map(s=>`<span class="spec-pill">${s}</span>`).join('');
+    const specs=(c.specialities||[]).map(s=>`<span class="spec-pill">${sanitize(s)}</span>`).join('');
     return `<div class="creator-card">
       <div class="creator-card-top">
-        <div class="creator-name">${c.name}</div>
+        <div class="creator-name">${sanitize(c.name||'')}</div>
         <div class="creator-actions">
-          <button class="btn btn-ghost btn-icon btn-sm" onclick="editCreator('${c.id}')" title="Edit">&#x270F;&#xFE0F;</button>
-          <button class="btn btn-red btn-icon btn-sm" onclick="deleteCreator('${c.id}')" title="Delete">&#x1F5D1;</button>
+          <button class="btn btn-ghost btn-icon btn-sm" onclick="editCreator('${c.id}')" title="Edit">✏️</button>
+          <button class="btn btn-red btn-icon btn-sm" onclick="deleteCreator('${c.id}')" title="Delete">🗑</button>
         </div>
       </div>
-      <div><span class="city-pill">${c.city}</span></div>
-      <div class="creator-phone">&#x1F4F1; <a href="https://wa.me/91${c.phone}" target="_blank">+91 ${c.phone}</a></div>
+      <div><span class="city-pill">${sanitize(c.city||'')}</span></div>
+      <div class="creator-phone">📱 <a href="https://wa.me/91${encodeURIComponent(c.phone||'')}" target="_blank">+91 ${sanitize(c.phone||'')}</a></div>
       <div class="spec-pills">${specs}</div>
       <div class="creator-status">
         <div class="status-dot ${dotCls}"></div>
-        <span style="font-size:13px;color:var(--text-dim)">${c.status}</span>
+        <span style="font-size:13px;color:var(--text-dim)">${sanitize(c.status||'')}</span>
       </div>
       <div class="creator-shoots">${shoots} shoot${shoots!==1?'s':''} completed</div>
       ${c.status==='Available'?`<button class="btn btn-cyan btn-sm" style="margin-top:4px" onclick="openAssignForCreator('${c.id}')">Assign Shoot</button>`:''}
@@ -1616,38 +1819,28 @@ function openAssign(bookingId,preselect=null){
   assignBookingId=bookingId;
   const b=getBookings().find(x=>x.id===bookingId);
   if(!b)return;
-  const allCreators=getCreators();
-  let localCreators=allCreators.filter(c=>c.city===b.location);
-  const showingAll=localCreators.length===0;
-  const creators=showingAll?allCreators:localCreators;
+  const creators=getCreators().filter(c=>c.city===b.location);
   const bookings=getBookings();
-
-  const listLabel = showingAll
-    ? `<div style="font-family:Rajdhani,sans-serif;font-size:12px;letter-spacing:.5px;color:var(--orange);margin-bottom:12px;padding:8px 10px;background:rgba(251,146,60,.1);border-radius:6px;border:1px solid rgba(251,146,60,.25)">No local creators in ${b.location} &mdash; showing all available creators</div>`
-    : `<div style="font-family:Rajdhani,sans-serif;font-size:12px;letter-spacing:.5px;color:var(--text-muted);margin-bottom:12px">AVAILABLE CREATORS IN ${b.location.toUpperCase()}</div>`;
 
   $('assign-modal-body').innerHTML=`
     <div class="shoot-info-box">
-      <div>&#x1F4C5; <strong>${fmtDate(b.date)}</strong></div>
-      <div>&#x23F0; <strong>${fmtTime(b.startTime)}${b.endTime?' \u2013 '+fmtTime(b.endTime):''}</strong></div>
-      <div>&#x1F4CD; <strong>${b.location}</strong></div>
-      <div>&#x1F3A5; <strong>${getPackageName(b.package)}</strong></div>
-      ${b.notes?`<div style="grid-column:1/-1;font-size:12px;color:var(--text-muted)">Notes: ${b.notes}</div>`:''}
+      <div>📅 <strong>${fmtDate(b.date)}</strong></div>
+      <div>⏰ <strong>${fmtTime(b.startTime)}${b.endTime?' – '+fmtTime(b.endTime):''}</strong></div>
+      <div>📍 <strong>${sanitize(b.location||'')}</strong></div>
+      <div>🎥 <strong>${sanitize(b.package||'')}</strong></div>
     </div>
-    ${listLabel}
+    <div style="font-family:Rajdhani,sans-serif;font-size:12px;letter-spacing:.5px;color:var(--text-muted);margin-bottom:12px">AVAILABLE CREATORS IN ${sanitize((b.location||'').toUpperCase())}</div>
     ${creators.length?creators.map(c=>{
       const shoots=bookings.filter(bk=>bk.assignedCreator===c.id).length;
       const isAssigned=b.assignedCreator===c.id;
-      const isBusy=c.status==='Busy';
-      const borderColor=isAssigned?'var(--cyan)':isBusy?'rgba(251,146,60,.4)':'var(--border)';
-      return `<div class="creator-assign-item" style="border-color:${borderColor}">
+      return `<div class="creator-assign-item">
         <div>
-          <div style="font-family:Rajdhani,sans-serif;font-weight:700;font-size:15px;color:${isAssigned?'var(--cyan)':isBusy?'var(--orange)':'var(--text)'}">${c.name} <span class="status-dot ${c.status.toLowerCase()}" style="display:inline-block;margin-left:6px"></span>${isBusy?' <span style=\'font-size:10px;color:var(--orange)\'>(Busy)</span>':''}</div>
-          <div style="font-size:12px;color:var(--text-muted)">${c.city} &middot; ${(c.specialities||[]).join(' \u00B7 ')} &middot; ${shoots} shoots</div>
+          <div style="font-family:Rajdhani,sans-serif;font-weight:700;font-size:15px">${sanitize(c.name||'')} <span class="status-dot ${sanitize((c.status||'').toLowerCase())}" style="display:inline-block;margin-left:6px"></span></div>
+          <div style="font-size:12px;color:var(--text-muted)">${(c.specialities||[]).map(s=>sanitize(s)).join(' · ')} · ${shoots} shoots</div>
         </div>
-        <button class="btn ${isAssigned?'btn-green':isBusy?'btn-ghost':'btn-cyan'} btn-sm" onclick="assignCreator('${bookingId}','${c.id}')">${isAssigned?'\u2705 Assigned':'Assign'}</button>
+        <button class="btn ${isAssigned?'btn-green':'btn-cyan'} btn-sm" onclick="assignCreator('${bookingId}','${c.id}')">${isAssigned?'✅ Assigned':'Assign'}</button>
       </div>`;
-    }).join(''):`<div class="empty-state"><div class="empty-icon">&#x1F465;</div><div class="empty-text">No creators added yet.<br><a href="javascript:void(0)" onclick="closeModal('assign-modal-overlay');showPage('creators')" style="color:var(--cyan)">Go to Creators page to add one.</a></div></div>`}
+    }).join(''):`<div class="empty-state"><div class="empty-icon">👥</div><div class="empty-text">No creators in ${sanitize(b.location||'')}</div></div>`}
   `;
 
   $('assign-wa-footer').style.display='none';
@@ -1668,7 +1861,7 @@ async function assignCreator(bookingId,creatorId){
     showToast(`${cr.name} assigned!`,'success');
 
     // Show WA message
-    const msg=`Hi ${cr.name}! \u{1F3AC}\nNew shoot assigned from STVR Hands.\n\n\u{1F4C5} Date: ${fmtDate(b.date)}\n\u23F0 Time: ${fmtTime(b.startTime)} - ${fmtTime(b.endTime)}\n\u{1F4CD} Location: ${b.location}\n\u{1F3A5} Package: ${getPackageName(b.package)}\n\u{1F4DD} Requirements: ${b.notes||'None'}\n\nPlease confirm if you can take this.\nReply YES to confirm.\n\u2014 Bharath, STVR Hands`;
+    const msg=`Hi ${cr.name}! 🎬\nNew shoot assigned from STVR Hands.\n\n📅 Date: ${fmtDate(b.date)}\n⏰ Time: ${fmtTime(b.startTime)} - ${fmtTime(b.endTime)}\n📍 Location: ${b.location}\n🎥 Package: ${b.package}\n📝 Requirements: ${b.notes||'None'}\n\nPlease confirm if you can take this.\nReply YES to confirm.\n— Bharath, STVR Hands`;
     $('assign-wa-msg').textContent=msg;
     $('assign-wa-footer').style.display='flex';
     $('assign-wa-btn').onclick=()=>window.open(`https://wa.me/91${cr.phone}?text=${encodeURIComponent(msg)}`,'_blank');
@@ -1702,31 +1895,32 @@ function renderShootList(){
   const creators=getCreators();
   const tbody=$('sh-tbody');
   if(!bookings.length){
-    tbody.innerHTML=`<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">&#x1F3AC;</div><div class="empty-text">No shoots scheduled</div></div></td></tr>`;
+    tbody.innerHTML=`<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">🎬</div><div class="empty-text">No shoots scheduled</div></div></td></tr>`;
     return;
   }
   tbody.innerHTML=bookings.map(b=>{
     const cr=creators.find(c=>c.id===b.assignedCreator);
     const reelToggleId=`reel_${b.id}`;
+    const firstName=sanitize((b.name||'').split(' ')[0]);
     return `<tr>
       <td data-label="Date">${fmtDate(b.date)}</td>
       <td data-label="Time">${fmtTime(b.startTime)}</td>
-      <td data-label="Customer">${b.name.split(' ')[0]}</td>
-      <td data-label="Package">${getPackageName(b.package)}</td>
-      <td data-label="Creator">${cr?cr.name:'—'}</td>
-      <td data-label="Status"><span class="badge ${badgeClass(b.status)}">${b.status}</span></td>
+      <td data-label="Customer">${firstName}</td>
+      <td data-label="Package" style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${sanitize(b.package||'')}</td>
+      <td data-label="Creator">${cr?sanitize(cr.name||''):'—'}</td>
+      <td data-label="Status"><span class="badge ${badgeClass(b.status)}">${sanitize(b.status||'')}</span></td>
       <td data-label="Reel Received">
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
           <label class="toggle-switch">
             <input type="checkbox" id="${reelToggleId}" ${b.reelReceived?'checked':''} onchange="toggleReel('${b.id}',this.checked)">
             <span class="toggle-slider"></span>
           </label>
-          ${b.reelReceived?`<input type="text" class="reel-link-input" placeholder="Drive link" value="${b.reelLink||''}" onchange="saveReelLink('${b.id}',this.value)">`:''}
+          ${b.reelReceived?`<input type="text" class="reel-link-input" placeholder="Drive link" value="${sanitize(b.reelLink||'')}" onchange="saveReelLink('${b.id}',this.value)">`:''}
         </div>
       </td>
       <td data-label="Actions">
-        <button class="btn btn-ghost btn-icon btn-sm" onclick="viewBooking('${b.id}')">&#x1F441;</button>
-        <button class="btn btn-cyan btn-icon btn-sm" onclick="openAssign('${b.id}')">&#x1F3AC;</button>
+        <button class="btn btn-ghost btn-icon btn-sm" onclick="viewBooking('${b.id}')">👁</button>
+        <button class="btn btn-cyan btn-icon btn-sm" onclick="openAssign('${b.id}')">🎬</button>
       </td>
     </tr>`;
   }).join('');
@@ -1778,8 +1972,8 @@ function renderCalendar(){
     const dayShoots=bookings.filter(b=>b.date===dateStr);
     const isToday=dateStr===today;
     html+=`<div class="cal-cell ${isToday?'today':''}" onclick="showCalDay('${dateStr}')">
-      <div class="cal-date" style="${isToday?'color:var(--cyan)':''}>${d}</div>
-      ${dayShoots.slice(0,3).map(b=>`<div class="cal-dot">● ${b.name.split(' ')[0]}</div>`).join('')}
+      <div class="cal-date" style="${isToday?'color:var(--cyan)':''}">${d}</div>
+      ${dayShoots.slice(0,3).map(b=>`<div class="cal-dot">● ${sanitize((b.name||'').split(' ')[0])}</div>`).join('')}
       ${dayShoots.length>3?`<div class="cal-dot" style="color:var(--text-muted)">+${dayShoots.length-3} more</div>`:''}
     </div>`;
   }
@@ -1807,10 +2001,10 @@ function showCalDay(dateStr){
     const cr=creators.find(c=>c.id===b.assignedCreator);
     return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;margin-bottom:8px">
       <div>
-        <div style="font-family:Rajdhani,sans-serif;font-weight:700">${b.name} · <span class="badge ${badgeClass(b.status)}">${b.status}</span></div>
-        <div style="font-size:12px;color:var(--text-muted)">${fmtTime(b.startTime)} · ${getPackageName(b.package)} · ${cr?cr.name:'Unassigned'}</div>
+        <div style="font-family:Rajdhani,sans-serif;font-weight:700">${sanitize(b.name||'')} · <span class="badge ${badgeClass(b.status)}">${sanitize(b.status||'')}</span></div>
+        <div style="font-size:12px;color:var(--text-muted)">${fmtTime(b.startTime)} · ${sanitize(b.package||'')} · ${cr?sanitize(cr.name||''):'Unassigned'}</div>
       </div>
-      <button class="btn btn-ghost btn-sm" onclick="viewBooking('${b.id}')">&#x1F441; View</button>
+      <button class="btn btn-ghost btn-sm" onclick="viewBooking('${b.id}')">👁 View</button>
     </div>`;
   }).join('');
 }
@@ -1835,38 +2029,38 @@ function renderPayments(){
   });
 
   $('pay-stats').innerHTML=`
-    ${statCard('\u{1F4B3}','Total Collected',rupees(totalCollected),'green')}
-    ${statCard('\u23F3','Pending Booking Amts',rupees(pendingBooking),'gold')}
-    ${statCard('\u{1F4B0}','Pending Final Amts',rupees(pendingFinal),'red')}
-    ${statCard('\u{1F4C5}','This Month Revenue',rupees(thisMonthRev),'blue')}
+    ${statCard('💳','Total Collected',rupees(totalCollected),'green')}
+    ${statCard('⏳','Pending Booking Amts',rupees(pendingBooking),'gold')}
+    ${statCard('💰','Pending Final Amts',rupees(pendingFinal),'red')}
+    ${statCard('📅','This Month Revenue',rupees(thisMonthRev),'cyan blue')}
   `;
 
   const settings=getSettings();
   const upi=settings.upi||'stvrhands@upi';
   const tbody=$('pay-tbody');
   if(!bookings.length){
-    tbody.innerHTML=`<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">&#x1F4B0;</div><div class="empty-text">No payment data</div></div></td></tr>`;
+    tbody.innerHTML=`<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">💰</div><div class="empty-text">No payment data</div></div></td></tr>`;
     return;
   }
   tbody.innerHTML=bookings.map(b=>{
     const balance=Math.max(0,(b.totalAmount||0)-(b.bookingAmount||0));
-    const waMsg=`Hi ${b.name}! Your reel is ready \u{1F3AC}\nPlease pay ${rupees(balance)} to receive your final files.\n\nUPI: ${upi}\n\u2014 STVR Hands`;
+    const waMsg=`Hi ${b.name||''}! Your reel is ready 🎬\nPlease pay ${rupees(balance)} to receive your final files.\n\nUPI: ${upi}\n— STVR Hands`;
     return `<tr>
-      <td data-label="Customer">${b.name}</td>
-      <td data-label="Package">${getPackageName(b.package)}</td>
+      <td data-label="Customer">${sanitize(b.name||'')}</td>
+      <td data-label="Package" style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${sanitize(b.package||'')}</td>
       <td data-label="Total">${rupees(b.totalAmount)}</td>
       <td data-label="Booking Amt">${rupees(b.bookingAmount)}</td>
       <td data-label="Balance">${rupees(balance)}</td>
       <td data-label="Booking Paid">
-        ${b.bookingPaid?'<span style="color:var(--green)">\u2705</span>':
+        ${b.bookingPaid?'<span style="color:var(--green)">✅</span>':
         `<button class="btn btn-green btn-sm" onclick="markPaid('${b.id}','booking')">Mark Paid</button>`}
       </td>
       <td data-label="Final Paid">
-        ${b.finalPaid?'<span style="color:var(--green)">\u2705</span>':
+        ${b.finalPaid?'<span style="color:var(--green)">✅</span>':
         `<button class="btn btn-green btn-sm" onclick="markPaid('${b.id}','final')">Mark Paid</button>`}
       </td>
       <td data-label="Actions">
-        <a class="btn btn-ghost btn-sm" href="https://wa.me/91${b.phone}?text=${encodeURIComponent(waMsg)}" target="_blank">&#x1F4AC; Pay WA</a>
+        <a class="btn btn-ghost btn-sm" href="https://wa.me/91${encodeURIComponent(b.phone||'')}?text=${encodeURIComponent(waMsg)}" target="_blank">💬 Pay WA</a>
       </td>
     </tr>`;
   }).join('');
@@ -1908,24 +2102,6 @@ async function initSettings(){
     const tSnap = await getDoc(doc(db,'settings','templates'));
     if(tSnap.exists()) _templates = tSnap.data();
   } catch(e){}
-
-  // Auto-fix: detect CP437-garbled encoding (≡ = U+2261 is the telltale
-  // first character of a garbled emoji that started with UTF-8 byte 0xF0)
-  const isCorrupted = t => t && (
-    (t.confirmation||'').includes('\u2261') ||
-    (t.reminder||'').includes('\u2261')     ||
-    (t.payment||'').includes('\u2261')      ||
-    (t.delivered||'').includes('\u2261')
-  );
-  if(isCorrupted(_templates)){
-    const fixed = getDefaultTemplates();
-    _templates = fixed;
-    try {
-      await setDoc(doc(db,'settings','templates'), {...fixed, updatedAt:serverTimestamp()});
-      showToast('\u2705 Templates auto-repaired \u2014 encoding was corrupted','success');
-    } catch(e){}
-  }
-
   const t = _templates;
   if($('tpl-confirmation')) $('tpl-confirmation').value=t.confirmation||'';
   if($('tpl-reminder'))     $('tpl-reminder').value=t.reminder||'';
@@ -1983,19 +2159,6 @@ async function saveTemplates(){
   } catch(err){ showToast('Error saving templates','error'); console.error(err); }
 }
 
-async function resetDefaultTemplates(){
-  const defaults = getDefaultTemplates();
-  try {
-    await setDoc(doc(db,'settings','templates'), {...defaults, updatedAt:serverTimestamp()});
-    _templates = defaults;
-    if($('tpl-confirmation')) $('tpl-confirmation').value = defaults.confirmation;
-    if($('tpl-reminder'))     $('tpl-reminder').value     = defaults.reminder;
-    if($('tpl-payment'))      $('tpl-payment').value      = defaults.payment;
-    if($('tpl-delivered'))    $('tpl-delivered').value    = defaults.delivered;
-    showToast('\u2705 Templates reset to defaults','success');
-  } catch(err){ showToast('Error resetting templates','error'); console.error(err); }
-}
-
 async function changePassword(){
   const curr=$('pw-current').value;
   const nw=$('pw-new').value;
@@ -2036,7 +2199,7 @@ function exportCSV(type){
 
 function clearAllData(){
   showConfirm(
-    'Clear All Data',
+    '⚠️ Clear All Data',
     'Type DELETE below to confirm. This will erase all bookings, creators, and settings permanently.',
     async ()=>{
       const inp=$('clear-confirm-input');
@@ -2066,24 +2229,6 @@ function clearAllData(){
     '<input type="text" id="clear-confirm-input" placeholder="Type DELETE" style="width:100%;padding:10px 14px;background:var(--bg);border:1px solid var(--red);border-radius:8px;color:var(--text);font-size:14px;margin-top:12px;font-family:DM Sans,sans-serif">'
   );
 }
-
-// ============================================================
-// WINDOW EXPORTS
-// All functions called from inline onclick/onchange handlers
-// must be attached to window when using type="module"
-// ============================================================
-Object.assign(window, {
-  showPage,
-  openBookingModal, editBooking, saveBooking, deleteBooking,
-  viewBooking, saveViewNotes, moveStatus,
-  openCreatorModal, editCreator, saveCreator, deleteCreator,
-  openAssign, openAssignForCreator, assignCreator,
-  setShootView, showCalDay, toggleReel, saveReelLink,
-  markPaid,
-  saveSettings, saveTemplates, resetDefaultTemplates, changePassword,
-  exportCSV, clearAllData,
-  closeModal, openModal,
-});
 
 // ============================================================
 // BOOTSTRAP
