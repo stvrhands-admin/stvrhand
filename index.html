@@ -1261,128 +1261,6 @@
     /* ============================================================
        CATEGORIES
     ============================================================ */
-    #categories {
-      padding: 7rem 2rem;
-      background: var(--bg);
-    }
-
-    .cat-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 2rem;
-    }
-
-    .cat-card {
-      position: relative;
-      border-radius: 20px;
-      overflow: hidden;
-      padding: 3rem 2.4rem;
-      min-height: 320px;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      cursor: pointer;
-      transition: transform .35s, box-shadow .35s;
-    }
-
-    .cat-card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 20px 60px rgba(0, 0, 0, .7);
-    }
-
-    .cat-girl {
-      background: linear-gradient(148deg, #180430 0%, #48107a 48%, #b21b5a 100%);
-    }
-
-    .cat-vd {
-      background: linear-gradient(148deg, #0a1520 0%, #0f3c82 48%, #e58000 100%);
-    }
-
-    /* Story ring gradient border */
-    .cat-card::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: 20px;
-      padding: 2px;
-      background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
-      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite: destination-out;
-      mask-composite: exclude;
-      pointer-events: none;
-      opacity: .85;
-    }
-
-    .cat-vd::before {
-      background: linear-gradient(135deg, #FFD700, #FF8F00, #0ea5e9, #38bdf8);
-    }
-
-    .cat-overlay {
-      position: absolute;
-      inset: 0;
-      border-radius: 20px;
-      background: linear-gradient(to top, rgba(0, 0, 0, .75) 0%, transparent 65%);
-    }
-
-    .cat-bg-icon {
-      position: absolute;
-      top: 1.5rem;
-      right: 1.8rem;
-      font-size: 3.8rem;
-      opacity: .14;
-      pointer-events: none;
-    }
-
-    .cat-content {
-      position: relative;
-      z-index: 1;
-    }
-
-    .cat-tag {
-      display: inline-block;
-      font-family: 'Rajdhani', sans-serif;
-      font-size: .68rem;
-      letter-spacing: .3em;
-      text-transform: uppercase;
-      color: rgba(255, 255, 255, .65);
-      padding: .28rem .9rem;
-      border: 1px solid rgba(255, 255, 255, .2);
-      border-radius: 20px;
-      margin-bottom: .6rem;
-    }
-
-    .cat-title {
-      font-family: 'Rajdhani', sans-serif;
-      font-weight: 700;
-      font-size: clamp(1.6rem, 3.2vw, 2.2rem);
-      color: #fff;
-      margin-bottom: .6rem;
-    }
-
-    .cat-desc {
-      font-size: .86rem;
-      color: rgba(255, 255, 255, .58);
-      line-height: 1.65;
-    }
-
-    .cat-link {
-      display: inline-flex;
-      align-items: center;
-      gap: .45rem;
-      margin-top: 1rem;
-      font-family: 'Rajdhani', sans-serif;
-      font-weight: 600;
-      font-size: .82rem;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-      color: rgba(255, 255, 255, .7);
-      transition: color .2s;
-    }
-
-    .cat-link:hover {
-      color: #fff;
-    }
-
     /* ============================================================
        CREATORS
     ============================================================ */
@@ -1741,8 +1619,14 @@
       font-family: 'DM Sans', sans-serif;
     }
 
-    input[type="time"].form-input {
-      color-scheme: dark;
+    .time-select-wrap {
+      display: flex;
+      gap: 0.4rem;
+    }
+    .time-select-wrap .form-select {
+      flex: 1;
+      padding-left: 0.6rem;
+      padding-right: 1.8rem;
     }
 
     /* ── HIRING: default CLOSED until Firebase confirms open ── */
@@ -2265,7 +2149,6 @@
       #about,
       #services,
       #stats,
-      #categories,
       #creators,
       #contact {
         padding: 4.5rem 1.2rem;
@@ -3202,7 +3085,6 @@
       <li><a href="#hero">Home</a></li>
       <li><a href="#services">Services</a></li>
       <li><a href="#portfolio">Portfolio</a></li>
-      <li><a href="#categories">Work</a></li>
       <li><a href="#creators">Creators</a></li>
       <li><a href="#faq">FAQ</a></li>
       <li><a href="#contact">Contact</a></li>
@@ -3476,49 +3358,6 @@
     </div>
   </section>
 
-  <div class="section-divider"></div>
-
-  <!-- ============================================================
-     CONTENT CATEGORIES
-============================================================ -->
-  <section id="categories">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-label">Featured Reels</span>
-        <h2 class="section-header-title chrome-deep reveal"
-          style="font-family:'Orbitron',sans-serif;font-weight:900;font-size:clamp(2rem,5vw,3.6rem);">
-          Our Signature Work
-        </h2>
-      </div>
-      <div class="cat-grid">
-        <div class="cat-card cat-girl reveal">
-          <div class="cat-overlay"></div>
-          <div class="cat-bg-icon" aria-hidden="true">✨</div>
-          <div class="cat-content">
-            <span class="cat-tag">Trending Now</span>
-            <div class="cat-title">🎬 Girl Reels</div>
-            <p class="cat-desc">Lifestyle &amp; fashion reels that captivate — crafted for maximum reach and engagement.
-            </p>
-            <a href="https://www.instagram.com/stvr__hands/" target="_blank" rel="noopener" class="cat-link">View on
-              Instagram →</a>
-          </div>
-        </div>
-        <div class="cat-card cat-vd reveal" style="transition-delay:.14s">
-          <div class="cat-overlay"></div>
-          <div class="cat-bg-icon" aria-hidden="true">🚗</div>
-          <div class="cat-content">
-            <span class="cat-tag">Most Popular</span>
-            <div class="cat-title">🚗 VD Reels</div>
-            <p class="cat-desc">Luxury car reveals &amp; delivery moments — shot with cinematic precision and raw
-              energy.</p>
-            <a href="https://www.instagram.com/stvr__hands/" target="_blank" rel="noopener" class="cat-link">View on
-              Instagram →</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- ============================================================
      FAQ
   ============================================================ -->
@@ -3714,13 +3553,18 @@
             <div class="form-grid-2">
               <div class="form-group">
                 <label>Shoot Location</label>
-                <select class="form-select" name="location">
+                <select class="form-select" id="locationSelect" name="location" onchange="toggleOtherCity(this)">
                   <option value="" disabled selected>Select your city</option>
-                  <option value="hyderabad">Hyderabad</option>
-                  <option value="vizag">Vizag</option>
-                  <option value="vijayawada">Vijayawada</option>
-                  <option value="rajahmundry">Rajahmundry</option>
+                  <option value="Hyderabad">Hyderabad</option>
+                  <option value="Vizag">Vizag</option>
+                  <option value="Vijayawada">Vijayawada</option>
+                  <option value="Rajahmundry">Rajahmundry</option>
+                  <option value="other">Other city...</option>
                 </select>
+                <div id="otherCityWrap" style="display:none;margin-top:0.5rem">
+                  <input type="text" class="form-input" id="otherCityInput" placeholder="Enter your city" maxlength="50">
+                  <p style="font-size:0.72rem;color:var(--text-muted);margin-top:0.35rem;font-family:'DM Sans',sans-serif;">&#x2139;&#xFE0F; We'll confirm availability in your city when we call you.</p>
+                </div>
               </div>
               <div class="form-group">
                 <label for="eventTypeSelect">Event Type</label>
@@ -3766,11 +3610,59 @@
                 <div class="custom-time-row">
                   <div class="form-group" style="margin-bottom:0;flex:1">
                     <label>Start Time</label>
-                    <input type="time" class="form-input" id="startTime">
+                    <div class="time-select-wrap">
+                      <select class="form-select" id="startHour">
+                        <option value="">Hour</option>
+                        <option value="12">12</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                      </select>
+                      <select class="form-select" id="startMin">
+                        <option value="00">:00</option>
+                        <option value="30">:30</option>
+                      </select>
+                      <select class="form-select" id="startAmPm">
+                        <option value="AM">AM</option>
+                        <option value="PM">PM</option>
+                      </select>
+                    </div>
                   </div>
                   <div class="form-group" style="margin-bottom:0;flex:1">
                     <label>End Time</label>
-                    <input type="time" class="form-input" id="endTime">
+                    <div class="time-select-wrap">
+                      <select class="form-select" id="endHour">
+                        <option value="">Hour</option>
+                        <option value="12">12</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                      </select>
+                      <select class="form-select" id="endMin">
+                        <option value="00">:00</option>
+                        <option value="30">:30</option>
+                      </select>
+                      <select class="form-select" id="endAmPm">
+                        <option value="AM">AM</option>
+                        <option value="PM" selected>PM</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
                 <p class="time-hint">💡 Minimum 2 hours recommended per reel</p>
@@ -3868,7 +3760,6 @@
         <a href="#about">About</a>
         <a href="#services">Services</a>
         <a href="#portfolio">Portfolio</a>
-        <a href="#categories">Work</a>
         <a href="#creators">Creators</a>
         <a href="#faq">FAQ</a>
         <a href="#contact">Contact</a>
@@ -4422,6 +4313,19 @@
     ----------------------------------------------------------- */
     const tcModal = document.getElementById('tcModal');
     
+    function toggleOtherCity(select) {
+      const wrap = document.getElementById('otherCityWrap');
+      const input = document.getElementById('otherCityInput');
+      if (select.value === 'other') {
+        wrap.style.display = 'block';
+        input.focus();
+      } else {
+        wrap.style.display = 'none';
+        input.value = '';
+      }
+    }
+    window.toggleOtherCity = toggleOtherCity;
+
     function openTCModal(e, type) {
       if (e) e.preventDefault();
       
@@ -4543,7 +4447,7 @@
       if (!eventType.value) showError(eventType, 'Please select a shoot type.');
 
       // Location
-      const location = this.querySelector('select[name="location"]');
+      const location = document.getElementById('locationSelect');
       if (!location.value) showError(location, 'Please select your city.');
 
       // Date
@@ -4557,12 +4461,12 @@
       }
 
       // Start Time
-      const startTime = document.getElementById('startTime');
-      if (!startTime.value) showError(startTime, 'Please enter a start time.');
+      const startHour = document.getElementById('startHour');
+      if (!startHour.value) showError(startHour, 'Please select a start time.');
 
       // End Time
-      const endTime = document.getElementById('endTime');
-      if (!endTime.value) showError(endTime, 'Please enter an end time.');
+      const endHour = document.getElementById('endHour');
+      if (!endHour.value) showError(endHour, 'Please select an end time.');
 
       // Terms and Conditions checkbox
       const bTerms = document.getElementById('b-terms');
@@ -4592,10 +4496,10 @@
         email:             (document.getElementById('b-email')?.value.trim() || ''),
         package:           eventType ? eventType.value : '',
         packageName:       eventType ? (eventType.options[eventType.selectedIndex]?.text || '') : '',
-        location:          location ? location.value : '',
+        location:          location ? (location.value === 'other' ? (document.getElementById('otherCityInput').value.trim() || 'Other') : location.value) : '',
         date:              dateEl ? dateEl.value : '',
-        startTime:         startTime ? startTime.value : '',
-        endTime:           endTime ? endTime.value : '',
+        startTime:         startHour && startHour.value ? `${startHour.value}:${document.getElementById('startMin').value} ${document.getElementById('startAmPm').value}` : '',
+        endTime:           endHour && endHour.value ? `${endHour.value}:${document.getElementById('endMin').value} ${document.getElementById('endAmPm').value}` : '',
         duration:          durEl ? durEl.value : '',
         notes:             msgEl ? msgEl.value.trim() : '',
         totalAmount:       (() => { const el = document.getElementById('prAmount'); const txt = el ? el.textContent.replace(/[^\d]/g, '') : '0'; return parseInt(txt) || 0; })(),
@@ -4645,7 +4549,7 @@
     });
 
     // Clear error state as user corrects each field
-    ['b-name', 'b-phone', 'eventTypeSelect', 'b-date', 'startTime', 'endTime', 'b-terms', 'c-terms'].forEach(id => {
+    ['b-name', 'b-phone', 'eventTypeSelect', 'b-date', 'startHour', 'endHour', 'b-terms', 'c-terms'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.addEventListener('input', function () {
         this.classList.remove('error');
@@ -4653,7 +4557,7 @@
         if (err) err.remove();
       });
     });
-    const locationSelect = document.querySelector('#bookingForm select[name="location"]');
+    const locationSelect = document.getElementById('locationSelect');
     if (locationSelect) locationSelect.addEventListener('change', function () {
       this.classList.remove('error');
       const err = this.parentNode.querySelector('.field-error');
@@ -4775,9 +4679,20 @@
         if (!data) { pricingReveal.style.display = 'none'; return; }
         prAmount.textContent = data.price;
         prNote.textContent = data.note;
-        prDetails.innerHTML = data.isDM
-          ? `<a href="https://instagram.com/stvr__hands" target="_blank" class="pr-dm-msg">📩 DM @stvr__hands for pricing</a>`
-          : data.details.split('\n').map(l => `<div>${l}</div>`).join('');
+        if (data.isDM) {
+          const pkg = eventSelect.value;
+          const msgMap = {
+            'more-than-3': 'Hi! I need more than 3 reels. Please share custom pricing.',
+            'wedding':     'Hi! I want to book a Wedding or Pre-Wedding shoot. Please share pricing.',
+            'birthday':    'Hi! I want to book a Birthday party shoot. Please share pricing.',
+            'brand':       'Hi! I want to book a Brand shoot. Please share pricing.',
+            'event':       'Hi! I want to book Event coverage. Please share pricing.'
+          };
+          const msg = encodeURIComponent(msgMap[pkg] || 'Hi! I want to enquire about custom pricing for my shoot.');
+          prDetails.innerHTML = `<a href="https://wa.me/917989079432?text=${msg}" target="_blank" class="pr-dm-msg">💬 WhatsApp for Pricing</a>`;
+        } else {
+          prDetails.innerHTML = data.details.split('\n').map(l => `<div>${l}</div>`).join('');
+        }
         pricingReveal.style.display = 'block';
       });
     }
