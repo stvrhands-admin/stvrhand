@@ -14,9 +14,97 @@
   <meta name="theme-color" content="#05080f">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>STVR Hands — Magic with Hands | Cinematic Reels Hyderabad</title>
-  <meta name="description"
-    content="Hyderabad's #1 cinematic reel studio. Viral reels for brands, influencers, cars & events. Book your shoot today.">
+  <link rel="icon" type="image/png" href="/assets/stvr-logo.png">
+  <link rel="apple-touch-icon" href="/assets/stvr-logo.png">
+  <!-- Primary SEO -->
+  <title>STVR Hands — Cinematic Reel Studio Hyderabad | Book a Shoot</title>
+  <meta name="description" content="Hyderabad's #1 cinematic reel studio. Professional reels for brands, influencers, car deliveries, weddings &amp; events. Starting ₹2,000. Book today — shoot today, viral tomorrow.">
+  <meta name="keywords" content="reel maker hyderabad, cinematic reels hyderabad, instagram reel creator hyderabad, car delivery reel hyderabad, birthday reel hyderabad, wedding reel hyderabad, brand shoot hyderabad, influencer content hyderabad, reel studio hyderabad, stvr hands, viral reels hyderabad, reel maker vizag, reel maker vijayawada, reel maker rajahmundry">
+  <meta name="author" content="STVR Hands">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://www.stvrhands.com/">
+
+  <!-- Open Graph (Facebook / WhatsApp) -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.stvrhands.com/">
+  <meta property="og:title" content="STVR Hands — Shoot Today. Viral Tomorrow.">
+  <meta property="og:description" content="Hyderabad's #1 cinematic reel studio. Reels for brands, cars, weddings &amp; events. Starting ₹2,000. Verified ✔ 32K followers.">
+  <meta property="og:image" content="https://www.stvrhands.com/assets/og-preview.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="STVR Hands — Cinematic Reel Studio Hyderabad">
+  <meta property="og:site_name" content="STVR Hands">
+  <meta property="og:locale" content="en_IN">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://www.stvrhands.com/">
+  <meta name="twitter:title" content="STVR Hands — Cinematic Reels Hyderabad">
+  <meta name="twitter:description" content="Shoot Today. Viral Tomorrow. Professional reels starting ₹2,000. Hyderabad, Vizag, Vijayawada, Rajahmundry.">
+  <meta name="twitter:image" content="https://www.stvrhands.com/assets/og-preview.jpg">
+
+  <!-- Geo tags for local SEO -->
+  <meta name="geo.region" content="IN-TG">
+  <meta name="geo.placename" content="Hyderabad, Telangana, India">
+  <meta name="geo.position" content="17.3850;78.4867">
+  <meta name="ICBM" content="17.3850, 78.4867">
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "STVR Hands",
+    "description": "Hyderabad's cinematic reel studio. Professional reels for brands, influencers, car deliveries, weddings and events.",
+    "url": "https://www.stvrhands.com",
+    "logo": "https://www.stvrhands.com/assets/stvr-logo.png",
+    "image": "https://www.stvrhands.com/assets/og-preview.jpg",
+    "telephone": "+917989079432",
+    "email": "stvrhands@gmail.com",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Hyderabad",
+      "addressRegion": "Telangana",
+      "addressCountry": "IN"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 17.3850,
+      "longitude": 78.4867
+    },
+    "areaServed": ["Hyderabad", "Vizag", "Vijayawada", "Rajahmundry"],
+    "priceRange": "₹₹",
+    "openingHours": "Mo-Su 07:00-21:00",
+    "sameAs": [
+      "https://instagram.com/stvr__hands",
+      "https://youtube.com/@stvr__bharath"
+    ],
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Reel Packages",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "name": "Portrait Reel",
+          "price": "2000",
+          "priceCurrency": "INR"
+        },
+        {
+          "@type": "Offer",
+          "name": "Car/Bike Delivery Reel",
+          "price": "2600",
+          "priceCurrency": "INR"
+        },
+        {
+          "@type": "Offer",
+          "name": "3 Portrait Reels",
+          "price": "5000",
+          "priceCurrency": "INR"
+        }
+      ]
+    }
+  }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://firestore.googleapis.com">
@@ -2798,7 +2886,278 @@
     }
     .modal, .modal-content, [style*="overflow"] { overscroll-behavior: contain; }
     button { min-height: 44px; }
+
+    /* WhatsApp Float Button */
+    .wa-float {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 58px;
+      height: 58px;
+      background: #25D366;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9000;
+      box-shadow: 0 4px 20px rgba(37,211,102,0.4);
+      transition: all 0.3s ease;
+      text-decoration: none;
+      opacity: 0;
+      transform: scale(0);
+    }
+    .wa-float.visible {
+      opacity: 1;
+      transform: scale(1);
+    }
+    .wa-float:hover {
+      background: #20ba5a;
+      transform: scale(1.1);
+      box-shadow: 0 6px 28px rgba(37,211,102,0.6);
+    }
+    .wa-float:hover .wa-tooltip {
+      opacity: 1;
+      transform: translateX(0);
+      pointer-events: auto;
+    }
+    .wa-tooltip {
+      position: absolute;
+      right: 68px;
+      background: #111827;
+      color: #fff;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      font-size: 0.82rem;
+      letter-spacing: 0.06em;
+      white-space: nowrap;
+      padding: 0.45rem 0.9rem;
+      border-radius: 6px;
+      border: 1px solid rgba(37,211,102,0.3);
+      opacity: 0;
+      transform: translateX(8px);
+      transition: all 0.2s ease;
+      pointer-events: none;
+    }
+    .wa-tooltip::after {
+      content: '';
+      position: absolute;
+      right: -6px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-top: 5px solid transparent;
+      border-bottom: 5px solid transparent;
+      border-left: 6px solid #111827;
+    }
+    .wa-pulse {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: rgba(37,211,102,0.4);
+      animation: waPulse 2.5s ease-out infinite;
+      z-index: -1;
+    }
+    @keyframes waPulse {
+      0% { transform: scale(1); opacity: 0.6; }
+      70% { transform: scale(1.6); opacity: 0; }
+      100% { transform: scale(1.6); opacity: 0; }
+    }
+    @media (max-width: 768px) {
+      .wa-float { bottom: 1.5rem; right: 1.2rem; width: 52px; height: 52px; }
+      .wa-tooltip { display: none; }
+    }
+
+    /* ── FAQ ── */
+    #faq { padding: 7rem 2rem; background: var(--bg2); }
+    .faq-headline {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      margin-bottom: 1rem;
+    }
+    .faq-sub {
+      color: var(--text-dim);
+      font-size: 1rem;
+      margin-bottom: 3rem;
+      max-width: 500px;
+    }
+    .faq-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .faq-item {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .faq-item:hover { border-color: rgba(56,189,248,0.35); }
+    .faq-item.open  { border-color: rgba(56,189,248,0.4); }
+    .faq-question {
+      padding: 1.2rem 1.4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--text);
+      gap: 1rem;
+      user-select: none;
+    }
+    .faq-icon {
+      font-size: 1.2rem;
+      color: var(--cyan);
+      flex-shrink: 0;
+      transition: transform 0.3s ease;
+      font-style: normal;
+    }
+    .faq-item.open .faq-icon { transform: rotate(45deg); }
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease, padding 0.35s ease;
+      padding: 0 1.4rem;
+      font-size: 0.9rem;
+      color: var(--text-dim);
+      line-height: 1.75;
+    }
+    .faq-item.open .faq-answer { max-height: 200px; padding: 0 1.4rem 1.2rem; }
+    @media (max-width: 768px) {
+      .faq-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── PORTFOLIO ── */
+    #portfolio { padding: 7rem 2rem; background: var(--bg); }
+    .portfolio-headline {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: clamp(1.8rem, 5vw, 3.2rem);
+      margin-bottom: 1rem;
+    }
+    .portfolio-sub { color: var(--text-dim); font-size: 1rem; margin-bottom: 2.5rem; }
+    .portfolio-filters { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 2.5rem; }
+    .pf-tab {
+      padding: 0.5rem 1.2rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      color: var(--text-dim);
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .pf-tab:hover, .pf-tab.active {
+      background: rgba(56,189,248,0.1);
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+    .portfolio-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+    .reel-card {
+      display: block;
+      text-decoration: none;
+      border-radius: 16px;
+      overflow: hidden;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    .reel-card:hover {
+      border-color: rgba(56,189,248,0.5);
+      transform: translateY(-6px);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.6), 0 0 30px rgba(56,189,248,0.1);
+    }
+    .reel-thumb-wrap {
+      position: relative;
+      aspect-ratio: 9/16;
+      overflow: hidden;
+      background: var(--bg2);
+    }
+    .reel-thumb-wrap img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+      display: block;
+    }
+    .reel-card:hover .reel-thumb-wrap img { transform: scale(1.05); }
+    .reel-thumb-wrap.no-thumb {
+      background: linear-gradient(135deg, #080e1a 0%, #0c1525 50%, #070d18 100%);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .reel-thumb-wrap.no-thumb::before { content: '🎬'; font-size: 3rem; opacity: 0.3; }
+    .reel-overlay {
+      position: absolute; inset: 0;
+      background: rgba(5,8,15,0.55);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 0.75rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .reel-card:hover .reel-overlay { opacity: 1; }
+    .reel-play-btn {
+      width: 60px; height: 60px;
+      background: rgba(56,189,248,0.2);
+      border: 2px solid rgba(56,189,248,0.6);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      backdrop-filter: blur(4px);
+      transition: all 0.2s;
+    }
+    .reel-play-btn svg { margin-left: 4px; }
+    .reel-card:hover .reel-play-btn {
+      background: rgba(56,189,248,0.35);
+      transform: scale(1.1);
+      box-shadow: 0 0 24px rgba(56,189,248,0.4);
+    }
+    .reel-open-label {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: #fff;
+      background: rgba(0,0,0,0.5);
+      padding: 0.3rem 0.8rem;
+      border-radius: 100px;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .reel-ig-badge {
+      position: absolute; top: 0.75rem; right: 0.75rem;
+      background: rgba(0,0,0,0.5);
+      border-radius: 50%; width: 28px; height: 28px;
+      display: flex; align-items: center; justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    .reel-card-label { padding: 0.65rem 0.85rem; display: flex; align-items: center; }
+    .reel-cat-tag {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--cyan);
+      background: rgba(56,189,248,0.07);
+      padding: 0.18rem 0.65rem;
+      border-radius: 100px;
+      border: 1px solid rgba(56,189,248,0.18);
+    }
+    .portfolio-cta { text-align: center; }
+    @media (max-width: 1100px) { .portfolio-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px) { .portfolio-grid { grid-template-columns: repeat(2, 1fr); gap: 0.6rem; } }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 </head>
 
 <body>
@@ -2842,8 +3201,10 @@
     <ul class="nav-links" id="navLinks">
       <li><a href="#hero">Home</a></li>
       <li><a href="#services">Services</a></li>
+      <li><a href="#portfolio">Portfolio</a></li>
       <li><a href="#categories">Work</a></li>
       <li><a href="#creators">Creators</a></li>
+      <li><a href="#faq">FAQ</a></li>
       <li><a href="#contact">Contact</a></li>
       <li><a href="#bookingPanel" class="nav-cta">Book a Shoot</a></li>
     </ul>
@@ -3081,6 +3442,43 @@
   <div class="section-divider"></div>
 
   <!-- ============================================================
+     PORTFOLIO
+  ============================================================ -->
+  <!--
+  TO ADD REAL REELS:
+  1. Go to instagram.com/stvr__hands
+  2. Open any reel you want to feature
+  3. Click 3 dots (...) → Embed
+  4. Copy the blockquote embed code
+  5. Replace the placeholder blockquote in each .reel-card with real embed code
+  6. Set data-category correctly: cars | events | influencer | weddings
+  Minimum 6 reels recommended.
+  -->
+  <section id="portfolio">
+    <div class="container">
+      <span class="section-label">OUR WORK</span>
+      <h2 class="chrome portfolio-headline reveal">Reels That Stopped the Scroll.</h2>
+      <p class="portfolio-sub reveal">Real shoots. Real clients. Real results.</p>
+
+      <div class="portfolio-filters">
+        <button class="pf-tab active" data-filter="all">All</button>
+        <button class="pf-tab" data-filter="cars">Cars</button>
+        <button class="pf-tab" data-filter="events">Events</button>
+        <button class="pf-tab" data-filter="influencer">Influencer</button>
+        <button class="pf-tab" data-filter="weddings">Weddings</button>
+      </div>
+
+      <div class="portfolio-grid" id="portfolioGrid"></div>
+
+      <div class="portfolio-cta">
+        <a href="https://instagram.com/stvr__hands" target="_blank" rel="noopener" class="btn btn-ghost">View All Reels on Instagram →</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ============================================================
      CONTENT CATEGORIES
 ============================================================ -->
   <section id="categories">
@@ -3117,6 +3515,21 @@
               Instagram →</a>
           </div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+     FAQ
+  ============================================================ -->
+  <section id="faq">
+    <div class="container">
+      <span class="section-label">GOT QUESTIONS?</span>
+      <h2 class="faq-headline chrome reveal">We've Got Answers.</h2>
+      <p class="faq-sub reveal">Everything you need to know about booking a shoot with STVR Hands.</p>
+      <div class="faq-grid">
+        <div class="faq-col" id="faqCol1"></div>
+        <div class="faq-col" id="faqCol2"></div>
       </div>
     </div>
   </section>
@@ -3294,6 +3707,10 @@
                 <input class="form-input" id="b-phone" type="tel" name="phone" placeholder="+91 XXXXX XXXXX" required>
               </div>
             </div>
+            <div class="form-group">
+              <label for="b-email">Email Address <span style="font-size:0.78rem;color:var(--text-muted);font-weight:400;">(optional — for booking confirmation)</span></label>
+              <input class="form-input" id="b-email" type="email" name="email" placeholder="yourname@email.com">
+            </div>
             <div class="form-grid-2">
               <div class="form-group">
                 <label>Shoot Location</label>
@@ -3450,8 +3867,10 @@
         <a href="#hero">Home</a>
         <a href="#about">About</a>
         <a href="#services">Services</a>
+        <a href="#portfolio">Portfolio</a>
         <a href="#categories">Work</a>
         <a href="#creators">Creators</a>
+        <a href="#faq">FAQ</a>
         <a href="#contact">Contact</a>
       </nav>
 
@@ -3586,6 +4005,108 @@
     }
     const _fbApp = initializeApp(firebaseConfig);
     const db     = getFirestore(_fbApp);
+
+    /*
+    EMAILJS SETUP (one-time, ~10 minutes):
+    1. Go to emailjs.com → Sign up free
+    2. Add Email Service:
+       Email Services → Add Service
+       Choose Gmail → Connect stvrhands@gmail.com
+       Copy the SERVICE_ID
+    3. Create Template 1 (Customer):
+       Email Templates → Create Template
+       Template Name: customer_confirmation
+       Subject: Your STVR Hands Booking is Received! 🎬
+       Copy TEMPLATE_ID_1
+    4. Create Template 2 (Admin):
+       Template Name: admin_notification
+       Subject: 🔔 New Booking — {{customer_name}} — {{package_name}}
+       Copy TEMPLATE_ID_2
+    5. Account → API Keys → Public Key
+    6. Replace the four placeholders below
+    */
+
+    // ── EMAILJS CONFIG ──
+    const EMAILJS_PUBLIC_KEY        = 'pUNonHoUBOha_XSnT';
+    const EMAILJS_SERVICE_ID        = 'service_rr5qpcb';
+    const EMAILJS_CUSTOMER_TEMPLATE = 'template_xc4b6sw';
+    const EMAILJS_ADMIN_TEMPLATE    = 'template_mwp4t9s';
+    const ADMIN_EMAIL               = 'stvrhands@gmail.com';
+
+    if (typeof emailjs !== 'undefined') emailjs.init(EMAILJS_PUBLIC_KEY);
+
+    function getPackageName(pkg) {
+      const map = {
+        'portrait-1':      'Portrait Reel (1 Reel)',
+        'landscape-1':     'Landscape Reel (1 Reel)',
+        'portrait-3':      '3 Portrait Reels',
+        'landscape-3':     '3 Landscape Reels',
+        'perday-3-reels':  'Per Day — 3 Reels',
+        'combo-2p1l':      '2 Portrait + 1 Landscape',
+        'combo-2l1p':      '2 Landscape + 1 Portrait',
+        'car-bike-delivery': 'Car / Bike Delivery Reel',
+        'more-than-3':     'More Than 3 Reels',
+        'wedding':         'Wedding & Pre-Wedding',
+        'birthday':        'Birthday & Parties',
+        'brand':           'Brand & Product Shoot',
+        'event':           'Event Coverage',
+      };
+      return map[pkg] || pkg || 'Custom Package';
+    }
+
+    async function sendConfirmationEmails(bookingData) {
+      if (typeof emailjs === 'undefined') {
+        console.error('[EmailJS] SDK not loaded');
+        return;
+      }
+      if (EMAILJS_PUBLIC_KEY === 'YOUR_PUBLIC_KEY') {
+        console.warn('[EmailJS] Not configured — skipping');
+        return;
+      }
+
+      const hasEmail = bookingData.email && bookingData.email.includes('@');
+
+      const templateParams = {
+        customer_name:  bookingData.name,
+        customer_email: bookingData.email || '',
+        customer_phone: bookingData.phone,
+        package_name:   getPackageName(bookingData.package),
+        shoot_location: bookingData.location,
+        shoot_date:     formatDate(bookingData.date),
+        shoot_time:     (bookingData.startTime || '') + ' - ' + (bookingData.endTime || ''),
+        total_amount:   formatAmount(bookingData.totalAmount),
+        booking_amount: '₹1,000',
+        message:        bookingData.notes || 'No special requirements',
+        admin_email:    ADMIN_EMAIL,
+        submitted_at:   new Date().toLocaleString('en-IN')
+      };
+
+      const promises = [];
+
+      // Email 1: Confirmation to customer
+      if (hasEmail) {
+        promises.push(
+          emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_CUSTOMER_TEMPLATE, {
+            ...templateParams,
+            to_email: bookingData.email,
+            to_name:  bookingData.name.split(' ')[0]
+          }).then(() => console.log('[EmailJS] Customer email sent ✓'))
+            .catch(err => console.error('[EmailJS] Customer email FAILED:', err.status, err.text))
+        );
+      }
+
+      // Email 2: Notification to Bharath
+      promises.push(
+        emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_ADMIN_TEMPLATE, {
+          ...templateParams,
+          to_email: ADMIN_EMAIL,
+          to_name:  'Bharath'
+        }).then(() => console.log('[EmailJS] Admin email sent ✓'))
+          .catch(err => console.error('[EmailJS] Admin email FAILED:', err.status, err.text))
+      );
+
+      await Promise.allSettled(promises);
+    }
 
     // ── DEV LOGGING ──
     const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
@@ -3798,6 +4319,42 @@
     }, { threshold: .1, rootMargin: '0px 0px -40px 0px' });
 
     document.querySelectorAll('.reveal').forEach(el => revObs.observe(el));
+
+    /* -----------------------------------------------------------
+       FAQ ACCORDION
+    ----------------------------------------------------------- */
+    const faqItems = [
+      { q: "Do you travel to my location?", a: "Yes! We travel to your exact location across Hyderabad, Vizag, Vijayawada and Rajahmundry. Just mention your area while booking." },
+      { q: "How long does editing take?", a: "Most reels are delivered within 24 hours of the shoot. For same-day delivery, let us know in advance and we'll prioritize your edit." },
+      { q: "What if I don't like the reel?", a: "We offer one free revision on every reel. If you have specific requirements, share them before the shoot and we'll nail it the first time." },
+      { q: "Is the ₹1,000 booking amount refundable?", a: "The booking amount is refundable if cancelled 48 hours before the shoot. Cancellations within 48 hours are non-refundable. Rescheduling within 24 hours is free once." },
+      { q: "Do you shoot at night?", a: "Yes! We shoot from 6 AM to 10 PM. Evening golden hour and night shoots are our specialty — especially for car reels and events." },
+      { q: "What equipment do you use?", a: "We shoot on latest iPhones and professional cameras depending on the package. All editing is done professionally with color grading and music sync." },
+      { q: "Can I request a specific style?", a: "Absolutely! Share reference reels or describe the vibe you want. We adapt to your style — cinematic, trendy, aesthetic or high-energy." },
+      { q: "How do I confirm my booking?", a: "After submitting the form, we'll call you within 2 hours. Pay the ₹1,000 booking amount via UPI to confirm. Balance paid after reel delivery." },
+      { q: "Do you shoot weddings?", a: "Yes! We cover pre-wedding shoots, wedding functions, reception and engagement ceremonies. Contact us for custom wedding packages." },
+      { q: "Can I book for same day?", a: "Same day bookings are possible subject to creator availability. WhatsApp us directly for fastest response on urgent bookings." }
+    ];
+
+    function buildFAQ() {
+      faqItems.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'faq-item reveal';
+        div.innerHTML = `<div class="faq-question" onclick="toggleFAQ(this)"><span>${sanitize(item.q)}</span><i class="faq-icon">+</i></div><div class="faq-answer">${sanitize(item.a)}</div>`;
+        const col = index % 2 === 0 ? document.getElementById('faqCol1') : document.getElementById('faqCol2');
+        if (col) col.appendChild(div);
+      });
+      document.querySelectorAll('.faq-item.reveal').forEach(el => revObs.observe(el));
+    }
+
+    window.toggleFAQ = function(questionEl) {
+      const item = questionEl.parentElement;
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
+    };
+
+    buildFAQ();
 
     /* -----------------------------------------------------------
        STAT COUNTERS
@@ -4032,7 +4589,7 @@
         id:                'local_' + Date.now(),
         name:              nameVal,
         phone:             phoneRaw,
-        email:             '',
+        email:             (document.getElementById('b-email')?.value.trim() || ''),
         package:           eventType ? eventType.value : '',
         packageName:       eventType ? (eventType.options[eventType.selectedIndex]?.text || '') : '',
         location:          location ? location.value : '',
@@ -4041,7 +4598,7 @@
         endTime:           endTime ? endTime.value : '',
         duration:          durEl ? durEl.value : '',
         notes:             msgEl ? msgEl.value.trim() : '',
-        totalAmount:       0,
+        totalAmount:       (() => { const el = document.getElementById('prAmount'); const txt = el ? el.textContent.replace(/[^\d]/g, '') : '0'; return parseInt(txt) || 0; })(),
         status:            'New',
         creatorStatus:     'unassigned',
         assignedCreator:   null,
@@ -4066,7 +4623,10 @@
       this.style.display = 'none';
       document.getElementById('bookingSuccess').style.display = 'block';
 
-      // ── STEP 2: Save to Firestore in background (user doesn't wait) ──
+      // ── STEP 2: Send emails in background (user never waits) ──
+      sendConfirmationEmails(bookingData);
+
+      // ── STEP 3: Save to Firestore in background (user doesn't wait) ──
       (async () => {
         try {
           const fsData = { ...bookingData, createdAt: serverTimestamp(), synced: true };
@@ -4221,7 +4781,105 @@
         pricingReveal.style.display = 'block';
       });
     }
+
+    // ── PORTFOLIO ──
+    /*
+    TO ADD REAL REEL THUMBNAILS:
+    1. Open each Instagram reel on phone
+    2. Take a screenshot
+    3. Crop to 9:16 ratio (portrait)
+    4. Save as: assets/reels/reel1.jpg, reel2.jpg ... reel8.jpg
+    5. Update the reel URL in each reels array object below
+    6. If no thumbnail provided, a dark placeholder shows — cards still work perfectly.
+    */
+    const reels = [
+      { id:1, url:'https://www.instagram.com/reel/DVFPiSWD91T/', thumbnail:'assets/reels/reel1.jpg', category:'cars',       categoryLabel:'&#x1F697; Cars',       title:'Car Delivery Reel' },
+      { id:2, url:'https://www.instagram.com/reel/DV52lW5vSOZ/', thumbnail:'assets/reels/reel2.jpg', category:'events',     categoryLabel:'&#x1F389; Events',     title:'Event Coverage' },
+      { id:3, url:'https://www.instagram.com/reel/DVtBjXYPEA1/', thumbnail:'assets/reels/reel3.jpg', category:'influencer', categoryLabel:'&#x1F4F8; Influencer', title:'Influencer Reel' },
+      { id:4, url:'https://www.instagram.com/reel/DUcJUdVj5R4/', thumbnail:'assets/reels/reel4.jpg', category:'weddings',   categoryLabel:'&#x1F48D; Wedding',    title:'Pre-Wedding Reel' },
+      { id:5, url:'https://www.instagram.com/reel/DSESsUKD5TD/', thumbnail:'assets/reels/reel5.jpg', category:'cars',       categoryLabel:'&#x1F697; Cars',       title:'Bike Delivery' },
+      { id:6, url:'https://www.instagram.com/reel/DU8wUGyiIbJ/', thumbnail:'assets/reels/reel6.jpg', category:'events',     categoryLabel:'&#x1F389; Events',     title:'Birthday Reel' },
+      { id:7, url:'https://www.instagram.com/reel/DO8Zj0bj9cT/', thumbnail:'assets/reels/reel7.jpg', category:'influencer', categoryLabel:'&#x1F4F8; Influencer', title:'Brand Shoot' },
+      { id:8, url:'https://www.instagram.com/reel/DV3RQQcvSk4/', thumbnail:'assets/reels/reel8.jpg', category:'weddings',   categoryLabel:'&#x1F48D; Wedding',    title:'Wedding Reel' }
+    ];
+
+    const IG_SVG = `<svg viewBox="0 0 24 24" fill="white" width="14" height="14"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>`;
+
+    function buildPortfolio(filter = 'all') {
+      const grid = document.getElementById('portfolioGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
+      const filtered = filter === 'all' ? reels : reels.filter(r => r.category === filter);
+      filtered.forEach(reel => {
+        const card = document.createElement('a');
+        card.href = reel.url;
+        card.target = '_blank';
+        card.rel = 'noopener';
+        card.className = 'reel-card';
+        card.dataset.category = reel.category;
+        card.innerHTML = `
+          <div class="reel-thumb-wrap">
+            <img src="${reel.thumbnail}" alt="${reel.title}" loading="lazy" onerror="this.parentElement.classList.add('no-thumb');this.remove()">
+            <div class="reel-overlay">
+              <div class="reel-play-btn"><svg viewBox="0 0 24 24" fill="white" width="28" height="28"><path d="M8 5v14l11-7z"/></svg></div>
+              <div class="reel-open-label">View on Instagram</div>
+            </div>
+            <div class="reel-ig-badge">${IG_SVG}</div>
+          </div>
+          <div class="reel-card-label"><span class="reel-cat-tag">${reel.categoryLabel}</span></div>`;
+        grid.appendChild(card);
+      });
+    }
+
+    buildPortfolio();
+
+    document.querySelectorAll('.pf-tab').forEach(tab => {
+      tab.addEventListener('click', function() {
+        document.querySelectorAll('.pf-tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        buildPortfolio(this.dataset.filter);
+      });
+    });
+
+    // WhatsApp float button — show after 3s
+    setTimeout(() => {
+      const waFloat = document.getElementById('waFloat');
+      if (waFloat) waFloat.classList.add('visible');
+    }, 3000);
+
+    // Dim when booking form is visible
+    const bookingSection = document.getElementById('contact');
+    if (bookingSection) {
+      const waObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          const waFloat = document.getElementById('waFloat');
+          if (!waFloat) return;
+          if (entry.isIntersecting) {
+            waFloat.style.opacity = '0.3';
+            waFloat.style.transform = 'scale(0.85)';
+          } else {
+            waFloat.style.opacity = '1';
+            waFloat.style.transform = 'scale(1)';
+          }
+        });
+      }, { threshold: 0.3 });
+      waObserver.observe(bookingSection);
+    }
   </script>
+
+  <!-- WhatsApp Float Button -->
+  <a href="https://wa.me/917989079432?text=Hi%20STVR%20Hands!%20I%20saw%20your%20website%20and%20wanted%20to%20ask%20about%20your%20reel%20services%20%F0%9F%8E%AC"
+     target="_blank"
+     rel="noopener"
+     class="wa-float"
+     id="waFloat"
+     aria-label="Chat on WhatsApp">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="28" height="28">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+    </svg>
+    <span class="wa-tooltip">Chat with us</span>
+    <span class="wa-pulse"></span>
+  </a>
 
 </body>
 
