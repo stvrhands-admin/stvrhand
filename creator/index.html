@@ -1,0 +1,1549 @@
+<!--
+  STVR Hands — Creator Portal
+  Version: 2.0
+  Last updated: March 2026
+  Firebase: Connected
+  Access: Registered creators only
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+<meta name="theme-color" content="#05080f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="robots" content="noindex, nofollow">
+<title>Creator Portal &#x2014; STVR Hands</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@1,400;1,600&family=Caveat:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   RESET & VARIABLES
+============================================================ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#05080f;--bg2:#080e1a;--bg3:#0c1525;
+  --cyan:#38bdf8;--gold:#c9a84c;--red:#e63232;
+  --green:#22c55e;--orange:#fb923c;--purple:#a78bfa;
+  --text:#e8f0f7;--text-dim:#8aa0b0;--text-muted:#4a6070;
+  --border:rgba(56,189,248,.18);--glass:rgba(12,21,37,.75);
+  --header-h:56px;--nav-h:60px;
+}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
+a{color:inherit;text-decoration:none}
+button,input,select,textarea{font-family:'DM Sans',sans-serif}
+input,select,textarea{font-size:16px}
+
+/* Film grain */
+#grain{position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.03;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:200px}
+
+/* ============================================================
+   LOGIN SCREEN
+============================================================ */
+#login-screen{
+  position:fixed;inset:0;background:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  z-index:1000;padding:24px;
+  transition:opacity .5s ease;
+}
+#login-screen.fade-out{opacity:0;pointer-events:none}
+.login-card{
+  width:100%;max-width:360px;
+  background:var(--glass);border:1px solid var(--border);
+  border-radius:20px;padding:40px 28px;
+  display:flex;flex-direction:column;align-items:center;gap:20px;
+  backdrop-filter:blur(16px);
+  box-shadow:0 0 60px rgba(56,189,248,.06);
+}
+.logo-mark{display:flex;align-items:stretch;gap:10px}
+.logo-bar{width:3px;background:#e63946;border-radius:2px;min-height:44px}
+.logo-text-wrap{display:flex;flex-direction:column;line-height:1}
+.logo-stvr{font-family:'Orbitron',sans-serif;font-weight:900;font-size:28px;color:#fff;letter-spacing:2px}
+.logo-stvr span{color:var(--cyan)}
+.logo-hands{font-family:'Caveat',cursive;font-size:14px;color:var(--text-dim);margin-top:2px}
+.portal-label{font-family:'Rajdhani',sans-serif;font-size:12px;letter-spacing:3px;color:var(--cyan);font-weight:700;text-transform:uppercase}
+.portal-tagline{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;color:var(--text-muted);text-align:center}
+.login-form{width:100%;display:flex;flex-direction:column;gap:14px}
+.form-label-sm{font-family:'Rajdhani',sans-serif;font-size:11px;letter-spacing:1.5px;color:var(--text-muted);text-transform:uppercase;display:block;margin-bottom:6px}
+.phone-input{
+  width:100%;padding:14px 16px;
+  background:rgba(255,255,255,.04);border:1px solid var(--border);
+  border-radius:10px;color:var(--text);font-size:20px;
+  outline:none;transition:border .2s,box-shadow .2s;letter-spacing:2px;
+  -webkit-appearance:none;
+}
+.phone-input::placeholder{font-size:14px;color:var(--text-muted);letter-spacing:0}
+.phone-input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(56,189,248,.1)}
+.phone-input.shake{animation:shake .4s ease;border-color:var(--red)}
+.login-error{font-size:13px;color:var(--red);text-align:center;min-height:16px;line-height:1.4}
+.btn-login{
+  width:100%;padding:14px;
+  background:var(--cyan);color:#05080f;
+  font-family:'Orbitron',sans-serif;font-weight:700;font-size:13px;letter-spacing:2px;
+  border:none;border-radius:10px;cursor:pointer;transition:opacity .2s;
+}
+.btn-login:hover{opacity:.88}
+.btn-login:disabled{opacity:.5;cursor:not-allowed}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+
+/* ============================================================
+   APP SHELL
+============================================================ */
+#app{
+  display:none;min-height:100vh;
+  padding-top:var(--header-h);
+  padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom));
+}
+#app.active{display:block}
+
+/* HEADER */
+#app-header{
+  position:fixed;top:0;left:0;right:0;height:var(--header-h);z-index:100;
+  background:rgba(8,14,26,.94);border-bottom:1px solid var(--border);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  display:flex;align-items:center;justify-content:space-between;padding:0 16px;
+}
+.h-logo{display:flex;align-items:center;gap:7px}
+.h-bar{width:2px;height:26px;background:#e63946;border-radius:2px}
+.h-stvr{font-family:'Orbitron',sans-serif;font-weight:900;font-size:14px;color:#fff;letter-spacing:1px}
+.h-stvr span{color:var(--cyan)}
+.h-center{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:12px;letter-spacing:2.5px;color:var(--text-muted);text-transform:uppercase;flex:1;text-align:center}
+.h-right{display:flex;align-items:center;gap:8px}
+.creator-chip{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:14px;color:var(--cyan);letter-spacing:.5px}
+.icon-btn{
+  background:none;border:none;color:var(--text-muted);font-size:19px;
+  padding:6px;border-radius:8px;cursor:pointer;transition:color .2s;
+  line-height:1;min-width:36px;min-height:36px;
+  display:flex;align-items:center;justify-content:center;
+  -webkit-tap-highlight-color:transparent;
+}
+.icon-btn:hover{color:var(--cyan)}
+.notif-wrap{position:relative}
+.notif-badge{
+  position:absolute;top:2px;right:2px;
+  background:var(--red);color:#fff;font-size:9px;font-weight:700;
+  min-width:16px;height:16px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;padding:0 3px;
+}
+.notif-badge.hidden{display:none}
+
+/* BOTTOM NAV */
+#bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;height:var(--nav-h);z-index:100;
+  background:rgba(8,14,26,.96);border-top:1px solid var(--border);
+  display:flex;padding-bottom:env(safe-area-inset-bottom);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+}
+.nav-tab{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;cursor:pointer;color:var(--text-muted);
+  font-family:'Rajdhani',sans-serif;font-weight:700;font-size:10px;letter-spacing:.5px;
+  text-transform:uppercase;transition:color .2s;
+  min-height:48px;-webkit-tap-highlight-color:transparent;user-select:none;
+}
+.nav-tab.active{color:var(--cyan)}
+.nav-icon{font-size:20px;line-height:1;position:relative}
+.nav-dot{
+  position:absolute;top:-3px;right:-8px;
+  background:var(--red);color:#fff;font-size:8px;font-weight:700;
+  min-width:14px;height:14px;border-radius:7px;
+  display:none;align-items:center;justify-content:center;padding:0 2px;
+}
+.nav-dot.show{display:flex}
+.nav-tab.pulse-tab .nav-icon{animation:tabPulse 1s ease 3;}
+@keyframes tabPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
+
+/* CONTENT */
+#content{padding:16px 16px 8px;min-height:100%}
+.tab-panel{display:none;animation:fadeUp .25s ease}
+.tab-panel.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ============================================================
+   COMPONENTS
+============================================================ */
+/* Cards */
+.card{background:var(--glass);border:1px solid var(--border);border-radius:14px;backdrop-filter:blur(8px);margin-bottom:14px;overflow:hidden}
+.card-cyan{border-color:rgba(56,189,248,.35);box-shadow:0 0 20px rgba(56,189,248,.07)}
+.card-gold{border-color:rgba(201,168,76,.35);box-shadow:0 0 16px rgba(201,168,76,.05)}
+
+/* Sub-tabs */
+.sub-tabs{display:flex;gap:0;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:4px;margin-bottom:16px}
+.sub-tab{
+  flex:1;padding:9px 6px;border-radius:7px;border:none;
+  background:transparent;color:var(--text-muted);
+  font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;letter-spacing:.5px;
+  cursor:pointer;transition:all .2s;text-align:center;-webkit-tap-highlight-color:transparent;
+}
+.sub-tab.active{background:var(--cyan);color:#05080f}
+.sub-badge{
+  display:inline-block;background:rgba(255,255,255,.15);color:inherit;
+  font-size:10px;padding:0 5px;border-radius:8px;margin-left:3px;
+}
+.sub-tab.active .sub-badge{background:rgba(0,0,0,.2)}
+
+/* Info rows */
+.info-row{display:flex;align-items:flex-start;gap:10px;padding:5px 0;font-size:14px}
+.info-ico{font-size:14px;flex-shrink:0;width:20px;text-align:center;margin-top:1px}
+.info-lbl{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:10px;color:var(--text-muted);letter-spacing:.5px;text-transform:uppercase;white-space:nowrap;width:55px;flex-shrink:0;margin-top:3px}
+.info-val{color:var(--text);line-height:1.4;flex:1}
+
+/* Shoot card sections */
+.sc-head{padding:16px 16px 0}
+.sc-body{padding:4px 16px 8px}
+.sc-foot{padding:12px 16px 16px;border-top:1px solid rgba(255,255,255,.05);margin-top:8px;display:flex;flex-direction:column;gap:8px}
+
+/* New request label */
+.new-label{display:inline-flex;align-items:center;gap:7px;padding:4px 10px;background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.28);border-radius:20px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:11px;letter-spacing:1px;color:var(--cyan);text-transform:uppercase;margin-bottom:12px}
+.pulse-dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);flex-shrink:0;animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.65)}}
+
+/* Warning box */
+.warn-box{background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.24);border-radius:8px;padding:10px 12px;margin:10px 0;font-size:12px;color:var(--gold);line-height:1.6}
+.warn-box strong{display:block;font-family:'Rajdhani',sans-serif;letter-spacing:.5px;margin-bottom:2px}
+
+/* Status badges */
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;font-family:'Rajdhani',sans-serif;letter-spacing:.5px;text-transform:uppercase}
+.b-pending{background:rgba(56,189,248,.18);color:var(--cyan)}
+.b-accepted{background:rgba(34,197,94,.18);color:var(--green)}
+.b-rejected{background:rgba(230,50,50,.18);color:var(--red)}
+.b-done{background:rgba(167,139,250,.18);color:var(--purple)}
+.b-delivered{background:rgba(34,197,94,.18);color:var(--green)}
+
+/* Buttons */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  padding:13px 16px;border-radius:10px;
+  font-family:'Rajdhani',sans-serif;font-weight:700;font-size:14px;letter-spacing:.5px;
+  border:none;cursor:pointer;transition:all .2s;min-height:48px;width:100%;
+  -webkit-tap-highlight-color:transparent;
+}
+.btn-cyan{background:var(--cyan);color:#05080f}.btn-cyan:hover{opacity:.88}.btn-cyan:active{opacity:.75}
+.btn-red{background:rgba(230,50,50,.08);border:1px solid rgba(230,50,50,.32);color:var(--red)}.btn-red:hover{background:rgba(230,50,50,.15)}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text-dim)}.btn-ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+.btn-green{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.28);color:var(--green)}.btn-green:hover{background:rgba(34,197,94,.18)}
+.btn-wa{background:#25d366;color:#fff}.btn-wa:hover{opacity:.9}
+.btn-ig{background:transparent;border:1px solid var(--border);color:var(--text-dim)}.btn-ig:hover{border-color:#e1306c;color:#e1306c}
+.btn-sm{padding:8px 14px;font-size:13px;min-height:38px}
+
+/* Stats */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.stat-card{background:var(--glass);border:1px solid var(--border);border-radius:12px;padding:16px;backdrop-filter:blur(8px)}
+.stat-num{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:700;color:var(--text);line-height:1}
+.stat-lbl{font-family:'Rajdhani',sans-serif;font-size:11px;color:var(--text-muted);margin-top:4px;letter-spacing:.5px;text-transform:uppercase}
+
+/* History */
+.history-wrap{padding:4px 16px}
+.history-item{display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.history-item:last-child{border-bottom:none}
+.h-dot{width:10px;height:10px;border-radius:50%;background:var(--cyan);margin-top:4px;flex-shrink:0}
+.h-body{flex:1}
+.h-date{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:14px;color:var(--text);margin-bottom:3px}
+.h-sub{font-size:13px;color:var(--text-dim);margin-bottom:6px}
+.h-earn{font-family:'Orbitron',sans-serif;font-size:13px;color:var(--green)}
+
+/* Summary pills */
+.summary-pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.s-pill{padding:6px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:20px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;color:var(--text-dim)}
+.s-pill span{color:var(--cyan);margin-left:4px}
+
+/* Filter bar */
+.filter-bar{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;padding-bottom:2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.filter-bar::-webkit-scrollbar{display:none}
+.f-btn{flex-shrink:0;padding:7px 16px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:all .2s;white-space:nowrap;-webkit-tap-highlight-color:transparent}
+.f-btn.active{background:var(--cyan);color:#05080f;border-color:var(--cyan)}
+
+/* Earnings table */
+.earn-table{width:100%;border-collapse:collapse;font-size:13px}
+.earn-table th{padding:8px 10px;text-align:left;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:10px;letter-spacing:1px;color:var(--text-muted);text-transform:uppercase;border-bottom:1px solid var(--border)}
+.earn-table td{padding:10px;color:var(--text);border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle}
+.paid-y{display:inline-block;padding:2px 8px;border-radius:12px;font-size:10px;font-weight:700;font-family:'Rajdhani',sans-serif;background:rgba(34,197,94,.15);color:var(--green)}
+.paid-n{display:inline-block;padding:2px 8px;border-radius:12px;font-size:10px;font-weight:700;font-family:'Rajdhani',sans-serif;background:rgba(251,146,60,.12);color:var(--orange)}
+
+/* Info banner */
+.info-banner{background:rgba(56,189,248,.06);border:1px solid rgba(56,189,248,.18);border-radius:10px;padding:12px 14px;font-size:12px;color:var(--text-dim);line-height:1.6;margin-bottom:16px;display:flex;gap:10px;align-items:flex-start}
+
+/* Profile */
+.prof-name{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:700;background:linear-gradient(180deg,#fff 0%,#b8ccd8 45%,#5a7a8a 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px}
+.prof-phone{font-family:'Rajdhani',sans-serif;font-size:15px;color:var(--text-muted);letter-spacing:2px}
+.spec-pill{display:inline-block;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;font-family:'Rajdhani',sans-serif;background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.2);color:var(--cyan)}
+.status-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
+.sd-available{background:var(--green)}.sd-busy{background:var(--orange)}.sd-off{background:var(--text-muted)}
+.guidelines-card{background:var(--glass);border:1px solid rgba(201,168,76,.3);border-radius:14px;padding:18px;margin-bottom:14px;backdrop-filter:blur(8px)}
+.guide-title{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:15px;letter-spacing:.5px;color:var(--gold);margin-bottom:12px}
+.guide-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+.guide-list li{font-size:13px;color:var(--text-dim);padding-left:14px;position:relative;line-height:1.5}
+.guide-list li::before{content:'\2022';position:absolute;left:0;color:var(--gold)}
+
+/* Reel submit section */
+.reel-section{background:rgba(56,189,248,.04);border:1px dashed rgba(56,189,248,.25);border-radius:10px;padding:14px;margin-top:10px}
+.reel-title{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;letter-spacing:.5px;color:var(--cyan);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.reel-input{width:100%;padding:12px 14px;background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:8px;font-size:14px;outline:none;transition:border .2s;-webkit-appearance:none}
+.reel-input:focus{border-color:var(--cyan)}
+.reel-note{font-size:11px;color:var(--text-muted);margin-top:6px;line-height:1.5}
+
+/* Section title */
+.sec-title{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px}
+.sec-divider{height:1px;background:var(--border);margin:16px 0}
+.tab-heading{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:700;color:var(--text);margin-bottom:16px}
+.tab-head-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.refresh-btn{background:none;border:none;color:var(--text-muted);font-size:18px;padding:6px;border-radius:6px;cursor:pointer;transition:color .2s;-webkit-tap-highlight-color:transparent}
+.refresh-btn:hover{color:var(--cyan)}
+
+/* Empty state */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 20px;text-align:center}
+.empty-ico{font-size:48px;margin-bottom:12px;opacity:.3}
+.empty-ttl{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:16px;color:var(--text-muted);margin-bottom:6px;letter-spacing:.5px}
+.empty-txt{font-size:13px;color:var(--text-muted);line-height:1.6;max-width:220px}
+
+/* Spinner */
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(5,8,15,.25);border-top-color:currentColor;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Creator shoot timeline */
+.shoot-timeline{display:flex;gap:0;margin:10px 0 6px;overflow-x:auto;padding-bottom:2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.shoot-timeline::-webkit-scrollbar{display:none}
+.stl-step{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;position:relative}
+.stl-step:not(:last-child)::after{content:'';position:absolute;top:9px;left:50%;width:100%;height:2px;background:rgba(255,255,255,.08);z-index:0}
+.stl-step.done:not(:last-child)::after{background:rgba(34,197,94,.35)}
+.stl-step.active:not(:last-child)::after{background:rgba(56,189,248,.25)}
+.stl-dot{width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,.12);background:var(--bg3);z-index:1;font-size:9px;display:flex;align-items:center;justify-content:center}
+.stl-step.done .stl-dot{background:rgba(34,197,94,.2);border-color:var(--green);color:var(--green)}
+.stl-step.active .stl-dot{background:var(--cyan);border-color:var(--cyan);color:#05080f;box-shadow:0 0 8px rgba(56,189,248,.5)}
+.stl-lbl{font-family:'Rajdhani',sans-serif;font-size:9px;color:var(--text-muted);letter-spacing:.3px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.stl-step.done .stl-lbl,.stl-step.active .stl-lbl{color:var(--cyan)}
+
+/* ============================================================
+   MODALS (bottom sheet style)
+============================================================ */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:500;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:20px 20px 0 0;width:100%;max-height:88vh;overflow-y:auto;display:flex;flex-direction:column;animation:slideUp .3s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-handle{width:36px;height:4px;border-radius:2px;background:var(--border);margin:10px auto 6px;flex-shrink:0}
+.modal-header{padding:12px 20px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.modal-title{font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;color:var(--text)}
+.modal-x{background:none;border:none;color:var(--text-muted);font-size:22px;cursor:pointer;line-height:1;padding:4px 8px;border-radius:4px;transition:color .2s;min-height:36px;min-width:36px;display:flex;align-items:center;justify-content:center}
+.modal-x:hover{color:var(--red)}
+.modal-body{padding:20px;flex:1}
+.modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:10px;flex-shrink:0;padding-bottom:calc(14px + env(safe-area-inset-bottom))}
+.confirm-box{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:14px}
+.confirm-row{display:flex;gap:10px;padding:5px 0;font-size:14px;color:var(--text)}
+.reason-select{width:100%;padding:12px 14px;background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:8px;font-size:14px;outline:none;transition:border .2s;-webkit-appearance:none;margin-top:8px}
+.reason-select:focus{border-color:var(--cyan)}
+
+/* ============================================================
+   NOTIFICATION PANEL
+============================================================ */
+#notif-panel{position:fixed;inset:0;z-index:400;display:none}
+#notif-panel.open{display:block}
+.notif-back{position:absolute;inset:0;background:rgba(0,0,0,.5)}
+.notif-drawer{position:absolute;top:0;right:0;bottom:0;width:min(300px,85vw);background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;animation:slideLeft .25s ease}
+@keyframes slideLeft{from{transform:translateX(100%)}to{transform:translateX(0)}}
+.nd-head{padding:16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.nd-title{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:16px;letter-spacing:.5px;color:var(--cyan)}
+.nd-list{flex:1;overflow-y:auto}
+.nd-item{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px;color:var(--text);line-height:1.5;display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+.nd-item.unread{background:rgba(56,189,248,.04)}
+.nd-dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);flex-shrink:0;margin-top:5px}
+.nd-item.read .nd-dot{background:transparent}
+.nd-time{font-size:11px;color:var(--text-muted);margin-top:2px}
+.nd-empty{padding:40px 16px;text-align:center;font-size:13px;color:var(--text-muted)}
+.nd-footer{padding:12px 16px;border-top:1px solid var(--border)}
+
+/* ============================================================
+   TOAST
+============================================================ */
+#toast-container{position:fixed;bottom:calc(var(--nav-h) + 12px + env(safe-area-inset-bottom));left:16px;right:16px;z-index:9000;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:12px 16px;font-size:14px;color:var(--text);display:flex;align-items:center;gap:10px;pointer-events:all;animation:toastIn .3s ease;box-shadow:0 4px 20px rgba(0,0,0,.4);line-height:1.4}
+.toast.removing{animation:toastOut .25s ease forwards}
+.toast-success{border-left:3px solid var(--green)}
+.toast-error{border-left:3px solid var(--red)}
+.toast-info{border-left:3px solid var(--cyan)}
+@keyframes toastIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes toastOut{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(12px)}}
+
+/* ── Touch & interaction improvements ── */
+button,a,[role="button"],.card,.btn,.nav-tab,.sub-tab,.f-btn{touch-action:manipulation;-webkit-tap-highlight-color:rgba(56,189,248,0.12)}
+.modal,.modal-overlay,[class*="modal"]{overscroll-behavior:contain}
+
+/* ── Offline banner ── */
+#offlineBanner{display:none;position:fixed;top:0;left:0;right:0;z-index:9999;background:#f87171;color:#fff;text-align:center;padding:8px 16px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;letter-spacing:.5px}
+#offlineBanner.show{display:block}
+
+/* New shoot banner */
+#new-shoot-banner{position:fixed;top:var(--header-h);left:0;right:0;z-index:200;background:linear-gradient(90deg,rgba(56,189,248,.95),rgba(14,165,233,.95));color:#05080f;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:14px;letter-spacing:.5px;padding:10px 16px;display:none;align-items:center;justify-content:space-between;gap:10px;box-shadow:0 4px 20px rgba(56,189,248,.3);cursor:pointer}
+#new-shoot-banner.show{display:flex}
+#new-shoot-banner .nsbtn{background:rgba(0,0,0,.15);border:none;color:#05080f;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;padding:4px 12px;border-radius:20px;cursor:pointer;white-space:nowrap}
+
+/* ── SKELETON LOADING ── */
+.skeleton{background:linear-gradient(90deg,rgba(56,189,248,.05) 0%,rgba(56,189,248,.12) 50%,rgba(56,189,248,.05) 100%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:8px;pointer-events:none;}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+</style>
+</head>
+<body>
+<div id="offlineBanner">&#x26A0;&#xFE0F; No internet connection — some features may be unavailable.</div>
+<div id="grain"></div>
+
+<!-- ===== LOGIN ===== -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="logo-mark">
+      <div class="logo-bar"></div>
+      <div class="logo-text-wrap">
+        <div class="logo-stvr">ST<span>V</span>R</div>
+        <div class="logo-hands">HANDS</div>
+      </div>
+    </div>
+    <div class="portal-label">Creator Portal</div>
+    <div class="portal-tagline">Hands Behind Viral Reels</div>
+    <div class="login-form">
+      <div>
+        <span class="form-label-sm">Your Phone Number</span>
+        <input type="tel" id="login-phone" class="phone-input"
+          placeholder="10-digit number" maxlength="10"
+          inputmode="numeric" autocomplete="tel-national">
+        <div class="login-error" id="login-error"></div>
+      </div>
+      <button class="btn-login" id="login-btn">LOGIN</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== APP ===== -->
+<div id="app">
+
+  <div id="new-shoot-banner">
+    <span id="nsb-text">&#x1F3AC; New shoot assigned!</span>
+    <button class="nsbtn" onclick="goToShootsTab()">View Now</button>
+  </div>
+
+  <!-- HEADER -->
+  <header id="app-header">
+    <div class="h-logo">
+      <div class="h-bar"></div>
+      <div class="h-stvr">ST<span>V</span>R</div>
+    </div>
+    <div class="h-center">Creator Portal</div>
+    <div class="h-right">
+      <div class="notif-wrap">
+        <button class="icon-btn" id="notif-btn" aria-label="Notifications">&#x1F514;</button>
+        <span class="notif-badge hidden" id="notif-badge">0</span>
+      </div>
+      <span class="creator-chip" id="creator-chip"></span>
+      <button class="icon-btn" id="logout-btn" title="Logout" aria-label="Logout" style="color:var(--text-muted)">&#x23FB;</button>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <div id="content">
+
+    <!-- TAB: SHOOTS -->
+    <div class="tab-panel active" id="panel-shoots">
+      <div class="tab-head-row">
+        <div class="tab-heading">My Shoots</div>
+        <button class="refresh-btn" id="refresh-shoots" title="Refresh">&#x21BB;</button>
+      </div>
+      <div class="sub-tabs">
+        <button class="sub-tab active" data-sub="pending" onclick="switchSub(this,'pending')">
+          Pending <span class="sub-badge" id="sb-pending">0</span>
+        </button>
+        <button class="sub-tab" data-sub="accepted" onclick="switchSub(this,'accepted')">
+          Accepted <span class="sub-badge" id="sb-accepted">0</span>
+        </button>
+        <button class="sub-tab" data-sub="done" onclick="switchSub(this,'done')">
+          Done <span class="sub-badge" id="sb-done">0</span>
+        </button>
+      </div>
+      <div id="sp-pending"></div>
+      <div id="sp-accepted" style="display:none"></div>
+      <div id="sp-done" style="display:none"></div>
+    </div>
+
+    <!-- TAB: HISTORY -->
+    <div class="tab-panel" id="panel-history">
+      <div class="tab-head-row">
+        <div class="tab-heading">History</div>
+        <button class="refresh-btn" onclick="renderAll()" title="Refresh">&#x21BB;</button>
+      </div>
+      <div class="summary-pills" id="hist-pills"></div>
+      <div class="filter-bar">
+        <button class="f-btn active" data-f="month" onclick="setHistFilter(this,'month')">This Month</button>
+        <button class="f-btn" data-f="last" onclick="setHistFilter(this,'last')">Last Month</button>
+        <button class="f-btn" data-f="all" onclick="setHistFilter(this,'all')">All Time</button>
+      </div>
+      <div class="card">
+        <div class="history-wrap" id="hist-list"></div>
+      </div>
+    </div>
+
+    <!-- TAB: EARNINGS -->
+    <div class="tab-panel" id="panel-earnings">
+      <div class="tab-head-row">
+        <div class="tab-heading">Earnings</div>
+        <button class="refresh-btn" onclick="renderAll()" title="Refresh">&#x21BB;</button>
+      </div>
+      <div class="stats-grid" id="earn-stats"></div>
+      <div class="info-banner">
+        <span style="font-size:16px">&#x2139;&#xFE0F;</span>
+        <span>Earnings shown are estimates based on shoot count. Contact Bharath for exact payment details.</span>
+      </div>
+      <div class="sec-title">Shoot Breakdown</div>
+      <div class="card" style="overflow:hidden">
+        <div style="overflow-x:auto">
+          <table class="earn-table">
+            <thead><tr>
+              <th>Date</th><th>Package</th><th>Amount</th><th>Paid</th>
+            </tr></thead>
+            <tbody id="earn-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div style="margin-top:12px">
+        <button class="btn btn-wa" onclick="requestPayment()">&#x1F4AC; Request Payment via WhatsApp</button>
+      </div>
+    </div>
+
+    <!-- TAB: PROFILE -->
+    <div class="tab-panel" id="panel-profile">
+      <div class="card card-cyan" style="padding:20px;margin-bottom:14px">
+        <div class="prof-name" id="prof-name"></div>
+        <div class="prof-phone" id="prof-phone"></div>
+        <div style="display:flex;align-items:center;gap:6px;margin:10px 0 12px">
+          <span class="status-dot" id="prof-dot"></span>
+          <span id="prof-status" style="font-size:14px;color:var(--text-dim)"></span>
+          <span style="color:var(--text-muted);font-size:12px;margin:0 2px">&#x2022;</span>
+          <span id="prof-city" style="font-size:13px;color:var(--text-dim)"></span>
+        </div>
+        <div id="prof-specs" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+      </div>
+      <div class="stats-grid" id="prof-stats"></div>
+      <div class="sec-title">Contact</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
+        <a href="https://wa.me/917989079432" target="_blank" rel="noopener" class="btn btn-wa">&#x1F4AC; WhatsApp Bharath</a>
+        <a href="https://instagram.com/stvr__hands" target="_blank" rel="noopener" class="btn btn-ig">&#x1F4F8; Follow @stvr__hands</a>
+      </div>
+      <div class="guidelines-card">
+        <div class="guide-title">&#x26A0;&#xFE0F; Creator Guidelines</div>
+        <ul class="guide-list">
+          <li>Never contact clients directly</li>
+          <li>Always arrive 10 minutes before shoot time</li>
+          <li>Shoot in the highest quality available</li>
+          <li>Submit reel within 4 hours of the shoot</li>
+          <li>Any issues? Contact Bharath immediately</li>
+          <li>Do not share client details with anyone</li>
+        </ul>
+      </div>
+      <p style="font-size:11px;color:var(--text-muted);text-align:center">To update your profile, contact Bharath.</p>
+    </div>
+
+  </div><!-- /content -->
+
+  <!-- BOTTOM NAV -->
+  <nav id="bottom-nav">
+    <div class="nav-tab active" data-panel="shoots" onclick="switchTab(this)">
+      <div class="nav-icon">
+        &#x1F3AC;
+        <span class="nav-dot" id="nav-dot-shoots">0</span>
+      </div>
+      Shoots
+    </div>
+    <div class="nav-tab" data-panel="history" onclick="switchTab(this)">
+      <div class="nav-icon">&#x1F4CB;</div>
+      History
+    </div>
+    <div class="nav-tab" data-panel="earnings" onclick="switchTab(this)">
+      <div class="nav-icon">&#x1F4B0;</div>
+      Earnings
+    </div>
+    <div class="nav-tab" data-panel="profile" onclick="switchTab(this)">
+      <div class="nav-icon">&#x1F464;</div>
+      Profile
+    </div>
+  </nav>
+</div><!-- /app -->
+
+<!-- ===== ACCEPT MODAL ===== -->
+<div class="modal-overlay" id="modal-accept">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-title">Confirm Shoot</div>
+      <button class="modal-x" onclick="closeModal('modal-accept')">&#x00D7;</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:14px;color:var(--text-dim);margin-bottom:14px">Can you make it to this shoot?</p>
+      <div class="confirm-box" id="accept-info"></div>
+      <div class="warn-box">
+        <strong>&#x26A0;&#xFE0F; IMPORTANT</strong>
+        Do NOT contact the client directly. All communication goes through Bharath only.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-cyan" id="accept-ok-btn">&#x2705; Yes, I Accept</button>
+      <button class="btn btn-ghost" onclick="closeModal('modal-accept')">Go Back</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== REJECT MODAL ===== -->
+<div class="modal-overlay" id="modal-reject">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-title">Can&apos;t Make It</div>
+      <button class="modal-x" onclick="closeModal('modal-reject')">&#x00D7;</button>
+    </div>
+    <div class="modal-body">
+      <div class="confirm-box" id="reject-info"></div>
+      <span class="form-label-sm">Reason</span>
+      <select class="reason-select" id="reject-reason">
+        <option value="Already booked">Already booked on that day</option>
+        <option value="Out of city">Out of city</option>
+        <option value="Personal reason">Personal reason</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-red" id="reject-ok-btn">Confirm Rejection</button>
+      <button class="btn btn-ghost" onclick="closeModal('modal-reject')">Go Back</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== REEL MODAL ===== -->
+<div class="modal-overlay" id="modal-reel">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-title">Submit Your Reel</div>
+      <button class="modal-x" onclick="closeModal('modal-reel')">&#x00D7;</button>
+    </div>
+    <div class="modal-body">
+      <div class="confirm-box" id="reel-info"></div>
+      <span class="form-label-sm">Google Drive Link</span>
+      <input type="url" id="reel-url" class="reel-input" placeholder="https://drive.google.com/..." inputmode="url" autocomplete="off">
+      <p class="reel-note">&#x2139;&#xFE0F; Set the link to &quot;Anyone with link can view&quot; before submitting.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-cyan" id="reel-ok-btn">&#x1F4E4; Submit Reel</button>
+      <button class="btn btn-ghost" onclick="closeModal('modal-reel')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== NOTIFICATION PANEL ===== -->
+<div id="notif-panel">
+  <div class="notif-back" onclick="closeNotifs()"></div>
+  <div class="notif-drawer">
+    <div class="nd-head">
+      <div class="nd-title">Notifications</div>
+      <button class="modal-x" onclick="closeNotifs()">&#x00D7;</button>
+    </div>
+    <div class="nd-list" id="nd-list"></div>
+    <div class="nd-footer">
+      <button class="btn btn-ghost btn-sm" style="width:auto" onclick="markAllRead()">Mark all read</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div id="toast-container"></div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
+import {
+  getFirestore, collection, addDoc, getDocs, getDoc, setDoc,
+  updateDoc, deleteDoc, doc, query, orderBy, onSnapshot,
+  serverTimestamp, where, limit
+} from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
+
+/*
+FIRESTORE INDEXES REQUIRED:
+  Collection: bookings
+  Fields: assignedCreator (ASC), date (ASC)
+  — Required for the creator portal's main query.
+
+FIRESTORE SECURITY RULES (set in Firebase Console):
+  rules_version = '2';
+  service cloud.firestore {
+    match /databases/{database}/documents {
+      // Creators can read bookings assigned to them only
+      match /bookings/{id} {
+        allow read: if resource.data.assignedCreator == request.auth.uid
+                    || request.auth.token.admin == true;
+        allow write: if request.auth.token.admin == true
+                    || (resource.data.assignedCreator == request.auth.uid
+                        && request.resource.data.diff(resource.data).affectedKeys()
+                           .hasOnly(['creatorStatus','creatorRejectionReason','reelLink',
+                                     'reelReceived','reelSubmittedAt','status','updatedAt',
+                                     'creatorAcceptedAt','assignedCreator','assignedCreatorName']));
+      }
+    }
+  }
+*/
+
+/* ============================================================
+   FIREBASE CONFIG
+   Replace with your project's config from Firebase Console →
+   Project Settings → Your Apps → SDK setup and configuration
+============================================================ */
+const firebaseConfig = {
+  apiKey:            'AIzaSyCYLgTK6owCnk8Wo_wr8ATTmbI7XqkLtPw',
+  authDomain:        'stvr-website.firebaseapp.com',
+  projectId:         'stvr-website',
+  storageBucket:     'stvr-website.firebasestorage.app',
+  messagingSenderId: '533329033671',
+  appId:             '1:533329033671:web:1b296657225303134f41e2',
+  measurementId:     'G-HDXKHJPFDF'
+};
+const _fbApp = initializeApp(firebaseConfig);
+const db     = getFirestore(_fbApp);
+
+/* ============================================================
+   DEV / SECURITY UTILITIES
+============================================================ */
+const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+function devLog(...args) { if (isDev) console.log(...args); }
+
+// XSS prevention — escape all user data before inserting into innerHTML
+function sanitize(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;');
+}
+
+// Safe localStorage reader
+function safeGetStorage(key, fallback) {
+  if (fallback === undefined) fallback = null;
+  try { const d = localStorage.getItem(key); return d ? JSON.parse(d) : fallback; }
+  catch(e) { devLog('Storage parse error:', key, e); return fallback; }
+}
+
+// Debounce utility
+function debounce(fn, ms) {
+  let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+}
+
+// Status constants
+const BOOKING_STATUS = { NEW:'New', CONFIRMED:'Confirmed', ASSIGNED:'Assigned', CREATOR_CONFIRMED:'Creator Confirmed', REEL_READY:'Reel Ready', DELIVERED:'Delivered' };
+const CREATOR_STATUS = { AVAILABLE:'Available', BUSY:'Busy', OFF:'Off' };
+
+// Amount formatter
+function formatAmount(n) { return '\u20B9' + Number(n || 0).toLocaleString('en-IN'); }
+
+// Offline detection
+window.addEventListener('online',  () => document.getElementById('offlineBanner')?.classList.remove('show'));
+window.addEventListener('offline', () => document.getElementById('offlineBanner')?.classList.add('show'));
+if (!navigator.onLine) document.getElementById('offlineBanner')?.classList.add('show');
+
+// Button loading state helper
+function setButtonLoading(btn, loading, originalHTML) {
+  if (loading) {
+    btn.disabled = true;
+    btn._origHTML = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner"></span>';
+  } else {
+    btn.disabled = false;
+    btn.innerHTML = originalHTML || btn._origHTML || btn.textContent;
+  }
+}
+
+/* ============================================================
+   CONSTANTS
+============================================================ */
+const BHARATH_WA = '917989079432';
+const SESSION_KEY = 'stvr_creator_session';
+const DEFAULT_CUT = 0; // default creator earnings per shoot (₹)
+
+/* ============================================================
+   UTILS
+============================================================ */
+const $  = id => document.getElementById(id);
+const qs = (s, ctx = document) => ctx.querySelector(s);
+const qsa = (s, ctx = document) => [...ctx.querySelectorAll(s)];
+
+function fmtDate(d) {
+  if (!d) return '\u2014';
+  const [y, m, day] = d.split('-');
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${parseInt(day)} ${months[parseInt(m) - 1]} ${y}`;
+}
+function fmtTime(t) {
+  if (!t) return '';
+  const [h, mn] = t.split(':');
+  const hr = parseInt(h), ampm = hr >= 12 ? 'PM' : 'AM';
+  return `${hr % 12 || 12}:${mn} ${ampm}`;
+}
+function todayStr()     { return new Date().toISOString().slice(0, 10); }
+function monthStr()     { return todayStr().slice(0, 7); }
+function lastMonthStr() {
+  const d = new Date(); d.setMonth(d.getMonth() - 1);
+  return d.toISOString().slice(0, 7);
+}
+function maskPhone(p) {
+  if (!p || p.length < 4) return '\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022';
+  return '\u2022\u2022\u2022\u2022' + p.slice(-6);
+}
+function getPackageName(val) {
+  const map = {
+    'portrait-1':       'Portrait Reel',
+    'landscape-1':      'Landscape Reel',
+    'portrait-3':       '3 Portrait Reels',
+    'landscape-3':      '3 Landscape Reels',
+    'perday-3-reels':   'Per Day - 3 Reels',
+    'combo-2p1l':       '2 Portrait + 1 Landscape',
+    'combo-2l1p':       '2 Landscape + 1 Portrait',
+    'car-bike-delivery':'Car / Bike Delivery',
+    'more-than-3':      'Custom (3+ Reels)',
+    'wedding':          'Wedding &amp; Pre-Wedding',
+    'birthday':         'Birthday &amp; Parties',
+    'brand':            'Brand &amp; Product Shoot',
+    'event':            'Event Coverage'
+  };
+  return map[val] || val || '\u2014';
+}
+function rupees(n) { return '\u20B9' + Number(n || 0).toLocaleString('en-IN'); }
+
+/* ============================================================
+   STATE
+============================================================ */
+let _creator    = null;
+let _bookings   = [];
+let _notifs     = [];
+let _histFilter = 'month';
+let _unsub        = null;
+let _unsubProfile = null; // profile listener cleanup
+let _actionId     = null; // bookingId for current modal action
+let _shootsInitialLoad = true;
+
+/* ============================================================
+   TOAST
+============================================================ */
+function showToast(msg, type = 'info') {
+  const icons = { success: '\u2705', error: '\u274C', info: '\u2139\uFE0F' };
+  const el = document.createElement('div');
+  el.className = `toast toast-${type}`;
+  el.innerHTML = `<span style="font-size:18px">${icons[type]}</span><span>${msg}</span>`;
+  $('toast-container').appendChild(el);
+  setTimeout(() => { el.classList.add('removing'); setTimeout(() => el.remove(), 280); }, 3500);
+}
+
+/* ============================================================
+   LOGIN
+============================================================ */
+async function doLogin() {
+  const raw   = $('login-phone').value.replace(/\D/g, '');
+  const errEl = $('login-error');
+  const btn   = $('login-btn');
+  errEl.textContent = '';
+
+  // 1. Validate format instantly
+  if (!/^[6-9]\d{9}$/.test(raw)) {
+    setLoginError('Please enter a valid Indian 10-digit mobile number.');
+    return;
+  }
+
+  // 2. Check localStorage cache first (instant — no network)
+  const cachedList = safeGetStorage('stvr_creator_cache', []);
+  const cached = cachedList.find(c => c.phone === raw);
+  if (cached) {
+    // Login instantly from cache
+    _creator = cached;
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify(cached));
+    $('login-screen').classList.add('fade-out');
+    setTimeout(() => { $('login-screen').style.display = 'none'; startApp(); }, 480);
+    // Verify in background silently
+    (async () => {
+      try {
+        const snap = await getDocs(query(collection(db, 'creators'), where('phone', '==', raw), limit(1)));
+        if (snap.empty) { doLogout(); setLoginError('Access revoked. Contact Bharath.'); }
+        else {
+          const fresh = { id: snap.docs[0].id, ...snap.docs[0].data() };
+          _creator = fresh;
+          const updated = cachedList.map(c => c.phone === raw ? fresh : c);
+          localStorage.setItem('stvr_creator_cache', JSON.stringify(updated));
+          sessionStorage.setItem(SESSION_KEY, JSON.stringify(fresh));
+        }
+      } catch(e) { devLog('Background verify failed:', e); }
+    })();
+    return;
+  }
+
+  // 3. Not in cache — query Firestore
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>';
+
+  try {
+    const snap = await getDocs(query(collection(db, 'creators'), where('phone', '==', raw), limit(1)));
+    if (snap.empty) {
+      setLoginError('Phone number not registered. Contact Bharath to get access.');
+      resetLoginBtn(); return;
+    }
+    const creator = { id: snap.docs[0].id, ...snap.docs[0].data() };
+    // Cache for next login
+    const all = safeGetStorage('stvr_creator_cache', []);
+    if (!all.find(c => c.id === creator.id)) { all.push(creator); localStorage.setItem('stvr_creator_cache', JSON.stringify(all)); }
+    _creator = creator;
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify(creator));
+    resetLoginBtn();
+    $('login-screen').classList.add('fade-out');
+    setTimeout(() => { $('login-screen').style.display = 'none'; startApp(); }, 480);
+  } catch (err) {
+    if (!navigator.onLine && cached) { _creator = cached; sessionStorage.setItem(SESSION_KEY, JSON.stringify(cached)); $('login-screen').classList.add('fade-out'); setTimeout(() => { $('login-screen').style.display = 'none'; startApp(); }, 480); return; }
+    setLoginError('Connection error. Please try again.');
+    devLog('Login error:', err);
+    resetLoginBtn();
+  }
+}
+
+function setLoginError(msg) {
+  const inp = $('login-phone');
+  $('login-error').textContent = msg;
+  inp.classList.add('shake');
+  setTimeout(() => {
+    inp.classList.remove('shake');
+    $('login-error').textContent = '';
+  }, 3500);
+}
+function resetLoginBtn() {
+  const btn = $('login-btn');
+  btn.disabled = false;
+  btn.textContent = 'LOGIN';
+}
+
+/* ============================================================
+   SESSION
+============================================================ */
+function checkSession() {
+  try {
+    const raw = sessionStorage.getItem(SESSION_KEY);
+    if (!raw) return false;
+    _creator = JSON.parse(raw);
+    return !!_creator.id;
+  } catch { return false; }
+}
+
+function doLogout() {
+  if (_unsub) _unsub();
+  if (_unsubProfile) _unsubProfile();
+  sessionStorage.removeItem(SESSION_KEY);
+  _creator = null; _bookings = []; _notifs = [];
+  $('app').classList.remove('active');
+  $('app').style.display = 'none';
+  $('login-screen').style.display = 'flex';
+  $('login-screen').style.opacity = '1';
+  $('login-screen').classList.remove('fade-out');
+  $('login-phone').value = '';
+}
+
+/* ============================================================
+   APP START
+============================================================ */
+function startApp() {
+  $('creator-chip').textContent = (_creator.name || 'Creator').split(' ')[0];
+  $('app').style.display = 'block';
+  $('app').classList.add('active');
+  // If session was from sessionStorage, load full creator data from Firestore
+  if (!_creator.specialities) loadCreatorData();
+  loadNotifs();
+  startBookingsListener();
+  renderProfile();
+  if('Notification' in window) Notification.requestPermission();
+  // Real-time profile listener — reflects status changes by admin instantly
+  if(_creator && _creator.id) {
+    if(_unsubProfile) _unsubProfile();
+    _unsubProfile = onSnapshot(doc(db, 'creators', _creator.id), snap => {
+      if(snap.exists()) {
+        _creator = {id:snap.id, ...snap.data()};
+        // update session
+        try { sessionStorage.setItem(SESSION_KEY, JSON.stringify({id:_creator.id,name:_creator.name,phone:_creator.phone,city:_creator.city})); } catch(e){}
+        renderProfile();
+        // update header chip
+        const chip = document.getElementById('creator-chip');
+        if(chip) chip.textContent = (_creator.name||'Creator').split(' ')[0];
+      }
+    }, err => { devLog('Profile listener error:', err); });
+  }
+}
+
+async function loadCreatorData() {
+  try {
+    const snap = await getDoc(doc(db, 'creators', _creator.id));
+    if (snap.exists()) {
+      _creator = { id: snap.id, ...snap.data() };
+      renderProfile();
+    }
+  } catch (e) { devLog('Could not refresh creator data:', e); }
+}
+
+/* ============================================================
+   FIRESTORE LISTENER
+============================================================ */
+function startBookingsListener() {
+  if (_unsub) _unsub();
+  _shootsInitialLoad = true;
+
+  // Show cached shoots instantly
+  const cachedBookings = safeGetStorage('stvr_my_bookings_' + _creator.id, []);
+  if (cachedBookings.length > 0) {
+    _bookings = cachedBookings;
+    renderAll();
+  } else {
+    // Show skeleton for shoot cards
+    const shootsEl = $('sp-pending');
+    if (shootsEl) shootsEl.innerHTML = `
+      <div class="skeleton" style="height:180px;border-radius:16px;margin-bottom:1rem"></div>
+      <div class="skeleton" style="height:180px;border-radius:16px;margin-bottom:1rem"></div>`;
+  }
+
+  const q = query(collection(db, 'bookings'), where('assignedCreator', '==', _creator.id));
+  _unsub = onSnapshot(q, snap => {
+    // detect new assignments (not on initial load)
+    if(!_shootsInitialLoad) {
+      snap.docChanges().forEach(change => {
+        if(change.type==='added') {
+          const nb = change.doc.data();
+          addNotif(`New shoot assigned: ${nb.date||''} at ${nb.location||''}`);
+          showNewShootBanner(nb);
+          // browser notification
+          if(Notification.permission==='granted') {
+            try { new Notification('New Shoot Assigned! \uD83C\uDFAC',{body:`${nb.date||''} at ${nb.startTime||''} \u2014 ${nb.location||''}`,icon:'/assets/Untitled.png'}); } catch(e){}
+          }
+          // pulse the shoots nav tab
+          const shootTab = document.querySelector('.nav-tab[data-panel="shoots"]');
+          if(shootTab) { shootTab.classList.add('pulse-tab'); setTimeout(()=>shootTab.classList.remove('pulse-tab'),3000); }
+        }
+      });
+    }
+    _shootsInitialLoad = false;
+    _bookings = snap.docs.map(d => ({ id: d.id, ...d.data(), createdAt: d.data().createdAt?.toMillis?.() || 0 }));
+    renderAll();
+    // Cache shoots for instant next load
+    try { localStorage.setItem('stvr_my_bookings_' + _creator.id, JSON.stringify(_bookings.slice(0, 50))); } catch(e) {}
+  }, err => {
+    showToast('Error loading shoots. Pull to refresh.', 'error');
+    devLog('Bookings listener error:', err);
+  });
+}
+
+/* ============================================================
+   NAVIGATION
+============================================================ */
+window.switchTab = function(el) {
+  const panel = el.dataset.panel;
+  qsa('.nav-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  qsa('.tab-panel').forEach(p => p.classList.remove('active'));
+  $(`panel-${panel}`).classList.add('active');
+};
+
+window.switchSub = function(el, sub) {
+  qsa('.sub-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  ['pending','accepted','done'].forEach(s => {
+    $(`sp-${s}`).style.display = s === sub ? '' : 'none';
+  });
+};
+
+/* ============================================================
+   RENDER ALL
+============================================================ */
+function renderAll() {
+  renderShoots();
+  renderHistory(_histFilter);
+  renderEarnings();
+  renderProfile();
+}
+window.renderAll = renderAll;
+
+/* ============================================================
+   SHOOTS
+============================================================ */
+function renderShoots() {
+  const pending  = _bookings.filter(b => !b.creatorStatus || b.creatorStatus === 'pending');
+  const accepted = _bookings.filter(b => b.creatorStatus === 'accepted' && b.status !== 'Delivered');
+  const done     = _bookings.filter(b => b.status === 'Delivered' || b.status === 'Reel Ready');
+
+  // Badges
+  $('sb-pending').textContent  = pending.length;
+  $('sb-accepted').textContent = accepted.length;
+  $('sb-done').textContent     = done.length;
+
+  // Nav dot
+  const dot = $('nav-dot-shoots');
+  if (pending.length > 0) { dot.textContent = pending.length; dot.classList.add('show'); }
+  else dot.classList.remove('show');
+
+  $('sp-pending').innerHTML  = pending.length  ? pending.map(b  => shootCard(b, 'pending')).join('')  : emptyHTML('&#x1F3AC;', 'No pending shoots', 'Bharath will assign your first shoot soon!');
+  $('sp-accepted').innerHTML = accepted.length ? accepted.map(b => shootCard(b, 'accepted')).join('') : emptyHTML('&#x1F3AC;', 'No accepted shoots', 'Shoots you accept will appear here.');
+  $('sp-done').innerHTML     = done.length     ? done.map(b     => shootCard(b, 'done')).join('')     : emptyHTML('&#x2705;', 'No completed shoots', 'Completed shoots appear here.');
+}
+
+function buildShootTimeline(b) {
+  const steps = [
+    {key:'assigned', label:'Assigned', icon:'&#x1F3AC;'},
+    {key:'accepted', label:'Accepted', icon:'&#x2705;'},
+    {key:'shot',     label:'Shoot Day', icon:'&#x1F4F8;'},
+    {key:'reel',     label:'Reel Sent', icon:'&#x1F4E4;'},
+    {key:'approved', label:'Approved', icon:'&#x1F44D;'},
+    {key:'paid',     label:'Paid', icon:'&#x1F4B0;'}
+  ];
+  let cur = 0;
+  if(b.creatorStatus==='accepted' || b.status==='Creator Confirmed') cur=1;
+  if(b.date && b.date<=todayStr()) cur=Math.max(cur,2);
+  if(b.reelReceived||b.reelLink) cur=Math.max(cur,3);
+  if(b.status==='Reel Ready'||b.status==='Delivered') cur=Math.max(cur,4);
+  if(b.creatorPaid) cur=5;
+  return `<div class="shoot-timeline">${steps.map((s,i)=>`
+    <div class="stl-step ${i<cur?'done':''}${i===cur?' active':''}">
+      <div class="stl-dot">${i<cur?'&#x2714;':s.icon}</div>
+      <div class="stl-lbl">${s.label}</div>
+    </div>`).join('')}</div>`;
+}
+
+function shootCard(b, type) {
+  const date  = fmtDate(b.date);
+  const time  = fmtTime(b.startTime) + (b.endTime ? ' \u2013 ' + fmtTime(b.endTime) : '');
+  const pkg   = sanitize(getPackageName(b.package));
+  const loc   = sanitize(b.location || '\u2014');
+  const notes = sanitize(b.notes || '');
+  const isPast = b.date && b.date <= todayStr();
+  const reelDone = b.reelReceived || !!b.reelLink;
+  const earned = rupees(b.creatorEarnings || DEFAULT_CUT);
+  // CHECK 3.4: PII fields (name, phone, email, totalAmount, bookingAmount,
+  //            balanceAmount, bookingPaid, finalPaid) are intentionally NOT shown.
+
+  let head = '';
+  if (type === 'pending') {
+    head = `<div class="new-label"><div class="pulse-dot"></div>NEW SHOOT REQUEST</div>`;
+  } else if (type === 'accepted') {
+    head = `<div style="margin-bottom:10px"><span class="badge b-accepted">&#x2705; Accepted</span></div>`;
+  }
+
+  let foot = '';
+  if (type === 'pending') {
+    foot = `
+      <button class="btn btn-cyan" onclick="openAccept('${b.id}')">&#x2705; Accept Shoot</button>
+      <button class="btn btn-red"  onclick="openReject('${b.id}')">&#x274C; Can&#x2019;t Make It</button>`;
+  } else if (type === 'accepted') {
+    if (reelDone) {
+      foot = `<div style="text-align:center;font-size:13px;color:var(--green);padding:4px 0">&#x2705; Reel submitted &#x2014; Bharath is reviewing!</div>`;
+    } else if (isPast) {
+      foot = `<button class="btn btn-cyan" onclick="openReelModal('${b.id}')">&#x1F4E4; Submit Reel</button>`;
+    } else {
+      foot = `<div style="text-align:center;font-size:12px;color:var(--text-muted);padding:4px 0">Reel submit button appears on shoot day.</div>`;
+    }
+  } else if (type === 'done') {
+    foot = `
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span class="badge b-delivered">&#x2705; Completed</span>
+        <span style="font-family:'Orbitron',sans-serif;font-size:14px;color:var(--green)">${earned}</span>
+      </div>`;
+  }
+
+  return `
+    <div class="card ${type === 'pending' ? 'card-cyan' : ''}">
+      <div class="sc-head">${head}</div>
+      <div class="sc-body">
+        ${type==='accepted'?buildShootTimeline(b):''}
+        <div class="info-row"><span class="info-ico">&#x1F4C5;</span><span class="info-lbl">Date</span><span class="info-val">${date}</span></div>
+        <div class="info-row"><span class="info-ico">&#x23F0;</span><span class="info-lbl">Time</span><span class="info-val">${time}</span></div>
+        <div class="info-row"><span class="info-ico">&#x1F4CD;</span><span class="info-lbl">City</span><span class="info-val">${loc}</span></div>
+        <div class="info-row"><span class="info-ico">&#x1F3A5;</span><span class="info-lbl">Package</span><span class="info-val">${pkg}</span></div>
+        ${notes ? `<div class="info-row"><span class="info-ico">&#x1F4DD;</span><span class="info-lbl">Notes</span><span class="info-val">${notes}</span></div>` : ''}
+        ${type === 'pending' ? `<div class="warn-box"><strong>&#x26A0;&#xFE0F; IMPORTANT</strong>Do NOT contact the client. All communication through Bharath only.</div>` : ''}
+      </div>
+      ${foot ? `<div class="sc-foot">${foot}</div>` : ''}
+    </div>`;
+}
+
+function emptyHTML(ico, ttl, txt) {
+  return `<div class="empty-state"><div class="empty-ico">${ico}</div><div class="empty-ttl">${ttl}</div><div class="empty-txt">${txt}</div></div>`;
+}
+
+/* ============================================================
+   ACCEPT FLOW
+============================================================ */
+window.openAccept = function(id) {
+  const b = _bookings.find(x => x.id === id);
+  if (!b) return;
+  _actionId = id;
+  $('accept-info').innerHTML = `
+    <div class="confirm-row"><span>&#x1F4C5;</span><strong>${fmtDate(b.date)}</strong></div>
+    <div class="confirm-row"><span>&#x23F0;</span>${fmtTime(b.startTime)}${b.endTime ? ' \u2013 ' + fmtTime(b.endTime) : ''}</div>
+    <div class="confirm-row"><span>&#x1F4CD;</span>${sanitize(b.location||'')}</div>
+    <div class="confirm-row"><span>&#x1F3A5;</span>${sanitize(getPackageName(b.package))}</div>`;
+  $('accept-ok-btn').onclick = () => confirmAccept(id);
+  openModal('modal-accept');
+};
+
+async function confirmAccept(id) {
+  const b = _bookings.find(x => x.id === id);
+  if (!b) return;
+  const btn = $('accept-ok-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Processing\u2026';
+  // Optimistic: update UI instantly
+  showToast('Shoot accepted! \uD83C\uDFAC Bharath will send you location details.', 'success');
+  closeModal('modal-accept');
+  addNotif(`You accepted the shoot on ${fmtDate(b.date)}.`);
+  const msg = `Hi Bharath! I have accepted the shoot for ${fmtDate(b.date)} at ${fmtTime(b.startTime)} in ${b.location}. I\u2019ll be ready!\n\u2014 ${_creator.name}`;
+  window.open(`https://wa.me/${BHARATH_WA}?text=${encodeURIComponent(msg)}`, '_blank');
+  try {
+    await updateDoc(doc(db, 'bookings', id), {
+      creatorStatus: 'accepted',
+      status: b.status === 'Assigned' ? 'Creator Confirmed' : b.status,
+      creatorAcceptedAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    });
+  } catch (e) { showToast('Error saving acceptance. Will retry on next sync.', 'error'); devLog('Accept error:', e); }
+  btn.disabled = false;
+  btn.innerHTML = '&#x2705; Yes, I Accept';
+}
+
+/* ============================================================
+   REJECT FLOW
+============================================================ */
+window.openReject = function(id) {
+  const b = _bookings.find(x => x.id === id);
+  if (!b) return;
+  _actionId = id;
+  $('reject-info').innerHTML = `
+    <div class="confirm-row"><span>&#x1F4C5;</span><strong>${fmtDate(b.date)}</strong></div>
+    <div class="confirm-row"><span>&#x23F0;</span>${fmtTime(b.startTime)}${b.endTime ? ' \u2013 ' + fmtTime(b.endTime) : ''}</div>
+    <div class="confirm-row"><span>&#x1F4CD;</span>${sanitize(b.location||'')}</div>`;
+  $('reject-ok-btn').onclick = () => confirmReject(id);
+  openModal('modal-reject');
+};
+
+async function confirmReject(id) {
+  const b      = _bookings.find(x => x.id === id);
+  if (!b) return;
+  const reason = $('reject-reason').value;
+  const btn    = $('reject-ok-btn');
+  btn.disabled = true;
+  btn.textContent = 'Processing\u2026';
+  // Optimistic: update UI instantly
+  showToast('Shoot declined.', 'success');
+  closeModal('modal-reject');
+  const msg = `Hi Bharath! Sorry I can\u2019t make the shoot on ${fmtDate(b.date)} at ${fmtTime(b.startTime)}.\nReason: ${reason}\nPlease reassign.\n\u2014 ${_creator.name}`;
+  window.open(`https://wa.me/${BHARATH_WA}?text=${encodeURIComponent(msg)}`, '_blank');
+  try {
+    await updateDoc(doc(db, 'bookings', id), {
+      creatorStatus: 'rejected',
+      creatorRejectionReason: reason,
+      assignedCreator: '',
+      assignedCreatorName: '',
+      status: 'New',
+      updatedAt: serverTimestamp()
+    });
+  } catch (e) { showToast('Error sending rejection. Try again.', 'error'); devLog('Reject error:', e); }
+  btn.disabled = false;
+  btn.textContent = 'Confirm Rejection';
+}
+
+/* ============================================================
+   REEL SUBMISSION
+============================================================ */
+window.openReelModal = function(id) {
+  const b = _bookings.find(x => x.id === id);
+  if (!b) return;
+  _actionId = id;
+  $('reel-info').innerHTML = `
+    <div class="confirm-row"><span>&#x1F4C5;</span><strong>${fmtDate(b.date)}</strong></div>
+    <div class="confirm-row"><span>&#x1F3A5;</span>${sanitize(getPackageName(b.package))}</div>`;
+  $('reel-url').value = b.reelLink || '';
+  $('reel-ok-btn').onclick = () => submitReel(id);
+  openModal('modal-reel');
+};
+
+async function submitReel(id) {
+  const url = $('reel-url').value.trim();
+  if (!url || !url.startsWith('http')) { showToast('Please paste a valid Google Drive link.', 'error'); return; }
+  const b   = _bookings.find(x => x.id === id);
+  if (!b) return;
+  const btn = $('reel-ok-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Submitting\u2026';
+  if (!url.includes('drive.google.com') && !url.includes('drive.usercontent.google.com')) {
+    showToast('Please paste a Google Drive link.', 'error');
+    btn.disabled = false;
+    btn.innerHTML = '&#x1F4E4; Submit Reel';
+    return;
+  }
+  // Instant feedback before network call
+  showToast('Reel submitted! Bharath will review and process payment.', 'success');
+  closeModal('modal-reel');
+  addNotif('Your reel has been submitted successfully!');
+  const msg = `Hi Bharath! I\u2019ve submitted the reel for the ${fmtDate(b.date)} shoot.\nDrive Link: ${url}\nPlease review!\n\u2014 ${_creator.name}`;
+  window.open(`https://wa.me/${BHARATH_WA}?text=${encodeURIComponent(msg)}`, '_blank');
+  try {
+    await updateDoc(doc(db, 'bookings', id), {
+      reelLink: url, reelReceived: true,
+      reelSubmittedAt: serverTimestamp(),
+      status: 'Reel Ready', updatedAt: serverTimestamp()
+    });
+  } catch (e) {
+    localStorage.setItem('stvr_pending_reel_' + id, JSON.stringify({ link: url, bookingId: id }));
+    localStorage.setItem('stvr_pending_sync', 'true');
+    console.error('Reel save failed:', e);
+  }
+  btn.disabled = false;
+  btn.innerHTML = '&#x1F4E4; Submit Reel';
+}
+
+/* ============================================================
+   HISTORY
+============================================================ */
+function renderHistory(filter) {
+  _histFilter = filter;
+  const all = _bookings.filter(b => b.status === 'Delivered' || b.status === 'Reel Ready' || b.reelReceived);
+  const thisMonthCount = all.filter(b => b.date && b.date.startsWith(monthStr())).length;
+
+  $('hist-pills').innerHTML = `
+    <div class="s-pill">Total Shoots <span>${all.length}</span></div>
+    <div class="s-pill">This Month <span>${thisMonthCount}</span></div>`;
+
+  let filtered = all;
+  if (filter === 'month') filtered = all.filter(b => b.date && b.date.startsWith(monthStr()));
+  else if (filter === 'last') filtered = all.filter(b => b.date && b.date.startsWith(lastMonthStr()));
+  filtered.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
+  if (!filtered.length) {
+    $('hist-list').innerHTML = `<div class="empty-state" style="padding:32px 16px"><div class="empty-ico">&#x1F4CB;</div><div class="empty-ttl">No completed shoots</div><div class="empty-txt">Your history appears here after your first delivery.</div></div>`;
+    return;
+  }
+
+  $('hist-list').innerHTML = filtered.map(b => {
+    const earned = rupees(b.creatorEarnings || DEFAULT_CUT);
+    return `
+      <div class="history-item">
+        <div class="h-dot"></div>
+        <div class="h-body">
+          <div class="h-date">&#x1F4C5; ${fmtDate(b.date)}</div>
+          <div class="h-sub">&#x1F3A5; ${sanitize(getPackageName(b.package))} &nbsp;&#x2022;&nbsp; &#x1F4CD; ${sanitize(b.location || '\u2014')}</div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span class="badge b-delivered">&#x2705; Done</span>
+            <span class="h-earn">${earned}</span>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+window.setHistFilter = function(btn, filter) {
+  qsa('.f-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderHistory(filter);
+};
+
+/* ============================================================
+   EARNINGS
+============================================================ */
+function renderEarnings() {
+  const done = _bookings.filter(b => b.status === 'Delivered' || b.status === 'Reel Ready' || b.reelReceived);
+  const thisMonth = done.filter(b => b.date && b.date.startsWith(monthStr()));
+  const totalEarned  = done.filter(b => b.creatorPaid).reduce((s, b) => s + (b.creatorEarnings || DEFAULT_CUT), 0);
+  const monthEarned  = thisMonth.reduce((s, b) => s + (b.creatorEarnings || DEFAULT_CUT), 0);
+  const pendingTotal = done.filter(b => !b.creatorPaid).reduce((s, b) => s + (b.creatorEarnings || DEFAULT_CUT), 0);
+
+  $('earn-stats').innerHTML = `
+    <div class="stat-card"><div class="stat-num">${rupees(totalEarned)}</div><div class="stat-lbl">Total Earned</div></div>
+    <div class="stat-card"><div class="stat-num">${rupees(monthEarned)}</div><div class="stat-lbl">This Month</div></div>
+    <div class="stat-card"><div class="stat-num">${rupees(pendingTotal)}</div><div class="stat-lbl">Pending</div></div>
+    <div class="stat-card"><div class="stat-num">${done.length}</div><div class="stat-lbl">Shoots Done</div></div>`;
+
+  if (!done.length) {
+    $('earn-tbody').innerHTML = `<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--text-muted)">No earnings yet.</td></tr>`;
+    return;
+  }
+  const sorted = [...done].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  $('earn-tbody').innerHTML = sorted.map(b => {
+    const amt = b.creatorEarnings || DEFAULT_CUT;
+    return `<tr>
+      <td style="white-space:nowrap">${fmtDate(b.date)}</td>
+      <td>${sanitize(getPackageName(b.package))}</td>
+      <td style="color:var(--green);font-family:'Orbitron',sans-serif;font-size:12px">${rupees(amt)}</td>
+      <td><span class="${b.creatorPaid ? 'paid-y' : 'paid-n'}">${b.creatorPaid ? '&#x2705; Paid' : 'Pending'}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+window.requestPayment = function() {
+  const unpaid = _bookings.filter(b => (b.status === 'Delivered' || b.status === 'Reel Ready' || b.reelReceived) && !b.creatorPaid);
+  const total  = unpaid.reduce((s, b) => s + (b.creatorEarnings || DEFAULT_CUT), 0);
+  if (!unpaid.length) { showToast('No pending payments to request.', 'info'); return; }
+  const msg = `Hi Bharath! Can you process my payment for ${unpaid.length} completed shoot${unpaid.length !== 1 ? 's' : ''}?\nTotal: ${rupees(total)}\n\u2014 ${_creator.name}`;
+  window.open(`https://wa.me/${BHARATH_WA}?text=${encodeURIComponent(msg)}`, '_blank');
+};
+
+/* ============================================================
+   PROFILE
+============================================================ */
+function renderProfile() {
+  if (!_creator) return;
+  $('prof-name').textContent = _creator.name || '\u2014';
+  $('prof-phone').textContent = maskPhone(_creator.phone);
+
+  const s  = (_creator.status || 'Available').toLowerCase();
+  const dot = $('prof-dot');
+  dot.className = `status-dot sd-${s}`;
+  $('prof-status').textContent = _creator.status || 'Available';
+  $('prof-city').textContent   = _creator.city || '\u2014';
+  $('prof-specs').innerHTML    = (_creator.specialities || []).map(sp => `<span class="spec-pill">${sanitize(sp)}</span>`).join('');
+
+  const accepted = _bookings.filter(b => b.creatorStatus === 'accepted').length;
+  const rejected = _bookings.filter(b => b.creatorStatus === 'rejected').length;
+  const total    = _creator.totalShoots || _bookings.length;
+
+  $('prof-stats').innerHTML = `
+    <div class="stat-card"><div class="stat-num">${total}</div><div class="stat-lbl">Total Shoots</div></div>
+    <div class="stat-card"><div class="stat-num">${accepted}</div><div class="stat-lbl">Accepted</div></div>
+    <div class="stat-card"><div class="stat-num">${rejected}</div><div class="stat-lbl">Rejected</div></div>
+    <div class="stat-card"><div class="stat-num">${_creator.city || '\u2014'}</div><div class="stat-lbl">City</div></div>`;
+}
+
+/* ============================================================
+   NOTIFICATIONS
+============================================================ */
+function notifKey() { return `stvr_creator_notifs_${_creator.id}`; }
+function loadNotifs() {
+  _notifs = safeGetStorage(notifKey(), []);
+  updateNotifBadge();
+}
+function saveNotifs() { localStorage.setItem(notifKey(), JSON.stringify(_notifs)); }
+function addNotif(msg) {
+  _notifs.unshift({ id: Date.now(), msg, read: false, ts: Date.now() });
+  if (_notifs.length > 30) _notifs = _notifs.slice(0, 30);
+  saveNotifs(); updateNotifBadge();
+}
+function updateNotifBadge() {
+  const n = _notifs.filter(x => !x.read).length;
+  const b = $('notif-badge');
+  if (n > 0) { b.textContent = n; b.classList.remove('hidden'); }
+  else b.classList.add('hidden');
+}
+function renderNotifList() {
+  const list = $('nd-list');
+  if (!_notifs.length) { list.innerHTML = '<div class="nd-empty">No notifications yet.</div>'; return; }
+  list.innerHTML = _notifs.map(n => `
+    <div class="nd-item ${n.read ? 'read' : 'unread'}">
+      <div class="nd-dot"></div>
+      <div>
+        <div>${sanitize(n.msg||'')}</div>
+        <div class="nd-time">${new Date(n.ts).toLocaleDateString('en-IN', { day:'numeric', month:'short' })} &mdash; ${new Date(n.ts).toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' })}</div>
+      </div>
+    </div>`).join('');
+}
+window.markAllRead = function() {
+  _notifs.forEach(n => n.read = true);
+  saveNotifs(); updateNotifBadge(); renderNotifList();
+};
+window.closeNotifs = function() { $('notif-panel').classList.remove('open'); };
+
+/* ============================================================
+   NEW SHOOT BANNER
+============================================================ */
+function showNewShootBanner(booking) {
+  const banner = document.getElementById('new-shoot-banner');
+  const text = document.getElementById('nsb-text');
+  if(!banner) return;
+  if(text) text.textContent = '\uD83C\uDFAC New shoot: ' + (booking.date||'') + ' \u2014 ' + (booking.location||'');
+  banner.classList.add('show');
+  setTimeout(()=>banner.classList.remove('show'), 8000);
+}
+function goToShootsTab() {
+  const tab = document.querySelector('.nav-tab[data-panel="shoots"]');
+  if(tab) switchTab(tab);
+  document.getElementById('new-shoot-banner')?.classList.remove('show');
+}
+window.goToShootsTab = goToShootsTab;
+
+/* ============================================================
+   MODAL HELPERS
+============================================================ */
+function openModal(id)  { $(id).classList.add('open'); }
+function closeModal(id) { $(id).classList.remove('open'); }
+window.closeModal = closeModal;
+
+qsa('.modal-overlay').forEach(ov => {
+  ov.addEventListener('click', e => { if (e.target === ov) ov.classList.remove('open'); });
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    qsa('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+    $('notif-panel').classList.remove('open');
+  }
+});
+
+/* ============================================================
+   SAMPLE DATA SEED (seeds test creator + booking if Firestore empty)
+============================================================ */
+async function seedTestData() {
+  try {
+    const snap = await getDocs(query(collection(db, 'creators'), where('phone', '==', '9876543210')));
+    if (!snap.empty) return;
+
+    const crRef = await addDoc(collection(db, 'creators'), {
+      name: 'Ravi Kumar', phone: '9876543210', city: 'Hyderabad',
+      specialities: ['Portraits', 'Cars & Bikes'],
+      status: 'Available', totalShoots: 0,
+      creatorEarnings: DEFAULT_CUT, createdAt: serverTimestamp()
+    });
+
+    const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
+    const tmrStr = tomorrow.toISOString().slice(0, 10);
+
+    await addDoc(collection(db, 'bookings'), {
+      name: 'Test Client', phone: '0000000000', email: '',
+      package: 'portrait-1', location: 'Hyderabad',
+      date: tmrStr, startTime: '10:00', endTime: '12:00',
+      status: 'Assigned', assignedCreator: crRef.id,
+      assignedCreatorName: 'Ravi Kumar', creatorStatus: 'pending',
+      notes: 'Golden hour preferred. Bring reflector if available.',
+      totalAmount: 2000, bookingPaid: false, bookingAmount: 0, finalPaid: false,
+      creatorEarnings: DEFAULT_CUT, creatorPaid: false,
+      reelLink: '', reelReceived: false, createdAt: serverTimestamp()
+    });
+    devLog('%cTest creator seeded! Login with: 9876543210', 'color:#38bdf8;font-weight:bold');
+  } catch (e) { devLog('Seed skipped (rules may block unauthenticated writes):', e.message); }
+}
+
+/* ============================================================
+   BOOTSTRAP
+============================================================ */
+// Login phone — digits only
+$('login-phone').addEventListener('input', function() {
+  this.value = this.value.replace(/\D/g, '').slice(0, 10);
+  this.classList.remove('shake');
+  $('login-error').textContent = '';
+});
+$('login-btn').addEventListener('click', doLogin);
+$('login-phone').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+$('logout-btn').addEventListener('click', doLogout);
+$('refresh-shoots').addEventListener('click', () => startBookingsListener());
+$('notif-btn').addEventListener('click', e => {
+  e.stopPropagation();
+  $('notif-panel').classList.toggle('open');
+  renderNotifList(); markAllRead();
+});
+
+// Check existing session
+if (checkSession()) {
+  $('login-screen').style.display = 'none';
+  startApp();
+} else {
+  // Seed test data so first-time testers can log in immediately
+  seedTestData();
+}
+</script>
+</body>
+</html>
