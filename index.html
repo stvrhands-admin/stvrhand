@@ -3312,27 +3312,20 @@
       max-width: 500px;
     }
     .faq-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-      max-width: 860px;
-      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
     }
     .faq-item {
-      border-radius: 0;
-      border: none;
-      border-bottom: 1px solid rgba(56,189,248,0.1);
-      background: transparent;
-      backdrop-filter: none;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
       overflow: hidden;
       transition: border-color 0.2s;
     }
-    .faq-item:first-child {
-      border-top: 1px solid rgba(56,189,248,0.1);
-    }
-    .faq-item.open {
-      background: rgba(56,189,248,0.03);
-    }
+    .faq-item:hover { border-color: rgba(56,189,248,0.35); }
+    .faq-item.open  { border-color: rgba(56,189,248,0.4); }
     .faq-question {
       padding: 1.2rem 1.4rem;
       display: flex;
@@ -3347,25 +3340,13 @@
       user-select: none;
     }
     .faq-icon {
-      width: 28px;
-      height: 28px;
-      background: rgba(56,189,248,0.08);
-      border: 1px solid rgba(56,189,248,0.2);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.9rem;
+      font-size: 1.2rem;
+      color: var(--cyan);
       flex-shrink: 0;
-      transition: all 0.3s;
+      transition: transform 0.3s ease;
       font-style: normal;
     }
-    .faq-item.open .faq-icon {
-      background: var(--cyan);
-      color: #05080f;
-      transform: rotate(45deg);
-      border-color: var(--cyan);
-    }
+    .faq-item.open .faq-icon { transform: rotate(45deg); }
     .faq-answer {
       max-height: 0;
       overflow: hidden;
@@ -3377,7 +3358,7 @@
     }
     .faq-item.open .faq-answer { max-height: 200px; padding: 0 1.4rem 1.2rem; }
     @media (max-width: 768px) {
-      .faq-grid { max-width: 100%; }
+      .faq-grid { grid-template-columns: 1fr; }
     }
 
     /* ── PORTFOLIO ── */
@@ -3890,7 +3871,7 @@
   <section id="faq">
     <div class="container">
       <span class="section-label">GOT QUESTIONS?</span>
-      <h2 class="faq-headline chrome reveal">Got <em>Questions?</em></h2>
+      <h2 class="faq-headline chrome reveal">We've Got Answers.</h2>
       <p class="faq-sub reveal">Everything you need to know about booking a shoot with STVR Hands.</p>
       <div class="faq-grid">
         <div class="faq-col" id="faqCol1"></div>
