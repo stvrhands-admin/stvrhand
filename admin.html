@@ -525,7 +525,7 @@ textarea{resize:vertical;min-height:80px}
         <div class="table-wrap">
           <table id="pay-table">
             <thead><tr>
-              <th>Customer</th><th>Package</th><th>Total</th><th>Booking Amt</th><th>Balance</th><th>Booking Paid</th><th>Final Paid</th><th>Actions</th>
+              <th>Customer</th><th>Package</th><th>Total</th><th>Booking Amt</th><th>Balance</th><th>Creator Earnings</th><th>Creator Paid</th><th>Booking Paid</th><th>Final Paid</th><th>Actions</th>
             </tr></thead>
             <tbody id="pay-tbody"></tbody>
           </table>
@@ -1251,7 +1251,7 @@ async function seedSampleData(){
     upi:'stvrhands@upi',instagram:'@stvrhands'
   });
   await setDoc(doc(db,'settings','templates'), DEFAULT_TEMPLATES);
-  await setDoc(doc(db,'settings','hiring'),{ open:true });
+  await setDoc(doc(db,'settings','hiring'),{ open:true, isOpen:true });
 }
 
 // ============================================================
@@ -1614,6 +1614,7 @@ function renderDashboard(){
     <div class="stat-card glass skeleton skeleton-card"></div>
     <div class="stat-card glass skeleton skeleton-card"></div>
     <div class="stat-card glass skeleton skeleton-card"></div>
+    <div class="stat-card glass skeleton skeleton-card"></div>
   `);
 
   requestAnimationFrame(() => {
@@ -1628,6 +1629,9 @@ function renderDashboard(){
   const completed=bookings.filter(b=>['Delivered'].includes(b.status)&&b.date&&b.date.startsWith(thisMonth)).length;
   const pendingPay=bookings.filter(b=>!b.finalPaid).length;
   const activeC=creators.filter(c=>c.status==='Available').length;
+  const pendingCreatorPay=bookings
+    .filter(b=>b.assignedCreator&&!b.creatorPaid&&b.reelReceived)
+    .reduce((sum,b)=>sum+(b.creatorEarnings||0),0);
 
   $('dash-stats').innerHTML=`
     ${statCard('📋','Total Bookings',total,'blue')}
@@ -1636,6 +1640,7 @@ function renderDashboard(){
     ${statCard('✅','Completed This Month',completed,'green')}
     ${statCard('💰','Pending Payments',pendingPay,'red')}
     ${statCard('👥','Active Creators',activeC,'purple')}
+    ${statCard('🧾','Pending Creator Pay',rupees(pendingCreatorPay),'orange')}
   `;
 
   const recent=bookings.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,5);
@@ -1690,6 +1695,7 @@ function renderBookings(){
   const frag = document.createDocumentFragment();
   bookings.forEach((b,i)=>{
     const cr=creators.find(c=>c.id===b.assignedCreator);
+    const creatorName = cr?.name || b.assignedCreatorName || '—';
     const tr=document.createElement('tr');
     tr.innerHTML=`
       <td data-label="#">${startIdx + i + 1}</td>
@@ -1700,7 +1706,7 @@ function renderBookings(){
       <td data-label="Date">${fmtDate(b.date)}</td>
       <td data-label="Time">${fmtTime(b.startTime)}</td>
       <td data-label="Status"><span class="badge ${badgeClass(b.status || 'New')}">${sanitize(b.status || 'New')}</span></td>
-      <td data-label="Assigned To">${cr ? sanitize(cr.name) : '—'}</td>
+      <td data-label="Assigned To">${sanitize(creatorName)}</td>
       <td data-label="Actions" style="white-space:nowrap">
         <button class="btn btn-ghost btn-icon btn-sm" onclick="viewBooking('${b.id}')" title="View">👁</button>
         <button class="btn btn-ghost btn-icon btn-sm" onclick="editBooking('${b.id}')" title="Edit">✏️</button>
@@ -1915,7 +1921,10 @@ function renderCreators(){
 
   const bookings=getBookings();
   grid.innerHTML=creators.map(c=>{
-    const shoots=bookings.filter(b=>b.assignedCreator===c.id).length;
+    const myBookings=bookings.filter(b=>b.assignedCreator===c.id);
+    const shoots=myBookings.length;
+    const totalEarned=myBookings.reduce((sum,b)=>sum+(b.creatorEarnings||0),0);
+    const pendingEarnings=myBookings.filter(b=>!b.creatorPaid).reduce((sum,b)=>sum+(b.creatorEarnings||0),0);
     const dotCls=c.status==='Available'?'available':c.status==='Busy'?'busy':'off';
     const specs=(c.specialities||[]).map(s=>`<span class="spec-pill">${sanitize(s)}</span>`).join('');
     const maskedPhone=c.phone?'•••• '+c.phone.slice(-4):'';
@@ -1943,6 +1952,7 @@ function renderCreators(){
         <span style="font-size:13px;color:var(--text-dim)">${sanitize(c.status||'')}</span>
       </div>
       <div class="creator-shoots">${shoots} shoot${shoots!==1?'s':''} completed</div>
+      <div class="creator-shoots">💰 Total: ${rupees(totalEarned)} (Pending: ${rupees(pendingEarnings)})</div>
       ${feedbackHtml}
       ${c.status==='Available'?`<button class="btn btn-cyan btn-sm" style="margin-top:8px" onclick="openAssignForCreator('${c.id}')">Assign Shoot</button>`:''}
     </div>`;
@@ -2118,20 +2128,43 @@ async function assignCreator(bookingId,creatorId){
   const b  = getBookings().find(x=>x.id===bookingId);
   if(!cr||!b) return;
 
-  const bUpdates = { assignedCreator:creatorId, updatedAt:serverTimestamp() };
+  const earningsRate = cr.earningsRate || 0.4;
+  const totalAmount = b.totalAmount || 0;
+  const creatorEarnings = Math.round(totalAmount * earningsRate);
+
+  const bUpdates = {
+    assignedCreator: creatorId,
+    assignedCreatorName: cr.name,
+    assignedCreatorPhone: cr.phone,
+    creatorEarnings: creatorEarnings,
+    creatorStatus: 'pending',
+    updatedAt: serverTimestamp()
+  };
+
   if(b.status==='New'||b.status==='Confirmed') bUpdates.status='Assigned';
 
   try {
     await updateDoc(doc(db,'bookings',bookingId), bUpdates);
     await updateDoc(doc(db,'creators',creatorId), { status:'Busy', updatedAt:serverTimestamp() });
-    showToast(`${cr.name} assigned!`,'success');
+    showToast(`${cr.name} assigned! Earnings: ${rupees(creatorEarnings)}`,'success');
 
     // Show WA message
-    const msg=`Hi ${cr.name}! 🎬\nNew shoot assigned from STVR Hands.\n\n📅 Date: ${fmtDate(b.date)}\n⏰ Time: ${fmtTime(b.startTime)} - ${fmtTime(b.endTime)}\n📍 Location: ${b.location}\n🎥 Package: ${b.package}\n📝 Requirements: ${b.notes||'None'}\n\nPlease confirm if you can take this.\nReply YES to confirm.\n— Bharath, STVR Hands`;
+    const msg = `Hi ${cr.name}! 🎬\n` +
+      `New shoot assigned from STVR Hands.\n\n` +
+      `📅 Date: ${fmtDate(b.date)}\n` +
+      `⏰ Time: ${fmtTime(b.startTime)}\n` +
+      `📍 Location: ${sanitize(b.location||'')}\n` +
+      `🎥 Package: ${sanitize(b.package||'')}\n` +
+      `📝 Notes: ${sanitize(b.notes||'None')}\n\n` +
+      `Please confirm if available.\n` +
+      `Reply YES to confirm.\n` +
+      `— Bharath, STVR Hands`;
+
     $('assign-wa-msg').textContent=msg;
     $('assign-wa-footer').style.display='flex';
     $('assign-wa-btn').onclick=()=>window.open(`https://wa.me/91${cr.phone}?text=${encodeURIComponent(msg)}`,'_blank');
-    openAssign(bookingId);
+    // Close modal AFTER showing WA option
+    closeModal('assign-modal-overlay');
     // onSnapshot auto-re-renders
   } catch(err){ showToast('Error assigning creator','error'); console.error(err); }
 }
@@ -2305,7 +2338,7 @@ function renderPayments(){
   const upi=settings.upi||'stvrhands@upi';
   const tbody=$('pay-tbody');
   if(!bookings.length){
-    tbody.innerHTML=`<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">💰</div><div class="empty-text">No payment data</div></div></td></tr>`;
+    tbody.innerHTML=`<tr><td colspan="10"><div class="empty-state"><div class="empty-icon">💰</div><div class="empty-text">No payment data</div></div></td></tr>`;
     return;
   }
   tbody.innerHTML=bookings.map(b=>{
@@ -2317,6 +2350,11 @@ function renderPayments(){
       <td data-label="Total">${rupees(b.totalAmount)}</td>
       <td data-label="Booking Amt">${rupees(b.bookingAmount)}</td>
       <td data-label="Balance">${rupees(balance)}</td>
+      <td data-label="Creator Earnings">${rupees(b.creatorEarnings||0)}</td>
+      <td data-label="Creator Paid">
+        ${b.creatorPaid?'<span style="color:var(--green)">✅</span>':
+        `<button class="btn btn-cyan btn-sm" onclick="markCreatorPaid('${b.id}')">Pay Creator</button>`}
+      </td>
       <td data-label="Booking Paid">
         ${b.bookingPaid?'<span style="color:var(--green)">✅</span>':
         `<button class="btn btn-green btn-sm" onclick="markPaid('${b.id}','booking')">Mark Paid</button>`}
@@ -2330,6 +2368,13 @@ function renderPayments(){
       </td>
     </tr>`;
   }).join('');
+}
+
+async function markCreatorPaid(id){
+  try {
+    await updateDoc(doc(db,'bookings',id), { creatorPaid:true, creatorPaidAt:serverTimestamp(), updatedAt:serverTimestamp() });
+    showToast('Creator payment marked','success');
+  } catch(err){ showToast('Error marking creator payment','error'); console.error(err); }
 }
 
 async function markPaid(id,type){
@@ -2384,13 +2429,14 @@ async function initSettings(){
   if($('hiring-toggle')){
     try {
       const hSnap = await getDoc(doc(db,'settings','hiring'));
-      const hiring = hSnap.exists() ? hSnap.data().open : true;
+      const hData = hSnap.exists() ? hSnap.data() : {};
+      const hiring = hData.isOpen ?? hData.open ?? true;
       $('hiring-toggle').checked = hiring;
       updateHiringStatus(hiring);
     } catch(e){}
     $('hiring-toggle').onchange = async function(){
       try {
-        await setDoc(doc(db,'settings','hiring'),{ open:this.checked, updatedAt:serverTimestamp() });
+        await setDoc(doc(db,'settings','hiring'),{ open:this.checked, isOpen:this.checked, updatedAt:serverTimestamp() });
         updateHiringStatus(this.checked);
         showToast(this.checked?'Applications OPENED':'Applications CLOSED', this.checked?'success':'error');
       } catch(err){ showToast('Error updating hiring status','error'); console.error(err); }
