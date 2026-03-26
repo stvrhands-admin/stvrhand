@@ -662,6 +662,7 @@ import {
   updateDoc, deleteDoc, doc, query, orderBy, onSnapshot,
   serverTimestamp, where, limit
 } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
+import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
 
 /*
 FIRESTORE INDEXES REQUIRED:
@@ -880,9 +881,14 @@ async function doLogin() {
     return;
   }
 
-  // 3. Not in cache — query Firestore
+  // 3. Not in cache — sign in anonymously then query Firestore
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span>';
+
+  try {
+    const auth = getAuth();
+    if (!auth.currentUser) await signInAnonymously(auth);
+  } catch(e) { devLog('Anon auth skipped:', e.message); }
 
   try {
     const snap = await getDocs(query(collection(db, 'creators'), where('phone', '==', raw), limit(1)));

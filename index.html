@@ -3517,6 +3517,30 @@
             </div>
           </div>
           <div class="form-group">
+            <label>Your iPhone Model</label>
+            <select class="form-select" id="iphoneModel" required onchange="checkIphoneEligibility(this)">
+              <option value="" disabled selected>Select your iPhone model</option>
+              <optgroup label="✅ Eligible — Pro Models">
+                <option value="iPhone 17 Pro Max">iPhone 17 Pro Max ✨ Latest</option>
+                <option value="iPhone 17 Pro">iPhone 17 Pro ✨ Latest</option>
+                <option value="iPhone 16 Pro Max">iPhone 16 Pro Max</option>
+                <option value="iPhone 16 Pro">iPhone 16 Pro</option>
+                <option value="iPhone 15 Pro Max">iPhone 15 Pro Max</option>
+                <option value="iPhone 15 Pro">iPhone 15 Pro</option>
+                <option value="iPhone 14 Pro Max">iPhone 14 Pro Max</option>
+                <option value="iPhone 14 Pro">iPhone 14 Pro</option>
+              </optgroup>
+              <optgroup label="❌ Not Eligible">
+                <option value="iPhone 16">iPhone 16 (Standard)</option>
+                <option value="iPhone 15">iPhone 15 (Standard)</option>
+                <option value="iPhone 14">iPhone 14 (Standard)</option>
+                <option value="Android">Android Device</option>
+                <option value="Other">Other / Not Listed</option>
+              </optgroup>
+            </select>
+            <div id="iphoneEligibilityMsg" style="display:none;margin-top:0.5rem;padding:0.6rem 0.85rem;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.8rem;line-height:1.5"></div>
+          </div>
+          <div class="form-group">
             <label for="c-work">Your Work</label>
             <input class="form-input" id="c-work" type="url" name="work"
               placeholder="Paste your best reel or portfolio link here" required>
@@ -3927,8 +3951,9 @@
     // ── FIREBASE IMPORTS ──
     import { initializeApp }        from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
     import {
-      getFirestore, collection, addDoc, doc, onSnapshot, serverTimestamp
+      getFirestore, collection, addDoc, doc, getDoc, onSnapshot, serverTimestamp
     } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
+    import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
 
     // ── FIREBASE CONFIG ──
     // Replace with your actual values
@@ -4378,6 +4403,26 @@
     }
     window.toggleOtherCity = toggleOtherCity;
 
+    function checkIphoneEligibility(select) {
+      const msg = document.getElementById('iphoneEligibilityMsg');
+      if (!msg) return;
+      const eligibleModels = ['iPhone 14 Pro','iPhone 14 Pro Max','iPhone 15 Pro','iPhone 15 Pro Max','iPhone 16 Pro','iPhone 16 Pro Max','iPhone 17 Pro','iPhone 17 Pro Max'];
+      const isEligible = eligibleModels.includes(select.value);
+      msg.style.display = 'block';
+      if (isEligible) {
+        msg.style.background = 'rgba(34,197,94,0.08)';
+        msg.style.border = '1px solid rgba(34,197,94,0.25)';
+        msg.style.color = '#86efac';
+        msg.innerHTML = '&#x2705; Great! Your device is eligible to join STVR Hands creator team.';
+      } else {
+        msg.style.background = 'rgba(230,50,50,0.08)';
+        msg.style.border = '1px solid rgba(230,50,50,0.25)';
+        msg.style.color = '#fca5a5';
+        msg.innerHTML = '&#x274C; Sorry, only iPhone Pro and Pro Max models from iPhone 14 series onwards are eligible. Standard and Android devices are not accepted.';
+      }
+    }
+    window.checkIphoneEligibility = checkIphoneEligibility;
+
     function openTCModal(e, type) {
       if (e) e.preventDefault();
       
@@ -4456,6 +4501,7 @@
             email:         document.getElementById('c-email')?.value.trim() || '',
             instagramLink: document.getElementById('c-insta')?.value.trim() || '',
             city:          document.getElementById('c-city')?.value || '',
+            iphoneModel:   document.getElementById('iphoneModel')?.value || 'Not specified',
             status:        'pending',
             appliedAt:     serverTimestamp(),
             source:        'website'
@@ -4647,34 +4693,49 @@
       const btn    = form ? form.querySelector('.btn-submit') : null;
       if (isOpen) {
         form && form.classList.add('hiring-open');
-        if (banner) banner.classList.add('hiring-hidden');
-        if (btn) { btn.disabled = false; btn.style.cssText = ''; btn.textContent = 'Submit Application'; }
+        if (banner) { banner.style.display = 'none'; banner.classList.add('hiring-hidden'); }
+        if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.style.pointerEvents = 'auto'; btn.style.cursor = 'pointer'; btn.textContent = 'Submit Application →'; }
       } else {
         form && form.classList.remove('hiring-open');
-        if (banner) banner.classList.remove('hiring-hidden');
-        if (btn) { btn.disabled = true; btn.textContent = 'Applications Closed'; }
+        if (banner) { banner.style.display = 'block'; banner.classList.remove('hiring-hidden'); }
+        if (btn) { btn.disabled = true; btn.style.opacity = '0.4'; btn.style.pointerEvents = 'none'; btn.style.cursor = 'not-allowed'; btn.textContent = 'Applications Closed'; }
       }
       localStorage.setItem('stvr_hiring_cached', String(isOpen));
       localStorage.setItem('stvr_hiring_cache_time', String(Date.now()));
     }
 
-    (function initHiringToggle() {
-      // Apply cache instantly (no flicker)
-      const cached    = localStorage.getItem('stvr_hiring_cached');
-      const cacheTime = parseInt(localStorage.getItem('stvr_hiring_cache_time') || '0');
-      if (cached !== null && (Date.now() - cacheTime) < 300000) {
-        applyHiringStatus(cached === 'true');
-      }
-      // Then sync live from Firestore
+    async function initHiringToggle() {
+      // Step 1: Apply from localStorage cache IMMEDIATELY (zero delay)
+      const cached = localStorage.getItem('stvr_hiring_cached');
+      applyHiringStatus(cached === 'true');
+
+      // Step 2: Sign in anonymously so Firestore rules pass
       try {
+        const auth = getAuth();
+        if (!auth.currentUser) await signInAnonymously(auth);
+      } catch(e) { devLog('Anon auth skipped:', e.message); }
+
+      // Step 3: Fetch from Firestore with 5s timeout
+      try {
+        const snap = await Promise.race([
+          getDoc(doc(db, 'settings', 'hiring')),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
+        ]);
+        const isOpen = snap.exists() ? (snap.data().isOpen ?? snap.data().open ?? false) : false;
+        applyHiringStatus(isOpen);
+
+        // Step 4: Listen for real-time changes
         onSnapshot(doc(db, 'settings', 'hiring'), snap => {
-          const isOpen = snap.exists() ? (snap.data().isOpen ?? snap.data().open ?? false) : false;
-          applyHiringStatus(isOpen);
-        }, () => {
-          if (cached !== null) applyHiringStatus(cached === 'true');
-        });
-      } catch(e) { /* keep CSS default (closed) */ }
-    })();
+          const live = snap.exists() ? (snap.data().isOpen ?? snap.data().open ?? false) : false;
+          applyHiringStatus(live);
+        }, err => { devLog('Hiring listener error:', err); });
+
+      } catch(err) {
+        devLog('Hiring fetch failed:', err.message);
+        // Keep cached state already applied
+      }
+    }
+    initHiringToggle();
 
     /* -----------------------------------------------------------
        DURATION TAB TOGGLE
