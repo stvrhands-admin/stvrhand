@@ -830,7 +830,7 @@ service cloud.firestore {
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
 import {
   getFirestore, collection, addDoc, getDocs, getDoc, setDoc,
-  updateDoc, deleteDoc, doc, query, orderBy, onSnapshot,
+  updateDoc, deleteDoc, doc, query, where, orderBy, onSnapshot,
   serverTimestamp, limit, writeBatch
 } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
 import {
@@ -1151,28 +1151,33 @@ const EXISTING_CREATORS = [
 ];
 
 async function seedExistingCreators() {
-  if (localStorage.getItem('stvr_creators_seeded') === 'true') return;
-  devLog('Seeding existing creators...');
+  devLog('Checking if creators need seeding...');
   try {
-    const existing = await getDocs(collection(db, 'creators'));
-    if (existing.size > 0) {
-      localStorage.setItem('stvr_creators_seeded', 'true');
-      devLog('Creators already exist, skipping seed');
+    // Check if first real creator already exists by phone
+    const check = await getDocs(query(collection(db, 'creators'), where('phone', '==', '9701633962'), limit(1)));
+    if (!check.empty) {
+      devLog('Real creators already seeded, skipping');
       return;
     }
-    const batch = writeBatch(db);
+
+    // Delete any sample/fake creators (Arjun Varma, Sneha Patel from seedSampleData)
+    const allCreators = await getDocs(collection(db, 'creators'));
+    const deleteBatch = writeBatch(db);
+    allCreators.forEach(d => deleteBatch.delete(d.ref));
+    if (!allCreators.empty) await deleteBatch.commit();
+
+    // Add all real creators
+    const addBatch = writeBatch(db);
     EXISTING_CREATORS.forEach(creator => {
       const ref = doc(collection(db, 'creators'));
-      batch.set(ref, { ...creator, createdAt: serverTimestamp(), addedBy: 'initial_seed' });
+      addBatch.set(ref, { ...creator, createdAt: serverTimestamp(), addedBy: 'initial_seed' });
     });
-    await batch.commit();
-    localStorage.setItem('stvr_creators_seeded', 'true');
-    showToast('10 creators added successfully!', 'success');
+    await addBatch.commit();
+    showToast('10 creators added to Firebase!', 'success');
     devLog('Creators seeded successfully');
   } catch(error) {
     console.error('Seed failed:', error);
-    localStorage.setItem('stvr_creators', JSON.stringify(EXISTING_CREATORS.map((c,i) => ({ ...c, id:'local_creator_'+i }))));
-    localStorage.setItem('stvr_creators_seeded', 'true');
+    showToast('Seed failed — check console', 'error');
   }
 }
 
