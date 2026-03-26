@@ -3041,26 +3041,6 @@
     @media (max-width: 600px) { .portfolio-grid { grid-template-columns: repeat(2, 1fr); gap: 0.6rem; } }
 
     /* ── DEVICE REQUIREMENT CARD ── */
-    /* ── TERMS & CONDITIONS CHECKBOX ── */
-    .terms-group { margin-bottom: 1rem; }
-    .terms-label { display: flex; align-items: center; gap: 0.7rem; cursor: pointer; user-select: none; }
-    .terms-checkbox { position: absolute; opacity: 0; width: 0; height: 0; }
-    .terms-custom-check { width: 20px; height: 20px; border-radius: 5px; border: 1.5px solid rgba(56,189,248,0.3); background: rgba(8,14,26,0.85); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s ease; color: transparent; }
-    .terms-checkbox:checked + .terms-custom-check { background: var(--cyan); border-color: var(--cyan); color: #05080f; box-shadow: 0 0 12px rgba(56,189,248,0.4); }
-    .terms-text { font-family: 'DM Sans', sans-serif; font-size: 0.85rem; color: var(--text-dim); }
-    .terms-toggle-btn { background: none; border: none; color: var(--cyan); font-family: 'DM Sans', sans-serif; font-size: 0.85rem; cursor: pointer; padding: 0; text-decoration: underline; text-underline-offset: 2px; transition: opacity 0.2s; }
-    .terms-toggle-btn:hover { opacity: 0.75; }
-    .terms-panel { margin-top: 0.8rem; padding: 1rem 1.1rem; background: rgba(56,189,248,0.04); border: 1px solid rgba(56,189,248,0.14); border-radius: 10px; animation: slideDown 0.25s ease forwards; }
-    @keyframes slideDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
-    .terms-list { list-style: none; display: flex; flex-direction: column; gap: 0.55rem; }
-    .terms-list li { font-family: 'DM Sans', sans-serif; font-size: 0.8rem; color: var(--text-dim); line-height: 1.5; display: flex; align-items: flex-start; gap: 0.5rem; }
-    .terms-list li strong { color: var(--text); }
-    .shake-error { animation: shakeLabel 0.5s ease; }
-    @keyframes shakeLabel { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-6px); } 40% { transform: translateX(6px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(4px); } }
-    @media (max-width: 768px) {
-      .terms-text, .terms-toggle-btn { font-size: 0.82rem; }
-      .terms-list li { font-size: 0.78rem; }
-    }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 </head>
@@ -3690,27 +3670,9 @@
               <textarea class="form-textarea" id="b-msg" name="message"
                 placeholder="Tell us your vision, location, and any special requirements…" rows="3"></textarea>
             </div>
-            <div class="form-group terms-group">
-              <label class="terms-label" id="termsLabel">
-                <input type="checkbox" id="termsCheck" class="terms-checkbox">
-                <span class="terms-custom-check">
-                  <svg viewBox="0 0 12 10" fill="none" width="12" height="10">
-                    <path d="M1 5l3.5 3.5L11 1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </span>
-                <span class="terms-text">I agree to the <button type="button" class="terms-toggle-btn" onclick="toggleTerms()">booking terms</button></span>
-              </label>
-              <div class="terms-panel" id="termsPanel" style="display:none">
-                <ul class="terms-list">
-                  <li>&#x23F0; Minimum shoot duration is <strong>2 hours</strong> per booking</li>
-                  <li>&#x1F4B0; &#x20B9;1,000 booking amount required to confirm shoot</li>
-                  <li>&#x274C; Cancellations within 48 hours are non-refundable</li>
-                  <li>&#x1F504; One free reschedule allowed with 24hrs notice</li>
-                  <li>&#x1F4F1; Our creator will contact you before the shoot</li>
-                  <li>&#x1F3AC; Final reel delivered within 24 hours of shoot</li>
-                  <li>&#x1F512; Balance payment required before reel delivery</li>
-                </ul>
-              </div>
+            <div class="checkbox-group">
+              <input type="checkbox" id="b-terms" name="terms" required>
+              <label for="b-terms">I have read and agree to the <a href="#" class="tc-link" onclick="openTCModal(event, 'booking')">Terms and Conditions</a></label>
             </div>
             <div id="booking-errors" style="display:none;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.3);border-radius:8px;padding:0.8rem 1rem;margin-bottom:0.8rem;font-size:0.82rem;color:#f87171;line-height:1.7;font-family:'DM Sans',sans-serif;"></div>
             <button type="submit" class="btn-submit">Book Now →</button>
@@ -4421,12 +4383,6 @@
     window.openTCModal  = openTCModal;
     window.closeTCModal = closeTCModal;
 
-    function toggleTerms() {
-      const panel = document.getElementById('termsPanel');
-      if (!panel) return;
-      panel.style.display = (panel.style.display === 'none' || !panel.style.display) ? 'block' : 'none';
-    }
-    window.toggleTerms = toggleTerms;
 
     /* -----------------------------------------------------------
        CREATOR FORM
@@ -4528,13 +4484,14 @@
       const startHour = document.getElementById('startHour');
       if (!startHour.value) showError(startHour, 'Please select a start time.');
 
-      // Terms checkbox
-      const termsChecked = document.getElementById('termsCheck')?.checked;
-      if (!termsChecked) {
-        const label = document.getElementById('termsLabel');
-        label.classList.add('shake-error');
-        setTimeout(() => label.classList.remove('shake-error'), 600);
-        showToast('Please agree to booking terms', 'error');
+      // Terms and Conditions checkbox
+      const bTerms = document.getElementById('b-terms');
+      if (!bTerms.checked) {
+        bTerms.classList.add('error');
+        const err = document.createElement('span');
+        err.className = 'field-error';
+        err.textContent = 'You must agree to the Terms and Conditions to book.';
+        bTerms.parentNode.appendChild(err);
         valid = false;
       }
 
@@ -4607,7 +4564,7 @@
     });
 
     // Clear error state as user corrects each field
-    ['b-name', 'b-phone', 'eventTypeSelect', 'b-date', 'startHour', 'c-terms'].forEach(id => {
+    ['b-name', 'b-phone', 'eventTypeSelect', 'b-date', 'startHour', 'b-terms', 'c-terms'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.addEventListener('input', function () {
         this.classList.remove('error');
