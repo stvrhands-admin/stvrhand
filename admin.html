@@ -1498,11 +1498,11 @@ function showPage(name){
   $('page-title').textContent=pageTitles[name]||name;
 
   // Dashboard and bookings always render (primary views)
-  const alwaysRender = {dashboard:renderDashboard, bookings:renderBookings};
+  const alwaysRender = {dashboard:renderDashboard, bookings:renderBookings, shoots:renderShoots};
   if(alwaysRender[name]){ alwaysRender[name](); return; }
 
   // Secondary pages: only init on first visit
-  const lazyRenders={creators:renderCreators,shoots:renderShoots,payments:renderPayments,settings:initSettings};
+  const lazyRenders={creators:renderCreators,payments:renderPayments,settings:initSettings};
   if(lazyRenders[name]){
     if(!_pageInitialized[name]){
       _pageInitialized[name] = true;
@@ -2181,13 +2181,15 @@ async function assignCreator(bookingId,creatorId){
 // ============================================================
 let calYear,calMonth;
 
+let _shootView = 'list';
+
 function renderShoots(){
-  const view=$('shoot-list-view').style.display!=='none'?'list':'calendar';
-  if(view==='list') renderShootList();
-  else renderCalendar();
+  if(_shootView === 'calendar') renderCalendar();
+  else renderShootList();
 }
 
 function setShootView(v){
+  _shootView = v;
   const listView = $('shoot-list-view');
   const calView  = $('shoot-cal-view');
   const listBtn  = $('shoot-list-btn');
@@ -2198,15 +2200,14 @@ function setShootView(v){
   if(v === 'calendar'){
     listView.style.display = 'none';
     calView.style.display  = 'block';
-    listBtn.classList.remove('active');
-    calBtn.classList.add('active');
-    calYear = null; // reset to current month
+    if(listBtn) listBtn.classList.remove('active');
+    if(calBtn)  calBtn.classList.add('active');
     renderCalendar();
   } else {
     calView.style.display  = 'none';
     listView.style.display = 'block';
-    calBtn.classList.remove('active');
-    listBtn.classList.add('active');
+    if(calBtn)  calBtn.classList.remove('active');
+    if(listBtn) listBtn.classList.add('active');
     renderShootList();
   }
 }
@@ -2464,6 +2465,13 @@ async function initSettings(){
   if($('tpl-payment'))      $('tpl-payment').value      = t.payment      || DEFAULT_TEMPLATES.payment;
   if($('tpl-delivered'))    $('tpl-delivered').value    = t.delivered    || DEFAULT_TEMPLATES.delivered;
 
+  /*
+  IMPORTANT: Also manually fix the existing Firestore document.
+  Go to Firebase Console → Firestore Database → settings → hiring
+  The document currently has: { open: true/false }
+  Manually ADD the field: isOpen: true (or false)
+  This fixes the existing document. Future saves will write both fields.
+  */
   // Load hiring toggle from Firestore
   if($('hiring-toggle')){
     try {
@@ -2580,7 +2588,7 @@ function clearAllData(){
         const caSnap = await getDocs(collection(db,'creator_applications'));
         for(const d of caSnap.docs) await deleteDoc(doc(db,'creator_applications',d.id));
         // Reset settings
-        await setDoc(doc(db,'settings','hiring'),{ open:false, updatedAt:serverTimestamp() });
+        await setDoc(doc(db,'settings','hiring'),{ open:false, isOpen:false, updatedAt:serverTimestamp() });
         await setDoc(doc(db,'settings','studio'),{ studioName:'STVR Hands', whatsapp:'', upi:'', instagram:'', updatedAt:serverTimestamp() });
         await setDoc(doc(db,'settings','templates'),{ confirmation:'', reminder:'', payment:'', delivered:'', updatedAt:serverTimestamp() });
         _notifs = [];
