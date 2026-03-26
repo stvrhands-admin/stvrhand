@@ -221,12 +221,16 @@ textarea{resize:vertical;min-height:80px}
 .cal-month{font-family:'Orbitron',sans-serif;font-size:15px;font-weight:700;color:var(--text)}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
 .cal-day-name{text-align:center;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;color:var(--text-muted);padding:8px 0;letter-spacing:.5px}
-.cal-cell{background:var(--bg3);border:1px solid var(--border);border-radius:8px;min-height:72px;padding:8px;cursor:pointer;transition:border .2s;position:relative}
+.cal-cell{background:var(--bg3);border:1px solid var(--border);border-radius:8px;min-height:72px;padding:8px;cursor:pointer;transition:border .2s,background .2s;position:relative}
 .cal-cell:hover{border-color:var(--cyan)}
 .cal-cell.today{border-color:rgba(56,189,248,.5)}
-.cal-cell.other-month{opacity:.3}
-.cal-date{font-size:12px;font-weight:700;color:var(--text-dim);margin-bottom:4px}
+.cal-cell.other-month{opacity:.3;pointer-events:none}
+.cal-cell.has-shoots{border-color:rgba(56,189,248,.3);background:rgba(56,189,248,.04)}
+.cal-cell.has-shoots:hover{border-color:var(--cyan);background:rgba(56,189,248,.08)}
+.cal-date{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:14px;color:var(--text);margin-bottom:4px}
+.cal-date.today-date{color:var(--cyan);font-size:15px}
 .cal-dot{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--cyan);margin-bottom:2px}
+.cal-dot.more{color:var(--text-muted);font-style:italic}
 .cal-day-shoots{margin-top:16px;background:var(--glass);border:1px solid var(--border);border-radius:12px;padding:16px}
 
 /* ===== TOGGLE SWITCH ===== */
@@ -331,8 +335,11 @@ textarea{resize:vertical;min-height:80px}
   .shoot-info-box{grid-template-columns:1fr}
   .view-detail{grid-template-columns:1fr}
   .timeline{overflow-x:auto}
-  .cal-cell{min-height:48px;padding:4px}
+  .cal-cell{min-height:52px;padding:4px}
+  .cal-date{font-size:12px}
   .cal-dot{font-size:8px}
+  .cal-day-name{font-size:9px;padding:4px 0}
+  #shoot-cal-view{overflow-y:auto;max-height:calc(100vh - 180px);padding-bottom:2rem}
 }
 @media(max-width:480px){
   .stats-grid{grid-template-columns:1fr}
@@ -2181,12 +2188,27 @@ function renderShoots(){
 }
 
 function setShootView(v){
-  $('shoot-list-view').style.display=v==='list'?'':'none';
-  $('shoot-cal-view').style.display=v==='calendar'?'':'none';
-  $('shoot-list-btn').classList.toggle('active',v==='list');
-  $('shoot-cal-btn').classList.toggle('active',v==='calendar');
-  if(v==='calendar') renderCalendar();
-  else renderShootList();
+  const listView = $('shoot-list-view');
+  const calView  = $('shoot-cal-view');
+  const listBtn  = $('shoot-list-btn');
+  const calBtn   = $('shoot-cal-btn');
+
+  if(!listView || !calView) return;
+
+  if(v === 'calendar'){
+    listView.style.display = 'none';
+    calView.style.display  = 'block';
+    listBtn.classList.remove('active');
+    calBtn.classList.add('active');
+    calYear = null; // reset to current month
+    renderCalendar();
+  } else {
+    calView.style.display  = 'none';
+    listView.style.display = 'block';
+    calBtn.classList.remove('active');
+    listBtn.classList.add('active');
+    renderShootList();
+  }
 }
 
 function renderShootList(){
@@ -2244,49 +2266,59 @@ async function saveReelLink(id,val){
 // CALENDAR
 // ============================================================
 function renderCalendar(){
-  const now=new Date();
-  if(!calYear){calYear=now.getFullYear();calMonth=now.getMonth();}
+  const calGrid  = $('cal-grid');
+  const calLabel = $('cal-month-label');
+  if(!calGrid || !calLabel) return;
 
-  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
-  $('cal-month-label').textContent=`${months[calMonth]} ${calYear}`;
+  const now = new Date();
+  if(!calYear){ calYear = now.getFullYear(); calMonth = now.getMonth(); }
 
-  const firstDay=new Date(calYear,calMonth,1).getDay();
-  const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
-  const prevDays=new Date(calYear,calMonth,0).getDate();
-  const bookings=getBookings();
-  const today=todayStr();
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  calLabel.textContent = `${months[calMonth]} ${calYear}`;
 
-  // Day names
-  const dayNames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  let html=dayNames.map(d=>`<div class="cal-day-name">${d}</div>`).join('');
+  const firstDay    = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const prevDays    = new Date(calYear, calMonth, 0).getDate();
+  const bookings    = getBookings();
+  const today       = todayStr();
 
-  // Prev month filler
-  for(let i=firstDay-1;i>=0;i--){
-    const day=prevDays-i;
-    html+=`<div class="cal-cell other-month"><div class="cal-date">${day}</div></div>`;
+  const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  let html = dayNames.map(d => `<div class="cal-day-name">${d}</div>`).join('');
+
+  // Previous month filler
+  for(let i = firstDay - 1; i >= 0; i--){
+    html += `<div class="cal-cell other-month"><div class="cal-date">${prevDays - i}</div></div>`;
   }
-  // Current month
-  for(let d=1;d<=daysInMonth;d++){
-    const dateStr=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const dayShoots=bookings.filter(b=>b.date===dateStr);
-    const isToday=dateStr===today;
-    html+=`<div class="cal-cell ${isToday?'today':''}" onclick="showCalDay('${dateStr}')">
-      <div class="cal-date" style="${isToday?'color:var(--cyan)':''}">${d}</div>
-      ${dayShoots.slice(0,3).map(b=>`<div class="cal-dot">● ${sanitize((b.name||'').split(' ')[0])}</div>`).join('')}
-      ${dayShoots.length>3?`<div class="cal-dot" style="color:var(--text-muted)">+${dayShoots.length-3} more</div>`:''}
+
+  // Current month days
+  for(let d = 1; d <= daysInMonth; d++){
+    const dateStr   = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dayShoots = bookings.filter(b => b.date === dateStr);
+    const isToday   = dateStr === today;
+    const hasShoots = dayShoots.length > 0;
+    html += `<div class="cal-cell ${isToday ? 'today' : ''} ${hasShoots ? 'has-shoots' : ''}" onclick="showCalDay('${dateStr}')">
+      <div class="cal-date ${isToday ? 'today-date' : ''}">${d}</div>
+      ${dayShoots.slice(0,2).map(b => `<div class="cal-dot">● ${sanitize((b.name||'').split(' ')[0])}</div>`).join('')}
+      ${dayShoots.length > 2 ? `<div class="cal-dot more">+${dayShoots.length - 2} more</div>` : ''}
     </div>`;
   }
+
   // Next month filler
-  const total=firstDay+daysInMonth;
-  const remaining=(7-total%7)%7;
-  for(let d=1;d<=remaining;d++){
-    html+=`<div class="cal-cell other-month"><div class="cal-date">${d}</div></div>`;
+  const remaining = (7 - (firstDay + daysInMonth) % 7) % 7;
+  for(let d = 1; d <= remaining; d++){
+    html += `<div class="cal-cell other-month"><div class="cal-date">${d}</div></div>`;
   }
 
-  $('cal-grid').innerHTML=html;
+  calGrid.innerHTML = html;
 
-  $('cal-prev').onclick=()=>{calMonth--;if(calMonth<0){calMonth=11;calYear--;}renderCalendar();};
-  $('cal-next').onclick=()=>{calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalendar();};
+  const prevBtn = $('cal-prev');
+  const nextBtn = $('cal-next');
+  if(prevBtn) prevBtn.onclick = () => { calMonth--; if(calMonth < 0){ calMonth = 11; calYear--; } renderCalendar(); };
+  if(nextBtn) nextBtn.onclick = () => { calMonth++; if(calMonth > 11){ calMonth = 0; calYear++; } renderCalendar(); };
+
+  // Hide day shoots panel on fresh render
+  const dayPanel = $('cal-day-shoots');
+  if(dayPanel) dayPanel.style.display = 'none';
 }
 
 function showCalDay(dateStr){
@@ -2298,14 +2330,21 @@ function showCalDay(dateStr){
   wrap.innerHTML=`<div class="section-title" style="margin-bottom:12px">Shoots on ${fmtDate(dateStr)}</div>`+
   bookings.map(b=>{
     const cr=creators.find(c=>c.id===b.assignedCreator);
+    const creatorName = cr?.name || b.assignedCreatorName || 'Unassigned';
     return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;margin-bottom:8px">
       <div>
         <div style="font-family:Rajdhani,sans-serif;font-weight:700">${sanitize(b.name||'')} · <span class="badge ${badgeClass(b.status)}">${sanitize(b.status||'')}</span></div>
-        <div style="font-size:12px;color:var(--text-muted)">${fmtTime(b.startTime)} · ${sanitize(b.package||'')} · ${cr?sanitize(cr.name||''):'Unassigned'}</div>
+        <div style="font-size:12px;color:var(--text-muted)">${fmtTime(b.startTime)} · ${sanitize(b.package||'')} · ${sanitize(creatorName)}</div>
       </div>
       <button class="btn btn-ghost btn-sm" onclick="viewBooking('${b.id}')">👁 View</button>
     </div>`;
   }).join('');
+
+  // Scroll day panel into view on mobile
+  setTimeout(() => {
+    const panel = $('cal-day-shoots');
+    if(panel) panel.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }, 100);
 }
 
 // ============================================================
