@@ -3040,32 +3040,22 @@
     @media (max-width: 1100px) { .portfolio-grid { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 600px) { .portfolio-grid { grid-template-columns: repeat(2, 1fr); gap: 0.6rem; } }
 
-    /* ── iPHONE STRIP ── */
-    .iphone-strip { margin-bottom: 3rem; text-align: center; }
-    .iphone-strip-label { font-family: 'Rajdhani', sans-serif; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 1.4rem; }
-    .iphone-models-row { display: flex; align-items: flex-end; justify-content: center; gap: 1.2rem; flex-wrap: wrap; }
-    .iphone-model-card { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; position: relative; padding: 1.2rem 1rem 1rem; background: rgba(12,21,37,0.6); border: 1px solid rgba(56,189,248,0.12); border-radius: 16px; min-width: 100px; transition: all 0.3s ease; cursor: default; }
-    .iphone-model-card:hover { border-color: rgba(56,189,248,0.35); background: rgba(12,21,37,0.9); transform: translateY(-4px); }
-    .iphone-model-card.featured { border-color: rgba(56,189,248,0.4); background: rgba(14,26,46,0.85); box-shadow: 0 0 30px rgba(56,189,248,0.1), inset 0 1px 0 rgba(255,255,255,0.05); transform: translateY(-8px); }
-    .iphone-featured-badge { position: absolute; top: -11px; left: 50%; transform: translateX(-50%); background: var(--cyan); color: #05080f; font-family: 'Rajdhani', sans-serif; font-weight: 800; font-size: 0.58rem; letter-spacing: 0.15em; padding: 0.2rem 0.7rem; border-radius: 100px; white-space: nowrap; }
-    .iphone-mini-frame { width: 36px; height: 64px; background: linear-gradient(145deg, #2a3a4a 0%, #1a2535 50%, #0f1a28 100%); border-radius: 9px; padding: 4px 3px 3px; box-shadow: 0 0 0 1px rgba(56,189,248,0.25), 0 4px 12px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1); position: relative; overflow: hidden; }
-    .iphone-mini-frame.pro-max { width: 40px; height: 72px; border-radius: 11px; }
-    .iphone-mini-frame.latest { box-shadow: 0 0 0 1px rgba(201,168,76,0.4), 0 4px 16px rgba(0,0,0,0.6), 0 0 20px rgba(201,168,76,0.1), inset 0 1px 0 rgba(255,255,255,0.1); }
-    .dynamic-island { width: 14px; height: 5px; background: #05080f; border-radius: 3px; margin: 0 auto 2px; position: relative; z-index: 2; }
-    .iphone-mini-screen { background: linear-gradient(180deg, #070d18 0%, #050810 100%); border-radius: 5px; height: calc(100% - 9px); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
-    .iphone-mini-screen::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(56,189,248,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(56,189,248,.06) 1px, transparent 1px); background-size: 6px 6px; }
-    .iphone-camera-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(56,189,248,0.5); box-shadow: 0 0 6px rgba(56,189,248,0.8); animation: cameraBlink 2s ease-in-out infinite; position: relative; z-index: 1; }
-    @keyframes cameraBlink { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; box-shadow: 0 0 10px rgba(56,189,248,1); } }
-    .iphone-model-name { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.78rem; color: var(--text); text-align: center; letter-spacing: 0.03em; }
-    .iphone-model-chip { font-family: 'DM Sans', sans-serif; font-size: 0.65rem; color: var(--cyan); background: rgba(56,189,248,0.08); border: 1px solid rgba(56,189,248,0.18); padding: 0.15rem 0.55rem; border-radius: 100px; }
-    .gold-chip { color: var(--gold) !important; background: rgba(201,168,76,0.08) !important; border-color: rgba(201,168,76,0.25) !important; }
+    /* ── DEVICE REQUIREMENT CARD ── */
+    .device-requirement-card { background: rgba(56,189,248,0.04); border: 1px solid rgba(56,189,248,0.2); border-left: 3px solid var(--cyan); border-radius: 10px; padding: 1.2rem 1.3rem; margin-bottom: 1.8rem; }
+    .device-req-header { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.75rem; }
+    .device-req-icon { font-size: 1.1rem; }
+    .device-req-title { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.95rem; letter-spacing: 0.06em; color: var(--text); text-transform: uppercase; }
+    .device-req-badge { margin-left: auto; background: rgba(230,50,50,0.12); border: 1px solid rgba(230,50,50,0.3); color: #f87171; font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.6rem; letter-spacing: 0.2em; padding: 0.2rem 0.6rem; border-radius: 4px; text-transform: uppercase; }
+    .device-req-text { font-family: 'DM Sans', sans-serif; font-size: 0.85rem; color: var(--text-dim); line-height: 1.65; margin-bottom: 0.9rem; }
+    .device-req-text strong { color: var(--cyan); font-weight: 600; }
+    .device-models-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.75rem; }
+    .device-tag { font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 0.72rem; letter-spacing: 0.05em; color: var(--text-dim); background: rgba(56,189,248,0.05); border: 1px solid rgba(56,189,248,0.15); padding: 0.2rem 0.65rem; border-radius: 6px; }
+    .gold-tag { color: var(--gold) !important; background: rgba(201,168,76,0.06) !important; border-color: rgba(201,168,76,0.2) !important; }
+    .device-req-note { font-family: 'DM Sans', sans-serif; font-size: 0.75rem; color: var(--text-muted); line-height: 1.5; padding-top: 0.6rem; border-top: 1px solid rgba(56,189,248,0.08); }
     @media (max-width: 768px) {
-      .iphone-models-row { gap: 0.7rem; justify-content: center; }
-      .iphone-model-card { min-width: 80px; padding: 1rem 0.7rem 0.8rem; }
-      .iphone-model-card.featured { transform: translateY(-5px); }
-      .iphone-mini-frame { width: 30px; height: 54px; }
-      .iphone-mini-frame.pro-max { width: 34px; height: 60px; }
-      .iphone-model-name { font-size: 0.68rem; }
+      .device-requirement-card { padding: 1rem; }
+      .device-req-text { font-size: 0.82rem; }
+      .device-tag { font-size: 0.68rem; }
     }
 
     /* ── TERMS & CONDITIONS CHECKBOX ── */
@@ -3438,53 +3428,6 @@
         </p>
       </div>
 
-      <div class="iphone-strip">
-        <p class="iphone-strip-label">&#x1F4F1; Shoot professionally with</p>
-        <div class="iphone-models-row">
-          <div class="iphone-model-card">
-            <div class="iphone-model-icon">
-              <div class="iphone-mini-frame">
-                <div class="iphone-mini-notch dynamic-island"></div>
-                <div class="iphone-mini-screen"><span class="iphone-camera-dot"></span></div>
-              </div>
-            </div>
-            <span class="iphone-model-name">iPhone 14 Pro</span>
-            <span class="iphone-model-chip">48MP</span>
-          </div>
-          <div class="iphone-model-card featured">
-            <div class="iphone-featured-badge">MOST USED</div>
-            <div class="iphone-model-icon">
-              <div class="iphone-mini-frame pro-max">
-                <div class="iphone-mini-notch dynamic-island"></div>
-                <div class="iphone-mini-screen"><span class="iphone-camera-dot"></span></div>
-              </div>
-            </div>
-            <span class="iphone-model-name">iPhone 15 Pro Max</span>
-            <span class="iphone-model-chip">48MP ProRes</span>
-          </div>
-          <div class="iphone-model-card">
-            <div class="iphone-model-icon">
-              <div class="iphone-mini-frame">
-                <div class="iphone-mini-notch dynamic-island"></div>
-                <div class="iphone-mini-screen"><span class="iphone-camera-dot"></span></div>
-              </div>
-            </div>
-            <span class="iphone-model-name">iPhone 16 Pro</span>
-            <span class="iphone-model-chip">48MP 4K120</span>
-          </div>
-          <div class="iphone-model-card">
-            <div class="iphone-model-icon">
-              <div class="iphone-mini-frame pro-max latest">
-                <div class="iphone-mini-notch dynamic-island"></div>
-                <div class="iphone-mini-screen"><span class="iphone-camera-dot"></span></div>
-              </div>
-            </div>
-            <span class="iphone-model-name">iPhone 17 Pro Max</span>
-            <span class="iphone-model-chip gold-chip">NEW &#x2728;</span>
-          </div>
-        </div>
-      </div>
-
       <div class="benefits-grid stagger">
         <div class="benefit-card glass reveal">
           <span class="benefit-icon">📱</span>
@@ -3516,6 +3459,30 @@
           </div>
         </div>
         <h3>Apply to Join Our Creator Team</h3>
+        <div class="device-requirement-card">
+          <div class="device-req-header">
+            <span class="device-req-icon">&#x1F4F1;</span>
+            <span class="device-req-title">Device Requirement</span>
+            <span class="device-req-badge">MANDATORY</span>
+          </div>
+          <p class="device-req-text">
+            Applications are accepted only from creators who own an
+            <strong>iPhone 14 Pro, 14 Pro Max</strong> or any later
+            <strong>Pro / Pro Max</strong> model
+            (15 Pro, 15 Pro Max, 16 Pro, 16 Pro Max, 17 Pro, 17 Pro Max).
+          </p>
+          <div class="device-models-tags">
+            <span class="device-tag">iPhone 14 Pro ✓</span>
+            <span class="device-tag">iPhone 14 Pro Max ✓</span>
+            <span class="device-tag">iPhone 15 Pro ✓</span>
+            <span class="device-tag">iPhone 15 Pro Max ✓</span>
+            <span class="device-tag">iPhone 16 Pro ✓</span>
+            <span class="device-tag">iPhone 16 Pro Max ✓</span>
+            <span class="device-tag gold-tag">iPhone 17 Pro ✓</span>
+            <span class="device-tag gold-tag">iPhone 17 Pro Max ✓</span>
+          </div>
+          <p class="device-req-note">&#x26A0;&#xFE0F; Standard iPhone models (non-Pro) are not eligible. Android devices are not accepted.</p>
+        </div>
         <form id="creatorForm" novalidate>
           <div class="form-grid-2">
             <div class="form-group">
