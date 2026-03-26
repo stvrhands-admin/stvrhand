@@ -2211,6 +2211,7 @@ function setShootView(v){
     renderShootList();
   }
 }
+window.setShootView = setShootView;
 
 function renderShootList(){
   const bookings=getBookings().filter(b=>b.status!=='Delivered'||b.date>=todayStr()).sort((a,b)=>new Date(a.date)-new Date(b.date));
