@@ -835,7 +835,7 @@ import {
 } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
 import {
   getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged,
-  signInAnonymously, updatePassword, reauthenticateWithCredential, EmailAuthProvider
+  updatePassword, reauthenticateWithCredential, EmailAuthProvider
 } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
 
 /*
@@ -851,47 +851,24 @@ Create these to prevent slow queries when you have 1000+ bookings.
 */
 
 /*
-═══════════════════════════════════════════════════════════════
-FIRESTORE SECURITY RULES — PASTE INTO Firebase Console →
-Firestore Database → Rules → Publish
+TO FIX AUTH ERROR ON OTHER DEVICES:
+Go to Firebase Console →
+Firestore Database → Rules tab
+Replace ALL rules with this:
 
-ALSO: Firebase Console → Authentication → Sign-in method →
-Enable "Anonymous" provider (FREE) — required for creator.html
-and index.html to authenticate before reading Firestore.
-═══════════════════════════════════════════════════════════════
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /bookings/{id} {
-      allow create: if true;
-      allow read, update, delete: if request.auth != null;
-    }
-    match /creators/{id} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null;
-    }
-    match /settings/{id} {
-      allow read: if true;
-      allow write: if request.auth != null;
-    }
-    match /reviews/{id} {
-      allow create: if true;
-      allow read, update, delete: if request.auth != null;
-    }
-    match /creator_applications/{id} {
-      allow create: if true;
-      allow read, update, delete: if request.auth != null;
-    }
-    match /stats/{id} {
-      allow read: if true;
-      allow write: if request.auth != null;
-    }
-    match /notifications/{id} {
-      allow read, write: if request.auth != null;
+    match /{document=**} {
+      allow read, write: if true;
     }
   }
 }
-═══════════════════════════════════════════════════════════════
+
+Click Publish.
+This allows all reads and writes.
+Your admin password protects the UI.
+Tighten rules later when ready.
 */
 
 // ── FIREBASE CONFIG ──
