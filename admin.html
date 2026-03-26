@@ -487,6 +487,7 @@ textarea{resize:vertical;min-height:80px}
             <option>Available</option><option>Busy</option><option>Off</option>
           </select>
           <button class="btn btn-cyan" onclick="openCreatorModal()">+ Add Creator</button>
+          <button class="btn btn-ghost" onclick="openNotifyAllModal()" style="border-color:rgba(56,189,248,0.3)">📢 Send Portal Link to All</button>
         </div>
         <div class="creators-grid" id="creators-grid"></div>
       </div>
@@ -780,6 +781,24 @@ service cloud.firestore {
   </div>
 </div>
 
+<!-- NOTIFY CREATOR MODAL -->
+<div class="modal-overlay" id="notify-modal-overlay">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-header">
+      <div class="modal-title" id="notify-modal-title">Send Portal Link</div>
+      <button class="modal-close" onclick="closeModal('notify-modal-overlay')">×</button>
+    </div>
+    <div class="modal-body">
+      <div style="font-family:Rajdhani,sans-serif;font-size:11px;letter-spacing:.5px;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase">Message Preview</div>
+      <textarea id="notify-msg-text" rows="12" style="width:100%;background:rgba(8,14,26,0.8);border:1px solid rgba(56,189,248,0.2);border-radius:8px;padding:12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.6;resize:vertical"></textarea>
+    </div>
+    <div class="modal-footer" style="gap:8px;flex-wrap:wrap">
+      <button class="btn btn-ghost" onclick="copyNotifyMsg()" style="flex:1">📋 Copy Message</button>
+      <button class="btn btn-green" id="notify-wa-btn" onclick="openNotifyWA()" style="flex:1">💬 Open WhatsApp</button>
+    </div>
+  </div>
+</div>
+
 <!-- CONFIRM DIALOG -->
 <div id="confirm-overlay">
   <div class="confirm-box">
@@ -812,7 +831,7 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebas
 import {
   getFirestore, collection, addDoc, getDocs, getDoc, setDoc,
   updateDoc, deleteDoc, doc, query, orderBy, onSnapshot,
-  serverTimestamp, limit
+  serverTimestamp, limit, writeBatch
 } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
 import {
   getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged,
@@ -1115,6 +1134,48 @@ function badgeClass(status){
 }
 
 // ============================================================
+// ============================================================
+// EXISTING CREATORS SEED DATA
+// ============================================================
+const EXISTING_CREATORS = [
+  { name:"Munna", email:"harinathgoud112@gmail.com", phone:"9701633962", city:"Hyderabad", area:"Shapur Nagar, Suchitra", flexibleLocation:true, status:"Available", specialities:["Portraits","Events"], feedback:null, joinedAt:"2026-03-20", totalShoots:0, creatorEarnings:0, earningsRate:0.4 },
+  { name:"Sandesh Reddy", email:"sandeshreddy.bulli@gmail.com", phone:"9515839424", city:"Hyderabad", area:"Moinabad, Mehdipatnam", flexibleLocation:true, status:"Available", specialities:["Portraits","Events","Weddings"], feedback:"STVR is not just a team to me, it's my family.", joinedAt:"2026-03-20", totalShoots:0, creatorEarnings:0, earningsRate:0.4 },
+  { name:"Abhiram", email:"ravulakollaabhiram@gmail.com", phone:"6305392043", city:"Hyderabad", area:"Almasguda, LB Nagar", flexibleLocation:true, status:"Available", specialities:["Portraits","Cars"], feedback:null, joinedAt:"2026-03-21", totalShoots:0, creatorEarnings:0, earningsRate:0.4 },
+  { name:"Pradeep Hash", email:"pradeephash936@gmail.com", phone:"8143195392", city:"Hyderabad", area:"Vanasthalipuram", flexibleLocation:true, status:"Available", specialities:["Events","Influencer Content"], feedback:"I love STVR Hands", joinedAt:"2026-03-21", totalShoots:0, creatorEarnings:0, earningsRate:0.4 },
+  { name:"Putta Bhanu Prasad", email:"bhanuprasadputta34@gmail.com", phone:"9390071352", city:"Hyderabad", area:"Bibinagar", flexibleLocation:true, status:"Available", specialities:["Events","Portraits"], feedback:"I am feeling very lucky to work as a creator in STVR Hands.", joinedAt:"2026-03-21", totalShoots:0, creatorEarnings:0, earningsRate:0.4 },
+  { name:"Simhadri Sai", email:"simhadrisai143@gmail.com", phone:"9014379699", city:"Hyderabad", area:"KPHB", flexibleLocation:true, status:"Available", specialities:["Portraits","Cars"], feedback:null, joinedAt:"2026-03-21", totalShoots:0, creatorEarnings:0, earningsRate:0.4 },
+  { name:"Kola Rahul", email:"rahulkola@gmail.com", phone:"6301916118", city:"Hyderabad", area:"Jubilee Hills", flexibleLocation:true, status:"Available", specialities:["Influencer Content","Brands"], feedback:null, joinedAt:"2026-03-21", totalShoots:0, creatorEarnings:0, earningsRate:0.4 },
+  { name:"Pandu", email:"pandueditor19@gmail.com", phone:"8331023236", city:"Vijayawada", area:"Vijayawada", flexibleLocation:true, status:"Available", specialities:["Events","Portraits"], feedback:null, joinedAt:"2026-03-22", totalShoots:0, creatorEarnings:0, earningsRate:0.4 },
+  { name:"Peddapole Harivardhan", email:"peddapoleharivardhan@gmail.com", phone:"9398334913", city:"Hyderabad", area:"Yapral", flexibleLocation:true, status:"Available", specialities:["Events","Cars"], feedback:null, joinedAt:"2026-03-22", totalShoots:0, creatorEarnings:0, earningsRate:0.4 },
+  { name:"Vijay Kumar", email:"vijaychotu113@gmail.com", phone:"9959497950", city:"Hyderabad", area:"Yellammabanda, KPHB", flexibleLocation:true, status:"Available", specialities:["Events","Portraits"], feedback:null, joinedAt:"2026-03-22", totalShoots:0, creatorEarnings:0, earningsRate:0.4 }
+];
+
+async function seedExistingCreators() {
+  if (localStorage.getItem('stvr_creators_seeded') === 'true') return;
+  devLog('Seeding existing creators...');
+  try {
+    const existing = await getDocs(collection(db, 'creators'));
+    if (existing.size > 0) {
+      localStorage.setItem('stvr_creators_seeded', 'true');
+      devLog('Creators already exist, skipping seed');
+      return;
+    }
+    const batch = writeBatch(db);
+    EXISTING_CREATORS.forEach(creator => {
+      const ref = doc(collection(db, 'creators'));
+      batch.set(ref, { ...creator, createdAt: serverTimestamp(), addedBy: 'initial_seed' });
+    });
+    await batch.commit();
+    localStorage.setItem('stvr_creators_seeded', 'true');
+    showToast('10 creators added successfully!', 'success');
+    devLog('Creators seeded successfully');
+  } catch(error) {
+    console.error('Seed failed:', error);
+    localStorage.setItem('stvr_creators', JSON.stringify(EXISTING_CREATORS.map((c,i) => ({ ...c, id:'local_creator_'+i }))));
+    localStorage.setItem('stvr_creators_seeded', 'true');
+  }
+}
+
 // IN-MEMORY CACHE  (kept in sync by onSnapshot listeners)
 // ============================================================
 let _bookings  = [];
@@ -1281,6 +1342,7 @@ function showApp(){
     showSyncIndicator();
   }
   initApp();
+  seedExistingCreators();
 }
 
 // ============================================================
@@ -1851,29 +1913,75 @@ function renderCreators(){
     const shoots=bookings.filter(b=>b.assignedCreator===c.id).length;
     const dotCls=c.status==='Available'?'available':c.status==='Busy'?'busy':'off';
     const specs=(c.specialities||[]).map(s=>`<span class="spec-pill">${sanitize(s)}</span>`).join('');
+    const maskedPhone=c.phone?'•••• '+c.phone.slice(-4):'';
+    const flexBadge=c.flexibleLocation?`<span style="display:inline-flex;align-items:center;gap:3px;background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.3);color:#22c55e;font-size:10px;font-family:Rajdhani,sans-serif;font-weight:700;letter-spacing:.05em;padding:2px 7px;border-radius:100px;margin-left:4px">Flexible ✓</span>`:'';
+    const feedbackHtml=c.feedback?`<div style="margin-top:8px;padding:8px 10px;background:rgba(56,189,248,0.04);border-left:2px solid rgba(56,189,248,0.25);border-radius:4px;font-size:11px;color:var(--text-muted);font-style:italic;line-height:1.5" title="${sanitize(c.feedback)}">"${sanitize(c.feedback.length>60?c.feedback.slice(0,60)+'…':c.feedback)}"</div>`:'';
     return `<div class="creator-card">
       <div class="creator-card-top">
-        <div class="creator-name">${sanitize(c.name||'')}</div>
+        <div>
+          <div class="creator-name">${sanitize(c.name||'')}</div>
+          ${c.area?`<div style="font-size:11px;color:var(--text-muted);margin-top:1px">${sanitize(c.area)}</div>`:''}
+        </div>
         <div class="creator-actions">
+          <button class="btn btn-ghost btn-icon btn-sm" onclick="openNotifyModal('${c.id}')" title="Notify">📢</button>
           <button class="btn btn-ghost btn-icon btn-sm" onclick="editCreator('${c.id}')" title="Edit">✏️</button>
           <button class="btn btn-red btn-icon btn-sm" onclick="deleteCreator('${c.id}')" title="Delete">🗑</button>
         </div>
       </div>
-      <div><span class="city-pill">${sanitize(c.city||'')}</span></div>
-      <div class="creator-phone">📱 <a href="https://wa.me/91${encodeURIComponent(c.phone||'')}" target="_blank">+91 ${sanitize(c.phone||'')}</a></div>
+      <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin:4px 0">
+        <span class="city-pill">${sanitize(c.city||'')}</span>${flexBadge}
+      </div>
+      <div class="creator-phone">📱 <a href="https://wa.me/91${encodeURIComponent(c.phone||'')}" target="_blank">+91 ${maskedPhone}</a> <span style="font-size:10px;color:var(--text-muted)">(${sanitize(c.phone||'')})</span></div>
       <div class="spec-pills">${specs}</div>
       <div class="creator-status">
         <div class="status-dot ${dotCls}"></div>
         <span style="font-size:13px;color:var(--text-dim)">${sanitize(c.status||'')}</span>
       </div>
       <div class="creator-shoots">${shoots} shoot${shoots!==1?'s':''} completed</div>
-      ${c.status==='Available'?`<button class="btn btn-cyan btn-sm" style="margin-top:4px" onclick="openAssignForCreator('${c.id}')">Assign Shoot</button>`:''}
+      ${feedbackHtml}
+      ${c.status==='Available'?`<button class="btn btn-cyan btn-sm" style="margin-top:8px" onclick="openAssignForCreator('${c.id}')">Assign Shoot</button>`:''}
     </div>`;
   }).join('');
 
   $('cr-search').oninput=renderCreators;
   $('cr-city-filter').onchange=renderCreators;
   $('cr-status-filter').onchange=renderCreators;
+}
+
+let _notifyCreatorPhone = '';
+
+function buildNotifyMsg(name, phone) {
+  return `Hi ${name}! 👋\n\nYou're now part of STVR Hands creator team! 🎬\n\nAccess your Creator Portal here:\nhttps://creator.stvrhands.com\n\nLogin with your phone number: ${phone}\n\nHere you can:\n✅ View assigned shoots\n✅ Accept or reject shoots\n✅ Submit your edited reels\n✅ Track your earnings\n\nAny questions? Reply here.\n— Bharath, STVR Hands`;
+}
+
+function openNotifyModal(creatorId) {
+  const c = getCreators().find(x => x.id === creatorId);
+  if (!c) return;
+  _notifyCreatorPhone = c.phone || '';
+  $('notify-modal-title').textContent = `Notify — ${c.name}`;
+  $('notify-msg-text').value = buildNotifyMsg(c.name, c.phone);
+  openModal('notify-modal-overlay');
+}
+
+function openNotifyAllModal() {
+  const creators = getCreators();
+  if (!creators.length) { showToast('No creators to notify', 'info'); return; }
+  const first = creators[0];
+  _notifyCreatorPhone = first.phone || '';
+  $('notify-modal-title').textContent = `Send Portal Link to All (${creators.length} creators)`;
+  $('notify-msg-text').value = buildNotifyMsg(first.name, first.phone) + '\n\n─────────────────────\nNote: Edit name/number above for each creator before sending.';
+  openModal('notify-modal-overlay');
+}
+
+function copyNotifyMsg() {
+  const txt = $('notify-msg-text').value;
+  navigator.clipboard.writeText(txt).then(() => showToast('Message copied!', 'success')).catch(() => { $('notify-msg-text').select(); document.execCommand('copy'); showToast('Message copied!', 'success'); });
+}
+
+function openNotifyWA() {
+  const msg = $('notify-msg-text').value;
+  const phone = _notifyCreatorPhone;
+  window.open(`https://wa.me/91${encodeURIComponent(phone)}?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
 function openCreatorModal(id=null){
@@ -1961,28 +2069,39 @@ function openAssign(bookingId,preselect=null){
   assignBookingId=bookingId;
   const b=getBookings().find(x=>x.id===bookingId);
   if(!b)return;
-  const creators=getCreators().filter(c=>c.city===b.location);
+  const allCreators=getCreators();
+  const localCreators=allCreators.filter(c=>c.city===b.location);
+  const flexCreators=allCreators.filter(c=>c.flexibleLocation===true&&c.city!==b.location);
   const bookings=getBookings();
+
+  function creatorRow(c){
+    const shoots=bookings.filter(bk=>bk.assignedCreator===c.id).length;
+    const isAssigned=b.assignedCreator===c.id;
+    return `<div class="creator-assign-item">
+      <div>
+        <div style="font-family:Rajdhani,sans-serif;font-weight:700;font-size:15px">${sanitize(c.name||'')} <span class="status-dot ${sanitize((c.status||'').toLowerCase())}" style="display:inline-block;margin-left:6px"></span></div>
+        <div style="font-size:12px;color:var(--text-muted)">${c.area?sanitize(c.area)+' · ':''}${(c.specialities||[]).map(s=>sanitize(s)).join(' · ')} · ${shoots} shoots</div>
+      </div>
+      <button class="btn ${isAssigned?'btn-green':'btn-cyan'} btn-sm" onclick="assignCreator('${bookingId}','${c.id}')">${isAssigned?'✅ Assigned':'Assign'}</button>
+    </div>`;
+  }
 
   $('assign-modal-body').innerHTML=`
     <div class="shoot-info-box">
       <div>📅 <strong>${fmtDate(b.date)}</strong></div>
-      <div>⏰ <strong>${fmtTime(b.startTime)}${b.endTime?' – '+fmtTime(b.endTime):''}</strong></div>
+      <div>⏰ <strong>${fmtTime(b.startTime)}</strong></div>
       <div>📍 <strong>${sanitize(b.location||'')}</strong></div>
       <div>🎥 <strong>${sanitize(b.package||'')}</strong></div>
     </div>
-    <div style="font-family:Rajdhani,sans-serif;font-size:12px;letter-spacing:.5px;color:var(--text-muted);margin-bottom:12px">AVAILABLE CREATORS IN ${sanitize((b.location||'').toUpperCase())}</div>
-    ${creators.length?creators.map(c=>{
-      const shoots=bookings.filter(bk=>bk.assignedCreator===c.id).length;
-      const isAssigned=b.assignedCreator===c.id;
-      return `<div class="creator-assign-item">
-        <div>
-          <div style="font-family:Rajdhani,sans-serif;font-weight:700;font-size:15px">${sanitize(c.name||'')} <span class="status-dot ${sanitize((c.status||'').toLowerCase())}" style="display:inline-block;margin-left:6px"></span></div>
-          <div style="font-size:12px;color:var(--text-muted)">${(c.specialities||[]).map(s=>sanitize(s)).join(' · ')} · ${shoots} shoots</div>
-        </div>
-        <button class="btn ${isAssigned?'btn-green':'btn-cyan'} btn-sm" onclick="assignCreator('${bookingId}','${c.id}')">${isAssigned?'✅ Assigned':'Assign'}</button>
-      </div>`;
-    }).join(''):`<div class="empty-state"><div class="empty-icon">👥</div><div class="empty-text">No creators in ${sanitize(b.location||'')}</div></div>`}
+    ${localCreators.length?`
+      <div style="font-family:Rajdhani,sans-serif;font-size:11px;letter-spacing:.5px;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase">📍 Local Creators — ${sanitize(b.location||'')}</div>
+      ${localCreators.map(creatorRow).join('')}
+    `:`<div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">No local creators in ${sanitize(b.location||'')}.</div>`}
+    ${flexCreators.length?`
+      <div style="font-family:Rajdhani,sans-serif;font-size:11px;letter-spacing:.5px;color:var(--text-muted);margin:14px 0 8px;text-transform:uppercase;border-top:1px solid rgba(56,189,248,0.1);padding-top:12px">🌐 Available Anywhere</div>
+      ${flexCreators.map(creatorRow).join('')}
+    `:''}
+    ${!localCreators.length&&!flexCreators.length?`<div class="empty-state"><div class="empty-icon">👥</div><div class="empty-text">No available creators found.</div></div>`:''}
   `;
 
   $('assign-wa-footer').style.display='none';

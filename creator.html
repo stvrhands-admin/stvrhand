@@ -861,7 +861,8 @@ async function doLogin() {
     _creator = cached;
     sessionStorage.setItem(SESSION_KEY, JSON.stringify(cached));
     $('login-screen').classList.add('fade-out');
-    setTimeout(() => { $('login-screen').style.display = 'none'; startApp(); }, 480);
+    const firstName = (cached.name||'').split(' ')[0];
+    setTimeout(() => { $('login-screen').style.display = 'none'; startApp(); showToast(`Welcome back, ${firstName}! 🎬`, 'success'); }, 480);
     // Verify in background silently
     (async () => {
       try {
@@ -897,7 +898,8 @@ async function doLogin() {
     sessionStorage.setItem(SESSION_KEY, JSON.stringify(creator));
     resetLoginBtn();
     $('login-screen').classList.add('fade-out');
-    setTimeout(() => { $('login-screen').style.display = 'none'; startApp(); }, 480);
+    const firstName = (creator.name||'').split(' ')[0];
+    setTimeout(() => { $('login-screen').style.display = 'none'; startApp(); showToast(`Welcome back, ${firstName}! 🎬`, 'success'); }, 480);
   } catch (err) {
     if (!navigator.onLine && cached) { _creator = cached; sessionStorage.setItem(SESSION_KEY, JSON.stringify(cached)); $('login-screen').classList.add('fade-out'); setTimeout(() => { $('login-screen').style.display = 'none'; startApp(); }, 480); return; }
     setLoginError('Connection error. Please try again.');
