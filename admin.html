@@ -1930,13 +1930,37 @@ function viewBooking(id){
     case 'Shoot Done':
       actionButtons.push(`<button class="btn btn-cyan" onclick="markReelReceived('${id}')">🎬 Reel Received</button>`);
       break;
-    case 'Reel Ready':
-      actionButtons.push(`<button class="btn btn-cyan" onclick="moveStatus('${id}','Payment Pending')">💰 Request Payment</button>`);
+    case 'Reel Ready':{
+      const reelBalance=(b.totalAmount||0)-(b.bookingAmount||0);
+      const reelUpi=getSettings().upi||'stvrhands@upi';
+      const reelPayMsg=
+        `Hi ${(b.name||'').split(' ')[0]}! 🎬\n\n`+
+        `Your reel is ready and it looks amazing! ✨\n\n`+
+        `To receive your final reel, please complete the remaining payment:\n\n`+
+        `💰 Amount: ₹${reelBalance.toLocaleString('en-IN')}\n`+
+        `📲 UPI ID: ${reelUpi}\n\n`+
+        `Once payment is done, your reel will be delivered within 30 minutes.\n\n`+
+        `Thank you for choosing STVR Hands! 🙏\n`+
+        `— Bharath, STVR Hands`;
+      const reelWaUrl=`https://wa.me/91${(b.phone||'').replace(/\D/g,'')}?text=${encodeURIComponent(reelPayMsg)}`;
+      actionButtons.push(`<div style="width:100%;background:rgba(56,189,248,0.05);border:1px solid rgba(56,189,248,0.2);border-radius:10px;padding:14px 16px;margin-bottom:4px"><div style="font-family:'Rajdhani',sans-serif;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">💬 Payment Request Message</div><div style="font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text-dim);background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:10px;white-space:pre-line;line-height:1.6;max-height:140px;overflow-y:auto">${sanitize(reelPayMsg)}</div><div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-cyan" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px" href="${reelWaUrl}" target="_blank">📲 Send on WhatsApp</a><button class="btn btn-ghost" onclick="moveStatus('${id}','Payment Pending')">💰 Mark Payment Pending</button></div></div>`);
       break;
+    }
     case 'Payment Pending':{
+      const pendBalance=(b.totalAmount||0)-(b.bookingAmount||0);
+      const pendUpi=getSettings().upi||'stvrhands@upi';
+      const pendMsg=
+        `Hi ${(b.name||'').split(' ')[0]}! 🎬\n\n`+
+        `Friendly reminder — your reel is ready and waiting for you! ✨\n\n`+
+        `Pending payment:\n`+
+        `💰 Amount: ₹${pendBalance.toLocaleString('en-IN')}\n`+
+        `📲 UPI ID: ${pendUpi}\n\n`+
+        `Your reel will be delivered immediately after payment.\n\n`+
+        `Thank you! 🙏\n`+
+        `— Bharath, STVR Hands`;
+      const pendWaUrl=`https://wa.me/91${(b.phone||'').replace(/\D/g,'')}?text=${encodeURIComponent(pendMsg)}`;
+      actionButtons.push(`<a class="btn btn-ghost" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px" href="${pendWaUrl}" target="_blank">🔔 Resend Payment WA</a>`);
       actionButtons.push(`<button class="btn btn-green" onclick="markFinalPaidAndDeliver('${id}')">✅ Mark Paid & Deliver</button>`);
-      const waPayMsg=encodeURIComponent(`Hi ${b.name||''}! Your reel is ready 🎬\nPlease pay ₹${(b.totalAmount||0)-(b.bookingAmount||0)} to receive your files.\n— STVR Hands`);
-      actionButtons.push(`<a class="btn btn-ghost" href="https://wa.me/91${(b.phone||'').replace(/\D/g,'')}?text=${waPayMsg}" target="_blank">💬 WA Payment</a>`);
       break;
     }
     case 'Delivered':
