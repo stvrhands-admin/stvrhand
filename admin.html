@@ -472,6 +472,7 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(56,189,248,0.1
       <div class="nav-item active" data-page="dashboard"><span class="nav-icon">📊</span>Dashboard</div>
       <div class="nav-item" data-page="bookings"><span class="nav-icon">📋</span>Bookings</div>
       <div class="nav-item" data-page="creators"><span class="nav-icon">👥</span>Creators</div>
+      <div class="nav-item" data-page="applications"><span class="nav-icon">📝</span>Applications<span id="app-nav-badge" style="display:none;background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:1px 6px;border-radius:100px;margin-left:auto">0</span></div>
       <div class="nav-item" data-page="shoots"><span class="nav-icon">🎬</span>Shoots</div>
       <div class="nav-item" data-page="payments"><span class="nav-icon">💰</span>Payments</div>
       <div class="nav-item" data-page="settings"><span class="nav-icon">⚙️</span>Settings</div>
@@ -576,6 +577,25 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(56,189,248,0.1
           <button class="btn btn-ghost" onclick="openNotifyAllModal()" style="border-color:rgba(56,189,248,0.3)">📢 Send Portal Link to All</button>
         </div>
         <div class="creators-grid" id="creators-grid"></div>
+      </div>
+
+      <!-- PAGE: APPLICATIONS -->
+      <div class="page" id="page-applications">
+        <div class="controls-bar" style="margin-bottom:16px">
+          <div>
+            <div style="font-family:Orbitron,sans-serif;font-size:13px;font-weight:700;color:var(--cyan);letter-spacing:0.08em">CREATOR APPLICATIONS</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:2px">Applicants from stvrhands.com</div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <select class="filter-select" id="app-status-filter">
+              <option value="">All Status</option>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </div>
+        </div>
+        <div id="applications-list"></div>
       </div>
 
       <!-- PAGE: SHOOTS -->
@@ -717,6 +737,7 @@ service cloud.firestore {
     <div class="tab-item active" data-page="dashboard"><div class="tab-icon">📊</div>Dash</div>
     <div class="tab-item" data-page="bookings"><div class="tab-icon">📋</div>Book</div>
     <div class="tab-item" data-page="creators"><div class="tab-icon">👥</div>Crew</div>
+    <div class="tab-item" data-page="applications"><div class="tab-icon">📝</div>Apps</div>
     <div class="tab-item" data-page="shoots"><div class="tab-icon">🎬</div>Shoots</div>
     <div class="tab-item" data-page="payments"><div class="tab-icon">💰</div>Pay</div>
   </div>
@@ -1477,6 +1498,7 @@ function showApp(){
   }
   initApp();
   seedExistingCreators();
+  checkPendingApps();
 }
 
 // ============================================================
@@ -1592,7 +1614,7 @@ function startClock(){
 // ============================================================
 // NAV
 // ============================================================
-const pageTitles={dashboard:'Dashboard',bookings:'Bookings',creators:'Creators',shoots:'Shoots',payments:'Payments',settings:'Settings'};
+const pageTitles={dashboard:'Dashboard',bookings:'Bookings',creators:'Creators',applications:'Applications',shoots:'Shoots',payments:'Payments',settings:'Settings'};
 
 function initNav(){
   qsa('.nav-item').forEach(item=>{
@@ -1624,7 +1646,7 @@ function showPage(name){
   if(alwaysRender[name]){ alwaysRender[name](); return; }
 
   // Secondary pages: only init on first visit
-  const lazyRenders={creators:renderCreators,payments:renderPayments,settings:initSettings};
+  const lazyRenders={creators:renderCreators,applications:renderApplications,payments:renderPayments,settings:initSettings};
   if(lazyRenders[name]){
     if(!_pageInitialized[name]){
       _pageInitialized[name] = true;
@@ -1990,7 +2012,6 @@ function viewBooking(id){
       <label>Internal Notes</label>
       <textarea id="view-notes" rows="3">${sanitize(b.notes||'')}</textarea>
     </div>
-    ${b.reelReceived?`<div class="form-group" style="margin-top:12px"><label>Drive Link</label><input type="text" id="view-reel-link" value="${sanitize(b.reelLink||'')}" placeholder="Paste Google Drive link"></div>`:''}
   `;
 
   const footer=$('view-modal-footer');
@@ -2080,8 +2101,6 @@ function viewBooking(id){
 
 async function saveViewNotes(id){
   const updates = { notes:$('view-notes').value, updatedAt:serverTimestamp() };
-  const rl = $('view-reel-link');
-  if(rl) updates.reelLink = rl.value;
   try {
     await updateDoc(doc(db,'bookings',id), updates);
     showToast('Notes saved','success');
@@ -2146,7 +2165,6 @@ function renderCreators(){
     const specs=(c.specialities||[]).map(s=>`<span class="spec-pill">${sanitize(s)}</span>`).join('');
     const maskedPhone=c.phone?'•••• '+c.phone.slice(-4):'';
     const flexBadge=c.flexibleLocation?`<span style="display:inline-flex;align-items:center;gap:3px;background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.3);color:#22c55e;font-size:10px;font-family:Rajdhani,sans-serif;font-weight:700;letter-spacing:.05em;padding:2px 7px;border-radius:100px;margin-left:4px">Flexible ✓</span>`:'';
-    const feedbackHtml=c.feedback?`<div style="margin-top:8px;padding:8px 10px;background:rgba(56,189,248,0.04);border-left:2px solid rgba(56,189,248,0.25);border-radius:4px;font-size:11px;color:var(--text-muted);font-style:italic;line-height:1.5" title="${sanitize(c.feedback)}">"${sanitize(c.feedback.length>60?c.feedback.slice(0,60)+'…':c.feedback)}"</div>`:'';
     return `<div class="creator-card">
       <div class="creator-card-top">
         <div>
@@ -2176,8 +2194,7 @@ function renderCreators(){
       </div>
       <div class="creator-shoots">${shoots} shoot${shoots!==1?'s':''} completed</div>
       <div class="creator-shoots">💰 Total: ${rupees(totalEarned)} (Pending: ${rupees(pendingEarnings)})</div>
-      ${feedbackHtml}
-      ${c.status==='Available'?`<button class="btn btn-cyan btn-sm" style="margin-top:8px" onclick="openAssignForCreator('${c.id}')">Assign Shoot</button>`:''}
+      ${(c.status==='Available'||c.status==='Busy')?`<button class="btn ${c.status==='Available'?'btn-cyan':'btn-ghost'} btn-sm" style="margin-top:8px" onclick="openAssignForCreator('${c.id}')">${c.status==='Busy'?'⚡ Assign Another':'Assign Shoot'}</button>`:''}
     </div>`;
   }).join('');
 
@@ -2282,6 +2299,122 @@ function viewCreatorProfile(creatorId) {
 }
 
 window.viewCreatorProfile = viewCreatorProfile;
+
+// ============================================================
+// APPLICATIONS PAGE
+// ============================================================
+async function renderApplications() {
+  const list = $('applications-list');
+  if(!list) return;
+
+  list.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--text-muted)">Loading applications...</div>`;
+
+  try {
+    const snap = await getDocs(
+      query(collection(db,'creator_applications'), orderBy('createdAt','desc'), limit(100))
+    );
+    const apps = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+    // Update badge count
+    const pending = apps.filter(a => !a.status || a.status === 'pending').length;
+    const badge = $('app-nav-badge');
+    if(badge) { badge.textContent = pending; badge.style.display = pending > 0 ? 'inline' : 'none'; }
+
+    // Filter
+    const filterVal = $('app-status-filter')?.value || '';
+    const filtered = filterVal ? apps.filter(a => (a.status||'pending') === filterVal) : apps;
+
+    if(!filtered.length) {
+      list.innerHTML = `<div class="empty-state"><div class="empty-icon">📝</div><div class="empty-text">No applications yet.<br><span style="font-size:12px">Applications submitted on stvrhands.com appear here.</span></div></div>`;
+      return;
+    }
+
+    list.innerHTML = filtered.map(a => {
+      const status = a.status || 'pending';
+      const statusColor = status==='approved' ? 'var(--green)' : status==='rejected' ? 'var(--red)' : 'var(--gold)';
+      const statusBg = status==='approved' ? 'rgba(34,197,94,0.1)' : status==='rejected' ? 'rgba(248,113,113,0.1)' : 'rgba(201,168,76,0.1)';
+      const date = a.createdAt?.toDate ? a.createdAt.toDate().toLocaleDateString('en-IN') : a.createdAt ? new Date(a.createdAt).toLocaleDateString('en-IN') : '—';
+      return `
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:10px;transition:border-color 0.2s"
+          onmouseover="this.style.borderColor='rgba(56,189,248,0.3)'" onmouseout="this.style.borderColor='var(--border)'">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap">
+            <div style="flex:1;min-width:200px">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+                <span style="font-family:Orbitron,sans-serif;font-weight:700;font-size:14px;color:var(--text)">${sanitize(a.name||'—')}</span>
+                <span style="font-size:10px;font-family:Rajdhani,sans-serif;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;background:${statusBg};color:${statusColor};padding:2px 8px;border-radius:100px">${status}</span>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--text-muted);margin-bottom:8px">
+                ${a.phone ? `<span>📱 ${sanitize(a.phone)}</span>` : ''}
+                ${a.email ? `<span>✉️ ${sanitize(a.email)}</span>` : ''}
+                ${a.city||a.location ? `<span>📍 ${sanitize(a.city||a.location||'')}</span>` : ''}
+                ${a.iphoneModel ? `<span>📱 ${sanitize(a.iphoneModel)}</span>` : ''}
+                <span>🗓 ${date}</span>
+              </div>
+              ${a.workLink||a.instagramLink ? `<div style="font-size:12px;margin-bottom:8px">
+                ${a.workLink ? `<a href="${sanitize(a.workLink)}" target="_blank" style="color:var(--cyan);text-decoration:none">🔗 View Work</a>` : ''}
+                ${a.instagramLink ? `<a href="${sanitize(a.instagramLink)}" target="_blank" style="color:var(--cyan);margin-left:12px;text-decoration:none">📸 Instagram</a>` : ''}
+              </div>` : ''}
+              ${a.message||a.notes ? `<div style="font-size:12px;color:var(--text-dim);background:rgba(56,189,248,0.04);border-left:2px solid rgba(56,189,248,0.2);padding:6px 10px;border-radius:4px;font-style:italic;line-height:1.5">"${sanitize((a.message||a.notes||'').slice(0,120))}${(a.message||a.notes||'').length>120?'…':''}"</div>` : ''}
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">
+              ${status==='pending' ? `
+                <button class="btn btn-green btn-sm" onclick="updateAppStatus('${a.id}','approved','${sanitize(a.name||'')}','${sanitize(a.phone||'')}')">✅ Approve</button>
+                <button class="btn btn-red btn-sm" onclick="updateAppStatus('${a.id}','rejected','${sanitize(a.name||'')}','${sanitize(a.phone||'')}')">❌ Reject</button>
+              ` : status==='approved' ? `
+                <button class="btn btn-cyan btn-sm" onclick="addCreatorFromApp('${a.id}')">👥 Add to Creators</button>
+              ` : ''}
+              ${a.phone ? `<a class="btn btn-ghost btn-sm" href="https://wa.me/91${(a.phone||'').replace(/\D/g,'')}" target="_blank" style="text-decoration:none;text-align:center">💬 WA</a>` : ''}
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+
+  } catch(err) {
+    console.error('Error loading apps:', err);
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-text">Error loading applications</div></div>`;
+  }
+}
+
+async function updateAppStatus(id, status, name, phone) {
+  try {
+    await updateDoc(doc(db,'creator_applications',id), { status, updatedAt: serverTimestamp() });
+    showToast(`${name} ${status}!`, status==='approved' ? 'success' : 'error');
+    renderApplications();
+  } catch(err) { showToast('Error updating','error'); }
+}
+
+async function addCreatorFromApp(appId) {
+  try {
+    const snap = await getDoc(doc(db,'creator_applications',appId));
+    if(!snap.exists()) return;
+    const a = snap.data();
+    await addDoc(collection(db,'creators'), {
+      name: a.name||'', phone: a.phone||'', email: a.email||'',
+      city: a.city||a.location||'Hyderabad', area: a.area||a.location||'',
+      iphoneModel: a.iphoneModel||'', flexibleLocation: true,
+      status: 'Available', specialities: ['Portraits','Events'],
+      totalShoots: 0, creatorEarnings: 0, earningsRate: 0.4,
+      addedFrom: 'application', applicationId: appId, createdAt: serverTimestamp()
+    });
+    await updateDoc(doc(db,'creator_applications',appId), { status:'converted', convertedAt: serverTimestamp() });
+    showToast(`${a.name} added to creators! ✅`, 'success');
+    renderApplications();
+  } catch(err) { showToast('Error adding creator','error'); console.error(err); }
+}
+
+async function checkPendingApps() {
+  try {
+    const snap = await getDocs(query(collection(db,'creator_applications'), where('status','==','pending'), limit(20)));
+    const count = snap.size;
+    const badge = $('app-nav-badge');
+    if(badge) { badge.textContent = count; badge.style.display = count > 0 ? 'inline' : 'none'; }
+  } catch(e) {}
+}
+
+window.renderApplications = renderApplications;
+window.updateAppStatus = updateAppStatus;
+window.addCreatorFromApp = addCreatorFromApp;
+window.checkPendingApps = checkPendingApps;
 
 let _notifyCreatorPhone = '';
 
@@ -2417,7 +2550,7 @@ function openAssign(bookingId,preselect=null){
         <div style="font-family:Rajdhani,sans-serif;font-weight:700;font-size:15px">${sanitize(c.name||'')} <span class="status-dot ${sanitize((c.status||'').toLowerCase())}" style="display:inline-block;margin-left:6px"></span></div>
         <div style="font-size:12px;color:var(--text-muted)">${c.area?sanitize(c.area)+' · ':''}${(c.specialities||[]).map(s=>sanitize(s)).join(' · ')} · ${shoots} shoots</div>
       </div>
-      <button class="btn ${isAssigned?'btn-green':'btn-cyan'} btn-sm" onclick="assignCreator('${bookingId}','${c.id}')">${isAssigned?'✅ Assigned':'Assign'}</button>
+      <button class="btn ${isAssigned?'btn-green':c.status==='Busy'?'btn-ghost':'btn-cyan'} btn-sm" onclick="assignCreator('${bookingId}','${c.id}')">${isAssigned?'✅ Assigned':c.status==='Busy'?'⚡ Assign (Busy)':'Assign'}</button>
     </div>`;
   }
 
@@ -2971,6 +3104,9 @@ window.markFinalPaidAndDeliver = markFinalPaidAndDeliver;
 // ============================================================
 document.addEventListener('DOMContentLoaded',()=>{
   initLogin();
+  // Wire up app-status-filter once DOM is ready
+  const appFilter = $('app-status-filter');
+  if(appFilter) appFilter.onchange = renderApplications;
 });
 </script>
 </body>
