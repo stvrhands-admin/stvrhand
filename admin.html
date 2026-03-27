@@ -764,7 +764,6 @@ service cloud.firestore {
         </div>
         <div class="form-group"><label>Shoot Date *</label><input type="date" id="bk-date"><div class="field-err" id="err-bk-date"></div></div>
         <div class="form-group"><label>Start Time</label><input type="time" id="bk-start-time"></div>
-        <div class="form-group"><label>End Time</label><input type="time" id="bk-end-time"></div>
         <div class="form-group"><label>Total Amount (₹)</label><input type="number" id="bk-total" min="0"></div>
         <div class="form-group">
           <label>Booking Amount</label>
@@ -881,6 +880,20 @@ service cloud.firestore {
     <div class="modal-footer" style="gap:8px;flex-wrap:wrap">
       <button class="btn btn-ghost" onclick="copyNotifyMsg()" style="flex:1">📋 Copy Message</button>
       <button class="btn btn-green" id="notify-wa-btn" onclick="openNotifyWA()" style="flex:1">💬 Open WhatsApp</button>
+    </div>
+  </div>
+</div>
+
+<!-- CREATOR PROFILE MODAL -->
+<div class="modal-overlay" id="creator-profile-overlay">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div class="modal-title" id="cp-modal-title">Creator Profile</div>
+      <button class="modal-close" onclick="closeModal('creator-profile-overlay')">×</button>
+    </div>
+    <div class="modal-body" id="cp-modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('creator-profile-overlay')">Close</button>
     </div>
   </div>
 </div>
@@ -1844,7 +1857,7 @@ function openBookingModal(id=null){
   // Clear
   ['bk-name','bk-phone','bk-email','bk-date','bk-notes'].forEach(f=>$(f).value='');
   ['bk-package','bk-location','bk-status'].forEach(f=>$(f).selectedIndex=0);
-  $('bk-start-time').value='';$('bk-end-time').value='';
+  $('bk-start-time').value='';
   $('bk-total').value='';$('bk-booking-amount').value='';
   $('bk-booking-paid-check').checked=false;$('bk-final-paid').checked=false;
   qsa('.field-err').forEach(e=>e.textContent='');
@@ -1859,7 +1872,6 @@ function openBookingModal(id=null){
       $('bk-location').value=b.location||'';
       $('bk-date').value=b.date||'';
       $('bk-start-time').value=b.startTime||'';
-      $('bk-end-time').value=b.endTime||'';
       $('bk-total').value=b.totalAmount||'';
       $('bk-booking-amount').value=b.bookingAmount||'';
       $('bk-booking-paid-check').checked=!!b.bookingPaid;
@@ -1896,7 +1908,6 @@ async function saveBooking(){
     email:$('bk-email').value.trim(),
     package:pkg,location:loc,date,
     startTime:$('bk-start-time').value,
-    endTime:$('bk-end-time').value,
     totalAmount:Number($('bk-total').value)||0,
     bookingPaid:$('bk-booking-paid-check').checked,
     bookingAmount:Number($('bk-booking-amount').value)||0,
@@ -1987,6 +1998,18 @@ function viewBooking(id){
 
   const actionButtons=[];
   actionButtons.push(`<button class="btn btn-ghost" onclick="closeModal('view-modal-overlay')">Close</button>`);
+  // Previous stage button — only show if not at first stage
+  if(curIdx > 0) {
+    const prevStatus = statusSteps[curIdx - 1];
+    actionButtons.push(
+      `<button class="btn btn-ghost"
+        style="color:var(--text-muted);font-size:11px;"
+        onclick="moveStatus('${id}','${prevStatus}')"
+        title="Go back to ${prevStatus}">
+        ← ${prevStatus}
+      </button>`
+    );
+  }
   actionButtons.push(`<button class="btn btn-ghost" onclick="saveViewNotes('${id}')">💾 Notes</button>`);
 
   switch(b.status){
@@ -2127,7 +2150,13 @@ function renderCreators(){
     return `<div class="creator-card">
       <div class="creator-card-top">
         <div>
-          <div class="creator-name">${sanitize(c.name||'')}</div>
+          <div class="creator-name"
+            onclick="viewCreatorProfile('${c.id}')"
+            style="cursor:pointer;transition:color 0.2s"
+            onmouseover="this.style.color='var(--cyan)'"
+            onmouseout="this.style.color=''">
+            ${sanitize(c.name||'')}
+          </div>
           ${c.area?`<div style="font-size:11px;color:var(--text-muted);margin-top:1px">${sanitize(c.area)}</div>`:''}
         </div>
         <div class="creator-actions">
@@ -2156,6 +2185,103 @@ function renderCreators(){
   $('cr-city-filter').onchange=renderCreators;
   $('cr-status-filter').onchange=renderCreators;
 }
+
+function viewCreatorProfile(creatorId) {
+  const c = getCreators().find(x => x.id === creatorId);
+  if(!c) return;
+
+  const allBookings = getBookings();
+  const creatorBookings = allBookings
+    .filter(b => b.assignedCreator === creatorId)
+    .sort((a,b) => new Date(b.date) - new Date(a.date));
+
+  const totalEarned = creatorBookings.reduce((sum,b) => sum + (b.creatorEarnings||0), 0);
+  const pendingPay = creatorBookings.filter(b => !b.creatorPaid).reduce((sum,b) => sum + (b.creatorEarnings||0), 0);
+
+  $('cp-modal-title').textContent = c.name + ' — Profile';
+
+  const shoots = creatorBookings.length;
+  const completed = creatorBookings.filter(b => b.status === 'Delivered').length;
+  const upcoming = creatorBookings.filter(b => b.date >= todayStr() && b.status !== 'Delivered').length;
+
+  $('cp-modal-body').innerHTML = `
+    <!-- Creator Info Header -->
+    <div style="display:flex;align-items:center;gap:16px;padding:16px;background:rgba(56,189,248,0.04);border:1px solid rgba(56,189,248,0.12);border-radius:12px;margin-bottom:20px">
+      <div style="width:52px;height:52px;border-radius:50%;background:rgba(56,189,248,0.15);border:2px solid rgba(56,189,248,0.3);display:flex;align-items:center;justify-content:center;font-family:Orbitron,sans-serif;font-weight:700;font-size:18px;color:var(--cyan);flex-shrink:0">
+        ${sanitize((c.name||'?')[0].toUpperCase())}
+      </div>
+      <div style="flex:1">
+        <div style="font-family:Orbitron,sans-serif;font-weight:700;font-size:16px;color:var(--text);margin-bottom:3px">
+          ${sanitize(c.name||'')}
+        </div>
+        <div style="font-size:12px;color:var(--text-muted)">
+          ${sanitize(c.area||c.city||'')}${c.phone ? ' · 📱 ' + sanitize(c.phone) : ''}
+        </div>
+      </div>
+      <a href="https://wa.me/91${(c.phone||'').replace(/\D/g,'')}" target="_blank"
+        class="btn btn-ghost btn-sm" style="text-decoration:none">💬 WA</a>
+    </div>
+
+    <!-- Stats Row -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px">
+      ${[
+        ['🎬', shoots, 'Total Shoots'],
+        ['✅', completed, 'Delivered'],
+        ['📅', upcoming, 'Upcoming'],
+        ['💰', '₹'+totalEarned.toLocaleString('en-IN'), 'Earned']
+      ].map(([icon,val,label]) => `
+        <div style="text-align:center;padding:12px 8px;background:var(--bg3);border:1px solid var(--border);border-radius:10px">
+          <div style="font-size:1.2rem;margin-bottom:4px">${icon}</div>
+          <div style="font-family:Orbitron,sans-serif;font-weight:700;font-size:15px;color:var(--text)">${val}</div>
+          <div style="font-size:10px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-top:2px">${label}</div>
+        </div>
+      `).join('')}
+    </div>
+
+    <!-- Shoots List -->
+    <div style="font-family:Rajdhani,sans-serif;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px">📋 Assigned Shoots</div>
+
+    ${creatorBookings.length === 0 ?
+      `<div class="empty-state"><div class="empty-icon">🎬</div><div class="empty-text">No shoots assigned yet</div></div>` :
+      creatorBookings.map(b => `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:border-color 0.2s"
+          onclick="closeModal('creator-profile-overlay');viewBooking('${b.id}')"
+          onmouseover="this.style.borderColor='rgba(56,189,248,0.4)'"
+          onmouseout="this.style.borderColor='var(--border)'">
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+              <span style="font-family:Rajdhani,sans-serif;font-weight:700;font-size:14px;color:var(--text)">${sanitize(b.name||'')}</span>
+              <span class="badge ${badgeClass(b.status)}" style="font-size:9px">${sanitize(b.status||'')}</span>
+            </div>
+            <div style="font-size:11px;color:var(--text-muted);display:flex;gap:12px;flex-wrap:wrap">
+              <span>📅 ${fmtDate(b.date)}</span>
+              <span>⏰ ${fmtTime(b.startTime)}</span>
+              <span>📍 ${sanitize(b.location||'')}</span>
+              <span>🎥 ${sanitize(getPackageName(b.package))}</span>
+            </div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;margin-left:12px">
+            ${b.creatorEarnings ?
+              `<div style="font-family:Rajdhani,sans-serif;font-weight:700;font-size:13px;color:var(--green)">₹${b.creatorEarnings.toLocaleString('en-IN')}</div>
+               <div style="font-size:10px;color:var(--text-muted)">${b.creatorPaid ? '✅ Paid' : '⏳ Pending'}</div>` :
+              `<div style="font-size:10px;color:var(--text-muted)">₹ TBD</div>`
+            }
+          </div>
+        </div>
+      `).join('')
+    }
+
+    ${pendingPay > 0 ? `
+      <div style="margin-top:12px;padding:12px 14px;background:rgba(251,146,60,0.08);border:1px solid rgba(251,146,60,0.25);border-radius:10px;font-size:13px;color:var(--orange)">
+        💰 Pending payout to ${sanitize(c.name||'')}: <strong>₹${pendingPay.toLocaleString('en-IN')}</strong>
+      </div>
+    ` : ''}
+  `;
+
+  openModal('creator-profile-overlay');
+}
+
+window.viewCreatorProfile = viewCreatorProfile;
 
 let _notifyCreatorPhone = '';
 
