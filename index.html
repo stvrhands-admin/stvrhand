@@ -2258,8 +2258,8 @@
 
       /* ---- Hero ---- */
       #hero {
-        padding-top: 4.5rem !important;
-        padding-bottom: 2rem !important;
+        padding-top: 4rem !important;
+        padding-bottom: 2.5rem !important;
         min-height: 100svh !important;
       }
 
@@ -2267,7 +2267,7 @@
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
-        gap: 0.6rem !important;
+        gap: 0 !important;
         padding: 0 1rem !important;
         width: 100% !important;
       }
@@ -2275,9 +2275,9 @@
       .hero-eyebrow,
       .eyebrow-label,
       .hero-pill {
-        font-size: 0.62rem !important;
+        font-size: 0.68rem !important;
         letter-spacing: 0.22em !important;
-        margin-bottom: 0.3rem !important;
+        margin-bottom: 0.6rem !important;
         margin-top: 0 !important;
       }
 
@@ -2288,13 +2288,12 @@
       }
 
       .hero-logo-component {
-        margin-bottom: 0.4rem !important;
-        margin-top: 0.3rem !important;
+        margin-bottom: 0.8rem !important;
         width: 100% !important;
       }
 
       .stvr-letters {
-        font-size: clamp(3.8rem, 20vw, 5.5rem) !important;
+        font-size: clamp(4.5rem, 24vw, 6.5rem) !important;
         letter-spacing: -0.02em !important;
         gap: 0 !important;
       }
@@ -2306,41 +2305,48 @@
       }
 
       .hands-row {
-        font-size: clamp(0.9rem, 5vw, 1.3rem) !important;
-        letter-spacing: 0.4em !important;
-        margin-top: -0.1em !important;
-        margin-bottom: 0 !important;
+        font-size: clamp(1.1rem, 5.5vw, 1.5rem) !important;
+        letter-spacing: 0.5em !important;
+        margin-top: 0.2rem !important;
+        margin-bottom: 0.3rem !important;
       }
 
       .magic-row {
-        font-size: clamp(1.1rem, 5.5vw, 1.6rem) !important;
+        font-size: clamp(1.3rem, 6vw, 1.8rem) !important;
         margin-top: 0 !important;
-        margin-bottom: 0.2rem !important;
+        margin-bottom: 0.5rem !important;
       }
 
       .hands-viral-line {
-        font-size: 0.7rem !important;
-        letter-spacing: 0.1em !important;
-        margin-bottom: 0.3rem !important;
-        margin-top: 0.1rem !important;
+        font-size: 0.82rem !important;
+        letter-spacing: 0.14em !important;
+        margin-bottom: 0.5rem !important;
+        margin-top: 0 !important;
+      }
+
+      .hbvr-white,
+      .hbvr-blue,
+      .hbvr-text {
+        font-size: 0.82rem !important;
+        letter-spacing: 0.14em !important;
       }
 
       .hero-bullets {
-        margin-bottom: 1rem !important;
+        margin-bottom: 1.2rem !important;
         margin-top: 0 !important;
         gap: 0 !important;
         flex-wrap: nowrap !important;
       }
 
       .bullet-item {
-        font-size: 0.65rem !important;
-        letter-spacing: 0.05em !important;
+        font-size: 0.75rem !important;
+        letter-spacing: 0.06em !important;
         padding: 0 0.15rem !important;
       }
 
       .bullet-item.highlight {
-        padding: 0.18rem 0.6rem !important;
-        font-size: 0.65rem !important;
+        padding: 0.22rem 0.7rem !important;
+        font-size: 0.75rem !important;
       }
 
       .bullet-sep {
@@ -2350,22 +2356,35 @@
 
       .hero-ctas {
         flex-direction: column !important;
-        gap: 0.5rem !important;
-        margin-bottom: 1.2rem !important;
-        margin-top: 0.2rem !important;
+        gap: 0.6rem !important;
+        margin-bottom: 1.5rem !important;
+        margin-top: 0 !important;
         width: 100% !important;
         align-items: center !important;
+        padding: 0 0.5rem !important;
       }
 
       .hero-ctas .btn {
         width: 100% !important;
         max-width: 320px !important;
-        padding: 0.8rem 1.2rem !important;
-        font-size: 0.8rem !important;
-        letter-spacing: 0.08em !important;
-        min-height: 48px !important;
+        padding: 0.9rem 1rem !important;
+        font-size: 0.85rem !important;
+        letter-spacing: 0.1em !important;
+        min-height: 50px !important;
         justify-content: center !important;
-        border-radius: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+      }
+
+      .hero-ctas .btn-solid {
+        background: var(--cyan) !important;
+        color: #05080f !important;
+        font-weight: 700 !important;
+      }
+
+      .hero-ctas .btn-ghost {
+        border: 1px solid rgba(56,189,248,0.3) !important;
+        color: var(--cyan) !important;
       }
 
       .hero-stat-strip {
@@ -2375,6 +2394,8 @@
         justify-content: center !important;
         flex-wrap: nowrap !important;
         width: 100% !important;
+        border-top: 1px solid rgba(56,189,248,0.15) !important;
+        border-bottom: 1px solid rgba(56,189,248,0.15) !important;
         margin-top: 0.5rem !important;
         padding: 0 !important;
       }
@@ -2385,11 +2406,11 @@
         flex-direction: column !important;
         align-items: center !important;
         justify-content: center !important;
-        padding: 0.7rem 0.2rem !important;
+        padding: 0.9rem 0.3rem !important;
         text-align: center !important;
         border-right: 1px solid rgba(56,189,248,0.15) !important;
         border-bottom: none !important;
-        border-top: 1px solid rgba(56,189,248,0.15) !important;
+        border-top: none !important;
         width: auto !important;
         min-width: 0 !important;
       }
@@ -2411,19 +2432,20 @@
 
       .h-stat-text strong,
       .h-stat strong {
-        font-size: 0.82rem !important;
+        font-size: 1.1rem !important;
         font-weight: 700 !important;
         display: block !important;
         color: var(--text) !important;
         white-space: nowrap !important;
+        line-height: 1.2 !important;
       }
 
       .h-stat-text span,
       .h-stat {
-        font-size: 0.62rem !important;
+        font-size: 0.68rem !important;
         color: var(--text-dim) !important;
         white-space: nowrap !important;
-        letter-spacing: 0.03em !important;
+        letter-spacing: 0.05em !important;
       }
 
       /* ---- Marquee ---- */
@@ -3705,6 +3727,58 @@
       letter-spacing: 0.05em !important;
       text-transform: uppercase !important;
     }
+
+    /* ── BORDER RADIUS — SUBTLE CURVES ── */
+    .glass,
+    .pricing-card,
+    .benefit-card,
+    .testimonial-card,
+    .booking-panel,
+    .creator-form-panel,
+    .founder-card,
+    .contact-info-row,
+    .reel-card,
+    .category-card { border-radius: 10px !important; }
+
+    .btn,
+    .btn-enter,
+    .dur-tab,
+    .popular-badge,
+    .hiring-banner,
+    .device-requirement-card,
+    .terms-panel { border-radius: 8px !important; }
+
+    /* Pills stay round */
+    .tag-pill,
+    .trust-pill,
+    .location-tag,
+    .bullet-item.highlight,
+    .section-label { border-radius: 100px !important; }
+
+    /* Form inputs subtle curve */
+    .form-input,
+    .form-select,
+    .form-textarea,
+    .time-select-wrap .form-select { border-radius: 8px !important; }
+
+    /* Stat strip cells — no radius */
+    .hero-stat-strip,
+    .h-stat { border-radius: 0 !important; }
+
+    /* Bento grid cells — no radius */
+    .bento-cell,
+    .svc-card,
+    .service-card { border-radius: 0 !important; }
+
+    /* ── BIGGER BODY TEXT ── */
+    body { font-size: 16px !important; }
+    .about-inner p,
+    .benefit-desc,
+    .svc-desc,
+    .service-desc,
+    .faq-answer,
+    .contact-left p,
+    .creators-header p { font-size: 1rem !important; line-height: 1.8 !important; }
 
     /* ── REMOVE ALL GLOWS & TRANSFORMS ── */
     .btn:hover, .btn-solid:hover, .btn-ghost:hover,
