@@ -1120,12 +1120,32 @@ function fmtDate(d){
   return `${day}/${m}/${y}`;
 }
 function fmtTime(t){
-  if(!t)return '';
-  const [h,min]=t.split(':');
-  const hr=parseInt(h);
-  const ampm=hr>=12?'PM':'AM';
-  const h12=hr%12||12;
-  return `${h12}:${min} ${ampm}`;
+  if(!t)return '—';
+  if(typeof t==='string'&&(t.includes('AM')||t.includes('PM'))) return t;
+  try {
+    const [h,m]=t.split(':').map(Number);
+    const ampm=h>=12?'PM':'AM';
+    const h12=h%12||12;
+    return `${h12}:${String(m).padStart(2,'0')} ${ampm}`;
+  } catch(e){ return t; }
+}
+function getPackageName(val){
+  const packages={
+    'portrait-1':'Portrait Reel',
+    'landscape-1':'Landscape Reel',
+    'portrait-3':'3 Portrait Reels',
+    'landscape-3':'3 Landscape Reels',
+    'perday-3-reels':'Per Day 3 Reels',
+    'combo-2p1l':'2 Portrait+1 Landscape',
+    'combo-2l1p':'2 Landscape+1 Portrait',
+    'car-bike-delivery':'Car/Bike Delivery',
+    'more-than-3':'Custom (3+ Reels)',
+    'wedding':'Wedding & Pre-Wedding',
+    'birthday':'Birthday & Parties',
+    'brand':'Brand & Product Shoot',
+    'event':'Event Coverage'
+  };
+  return packages[val]||val||'—';
 }
 function todayStr(){
   const d=new Date();
@@ -1659,7 +1679,7 @@ function renderDashboard(){
   tbody.innerHTML=recent.map(b=>`
     <tr>
       <td data-label="Name">${sanitize(b.name || 'Unknown')}</td>
-      <td data-label="Package">${sanitize(b.package || '')}</td>
+      <td data-label="Package">${sanitize(getPackageName(b.package))}</td>
       <td data-label="Location">${sanitize(b.location || 'TBD')}</td>
       <td data-label="Date">${fmtDate(b.date)}</td>
       <td data-label="Status"><span class="badge ${badgeClass(b.status || 'New')}">${sanitize(b.status || 'New')}</span></td>
@@ -1708,7 +1728,7 @@ function renderBookings(){
       <td data-label="#">${startIdx + i + 1}</td>
       <td data-label="Name">${sanitize(b.name || 'Unknown')}</td>
       <td data-label="Phone">${sanitize(b.phone || '')}</td>
-      <td data-label="Package" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${sanitize(b.package || '')}</td>
+      <td data-label="Package" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${sanitize(getPackageName(b.package))}</td>
       <td data-label="Location">${sanitize(b.location || 'TBD')}</td>
       <td data-label="Date">${fmtDate(b.date)}</td>
       <td data-label="Time">${fmtTime(b.startTime)}</td>
@@ -1718,7 +1738,7 @@ function renderBookings(){
         <button class="btn btn-ghost btn-icon btn-sm" onclick="viewBooking('${b.id}')" title="View">👁</button>
         <button class="btn btn-ghost btn-icon btn-sm" onclick="editBooking('${b.id}')" title="Edit">✏️</button>
         <button class="btn btn-ghost btn-icon btn-sm" onclick="openAssign('${b.id}')" title="Assign">🎬</button>
-        <a class="btn btn-ghost btn-icon btn-sm" href="https://wa.me/91${encodeURIComponent(b.phone || '')}?text=Hi+${encodeURIComponent(b.name || '')}%2C+this+is+STVR+Hands" target="_blank" title="WhatsApp">💬</a>
+        <a class="btn btn-ghost btn-icon btn-sm" href="https://wa.me/91${(b.phone||'').replace(/\D/g,'')}?text=Hi+${encodeURIComponent(b.name || '')}%2C+this+is+STVR+Hands" target="_blank" title="WhatsApp">💬</a>
         <button class="btn btn-red btn-icon btn-sm" onclick="deleteBooking('${b.id}')" title="Delete">🗑</button>
       </td>
     `;
@@ -2229,7 +2249,7 @@ function renderShootList(){
       <td data-label="Date">${fmtDate(b.date)}</td>
       <td data-label="Time">${fmtTime(b.startTime)}</td>
       <td data-label="Customer">${firstName}</td>
-      <td data-label="Package" style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${sanitize(b.package||'')}</td>
+      <td data-label="Package" style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${sanitize(getPackageName(b.package))}</td>
       <td data-label="Creator">${cr?sanitize(cr.name||''):'—'}</td>
       <td data-label="Status"><span class="badge ${badgeClass(b.status)}">${sanitize(b.status||'')}</span></td>
       <td data-label="Reel Received">
@@ -2387,7 +2407,7 @@ function renderPayments(){
     const waMsg=`Hi ${b.name||''}! Your reel is ready 🎬\nPlease pay ${rupees(balance)} to receive your final files.\n\nUPI: ${upi}\n— STVR Hands`;
     return `<tr>
       <td data-label="Customer">${sanitize(b.name||'')}</td>
-      <td data-label="Package" style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${sanitize(b.package||'')}</td>
+      <td data-label="Package" style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${sanitize(getPackageName(b.package))}</td>
       <td data-label="Total">${rupees(b.totalAmount)}</td>
       <td data-label="Booking Amt">${rupees(b.bookingAmount)}</td>
       <td data-label="Balance">${rupees(balance)}</td>
@@ -2603,6 +2623,53 @@ function clearAllData(){
     '<input type="text" id="clear-confirm-input" placeholder="Type DELETE" style="width:100%;padding:10px 14px;background:var(--bg);border:1px solid var(--red);border-radius:8px;color:var(--text);font-size:14px;margin-top:12px;font-family:DM Sans,sans-serif">'
   );
 }
+
+// ============================================================
+// EXPOSE TO GLOBAL SCOPE
+// Required because onclick/onchange attributes need window-level access.
+// All functions inside <script type="module"> are module-scoped by default.
+// ============================================================
+window.showPage          = showPage;
+window.viewBooking       = viewBooking;
+window.editBooking       = editBooking;
+window.deleteBooking     = deleteBooking;
+window.openAssign        = openAssign;
+window.openAssignForCreator = openAssignForCreator;
+window.assignCreator     = assignCreator;
+window.editCreator       = editCreator;
+window.deleteCreator     = deleteCreator;
+window.openCreatorModal  = openCreatorModal;
+window.openBookingModal  = openBookingModal;
+window.saveBooking       = saveBooking;
+window.saveCreator       = saveCreator;
+window.markPaid          = markPaid;
+window.markCreatorPaid   = markCreatorPaid;
+window.moveStatus        = moveStatus;
+window.saveViewNotes     = saveViewNotes;
+window.openNotifyModal   = openNotifyModal;
+window.openNotifyAllModal = openNotifyAllModal;
+window.closeModal        = closeModal;
+window.openModal         = openModal;
+window.showConfirm       = showConfirm;
+// setShootView already exported above
+window.showCalDay        = showCalDay;
+window.renderCalendar    = renderCalendar;
+window.renderShoots      = renderShoots;
+window.renderShootList   = renderShootList;
+window.saveSettings      = saveSettings;
+window.saveTemplates     = saveTemplates;
+window.resetTemplates    = resetTemplates;
+window.changePassword    = changePassword;
+window.exportCSV         = exportCSV;
+window.clearAllData      = clearAllData;
+window.renderNotifications = renderNotifications;
+window.prevPage          = prevPage;
+window.nextPage          = nextPage;
+window.toggleReel        = toggleReel;
+window.saveReelLink      = saveReelLink;
+window.copyNotifyMsg     = copyNotifyMsg;
+window.openNotifyWA      = openNotifyWA;
+window.searchBookings    = searchBookings;
 
 // ============================================================
 // BOOTSTRAP
