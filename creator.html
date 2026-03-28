@@ -81,6 +81,10 @@ input,select,textarea{font-size:16px}
 .phone-input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(56,189,248,.1)}
 .phone-input.shake{animation:shake .4s ease;border-color:var(--red)}
 .login-error{font-size:13px;color:var(--red);text-align:center;min-height:16px;line-height:1.4}
+.btn-google-creator{width:100%;padding:13px 16px;background:#fff;color:#3c4043;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all 0.2s;letter-spacing:0.01em;box-shadow:0 1px 4px rgba(0,0,0,0.2)}
+.btn-google-creator:hover{background:#f8f9fa;box-shadow:0 3px 10px rgba(0,0,0,0.25)}
+.btn-google-creator:disabled{opacity:.6;cursor:not-allowed}
+.login-note{font-size:12px;color:var(--text-muted);text-align:center;line-height:1.5;padding:0 8px}
 .btn-login{
   width:100%;padding:14px;
   background:var(--cyan);color:#05080f;
@@ -402,16 +406,12 @@ button,a,[role="button"],.card,.btn,.nav-tab,.sub-tab,.f-btn{touch-action:manipu
     </div>
     <div class="portal-label">Creator Portal</div>
     <div class="portal-tagline">Hands Behind Viral Reels</div>
-    <div class="login-form">
-      <div>
-        <span class="form-label-sm">Your Phone Number</span>
-        <input type="tel" id="login-phone" class="phone-input"
-          placeholder="10-digit number" maxlength="10"
-          inputmode="numeric" autocomplete="tel-national">
-        <div class="login-error" id="login-error"></div>
-      </div>
-      <button class="btn-login" id="login-btn">LOGIN</button>
-    </div>
+    <button class="btn-google-creator" id="creator-google-btn">
+      <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615Z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18Z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332Z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58Z"/></svg>
+      Continue with Google
+    </button>
+    <div class="login-note">Use the Google account registered with STVR Hands</div>
+    <div class="login-error" id="login-error"></div>
   </div>
 </div>
 
@@ -662,7 +662,9 @@ import {
   updateDoc, deleteDoc, doc, query, orderBy, onSnapshot,
   serverTimestamp, where, limit
 } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
-import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
+import {
+  getAuth, signInWithPopup, signOut, onAuthStateChanged, GoogleAuthProvider
+} from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
 
 /*
 FIRESTORE INDEXES REQUIRED:
@@ -705,6 +707,8 @@ const firebaseConfig = {
 };
 const _fbApp = initializeApp(firebaseConfig);
 const db     = getFirestore(_fbApp);
+const auth   = getAuth(_fbApp);
+const googleProvider = new GoogleAuthProvider();
 
 /* ============================================================
    DEV / SECURITY UTILITIES
@@ -842,96 +846,58 @@ function showToast(msg, type = 'info') {
 /* ============================================================
    LOGIN
 ============================================================ */
-async function doLogin() {
-  const raw   = $('login-phone').value.replace(/\D/g, '');
+async function doGoogleCreatorLogin() {
+  const btn   = $('creator-google-btn');
   const errEl = $('login-error');
-  const btn   = $('login-btn');
   errEl.textContent = '';
-
-  // 1. Validate format instantly
-  if (!/^[6-9]\d{9}$/.test(raw)) {
-    setLoginError('Please enter a valid Indian 10-digit mobile number.');
-    return;
-  }
-
-  // 2. Check localStorage cache first (instant — no network)
-  const cachedList = safeGetStorage('stvr_creator_cache', []);
-  const cached = cachedList.find(c => c.phone === raw);
-  if (cached) {
-    // Login instantly from cache
-    _creator = cached;
-    sessionStorage.setItem(SESSION_KEY, JSON.stringify(cached));
-    $('login-screen').classList.add('fade-out');
-    const firstName = (cached.name||'').split(' ')[0];
-    setTimeout(() => { $('login-screen').style.display = 'none'; startApp(); showToast(`Welcome back, ${firstName}! 🎬`, 'success'); }, 480);
-    // Verify in background silently
-    (async () => {
-      try {
-        const snap = await getDocs(query(collection(db, 'creators'), where('phone', '==', raw), limit(1)));
-        if (snap.empty) { doLogout(); setLoginError('Access revoked. Contact Bharath.'); }
-        else {
-          const fresh = { id: snap.docs[0].id, ...snap.docs[0].data() };
-          _creator = fresh;
-          const updated = cachedList.map(c => c.phone === raw ? fresh : c);
-          localStorage.setItem('stvr_creator_cache', JSON.stringify(updated));
-          sessionStorage.setItem(SESSION_KEY, JSON.stringify(fresh));
-        }
-      } catch(e) { devLog('Background verify failed:', e); }
-    })();
-    return;
-  }
-
-  // 3. Not in cache — sign in anonymously then query Firestore
   btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span>';
 
   try {
-    const auth = getAuth();
-    if (!auth.currentUser) await signInAnonymously(auth);
-  } catch(e) { devLog('Anon auth skipped:', e.message); }
+    const result = await signInWithPopup(auth, googleProvider);
+    const email  = result.user.email;
 
-  try {
-    const snap = await getDocs(query(collection(db, 'creators'), where('phone', '==', raw), limit(1)));
+    // Look up creator by email field in Firestore
+    const snap = await getDocs(query(collection(db, 'creators'), where('email', '==', email), limit(1)));
     if (snap.empty) {
-      setLoginError('Phone number not registered. Contact Bharath to get access.');
-      resetLoginBtn(); return;
+      await signOut(auth);
+      errEl.textContent = 'This Google account is not registered as a creator. Contact Bharath.';
+      btn.disabled = false;
+      return;
     }
+
     const creator = { id: snap.docs[0].id, ...snap.docs[0].data() };
-    // Cache for next login
-    const all = safeGetStorage('stvr_creator_cache', []);
-    if (!all.find(c => c.id === creator.id)) { all.push(creator); localStorage.setItem('stvr_creator_cache', JSON.stringify(all)); }
     _creator = creator;
     sessionStorage.setItem(SESSION_KEY, JSON.stringify(creator));
-    resetLoginBtn();
     $('login-screen').classList.add('fade-out');
-    const firstName = (creator.name||'').split(' ')[0];
+    const firstName = (creator.name || 'Creator').split(' ')[0];
     setTimeout(() => { $('login-screen').style.display = 'none'; startApp(); showToast(`Welcome back, ${firstName}! 🎬`, 'success'); }, 480);
-  } catch (err) {
-    if (!navigator.onLine && cached) { _creator = cached; sessionStorage.setItem(SESSION_KEY, JSON.stringify(cached)); $('login-screen').classList.add('fade-out'); setTimeout(() => { $('login-screen').style.display = 'none'; startApp(); }, 480); return; }
-    setLoginError('Connection error. Please try again.');
-    devLog('Login error:', err);
-    resetLoginBtn();
+  } catch(err) {
+    devLog('Google creator login error:', err.code, err.message);
+    if (err.code === 'auth/popup-closed-by-user') { btn.disabled = false; return; }
+    errEl.textContent = 'Sign-in failed. Please try again.';
+    btn.disabled = false;
   }
-}
-
-function setLoginError(msg) {
-  const inp = $('login-phone');
-  $('login-error').textContent = msg;
-  inp.classList.add('shake');
-  setTimeout(() => {
-    inp.classList.remove('shake');
-    $('login-error').textContent = '';
-  }, 3500);
-}
-function resetLoginBtn() {
-  const btn = $('login-btn');
-  btn.disabled = false;
-  btn.textContent = 'LOGIN';
 }
 
 /* ============================================================
    SESSION
 ============================================================ */
+// Resume session on page refresh via Firebase Auth state
+onAuthStateChanged(auth, async user => {
+  if (user && !_creator) {
+    // User is signed into Google but app state was lost (page refresh)
+    try {
+      const snap = await getDocs(query(collection(db, 'creators'), where('email', '==', user.email), limit(1)));
+      if (!snap.empty) {
+        _creator = { id: snap.docs[0].id, ...snap.docs[0].data() };
+        sessionStorage.setItem(SESSION_KEY, JSON.stringify(_creator));
+        $('login-screen').style.display = 'none';
+        if (!$('app').classList.contains('active')) startApp();
+      }
+    } catch(e) { devLog('Auth state creator lookup failed:', e); }
+  }
+});
+
 function checkSession() {
   try {
     const raw = sessionStorage.getItem(SESSION_KEY);
@@ -941,17 +907,19 @@ function checkSession() {
   } catch { return false; }
 }
 
-function doLogout() {
+async function doLogout() {
   if (_unsub) _unsub();
   if (_unsubProfile) _unsubProfile();
   sessionStorage.removeItem(SESSION_KEY);
   _creator = null; _bookings = []; _notifs = [];
+  try { await signOut(auth); } catch(e) { devLog('Sign out error:', e); }
   $('app').classList.remove('active');
   $('app').style.display = 'none';
   $('login-screen').style.display = 'flex';
   $('login-screen').style.opacity = '1';
   $('login-screen').classList.remove('fade-out');
-  $('login-phone').value = '';
+  $('login-error').textContent = '';
+  $('creator-google-btn').disabled = false;
 }
 
 /* ============================================================
@@ -1530,14 +1498,7 @@ async function seedTestData() {
 /* ============================================================
    BOOTSTRAP
 ============================================================ */
-// Login phone — digits only
-$('login-phone').addEventListener('input', function() {
-  this.value = this.value.replace(/\D/g, '').slice(0, 10);
-  this.classList.remove('shake');
-  $('login-error').textContent = '';
-});
-$('login-btn').addEventListener('click', doLogin);
-$('login-phone').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+$('creator-google-btn').addEventListener('click', doGoogleCreatorLogin);
 $('logout-btn').addEventListener('click', doLogout);
 $('refresh-shoots').addEventListener('click', () => startBookingsListener());
 $('notif-btn').addEventListener('click', e => {
