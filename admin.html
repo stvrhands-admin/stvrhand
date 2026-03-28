@@ -305,10 +305,7 @@ textarea{resize:vertical;min-height:80px}
 .confirm-btns{display:flex;gap:12px;justify-content:center}
 
 /* ===== MOBILE BOTTOM TAB ===== */
-#bottom-tab{display:none;position:fixed;bottom:0;left:0;right:0;height:56px;background:var(--bg2);border-top:1px solid var(--border);z-index:200;flex-direction:row}
-.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;color:var(--text-muted);font-size:10px;font-family:'Rajdhani',sans-serif;font-weight:600;letter-spacing:.3px;transition:color .2s;padding:4px 0}
-.tab-item.active{color:var(--cyan)}
-.tab-icon{font-size:18px}
+#bottom-tab{display:none}
 
 /* ===== OVERLAY (mobile sidebar) ===== */
 #sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:99}
@@ -324,8 +321,7 @@ textarea{resize:vertical;min-height:80px}
   #sidebar{position:fixed;top:0;bottom:0;left:0;transform:translateX(-100%)}
   #sidebar.open{transform:translateX(0)}
   #hamburger{display:block}
-  #bottom-tab{display:flex}
-  #content{padding:16px 12px 100px}
+  #content{padding:16px 12px 24px}
   .creators-grid{padding-bottom:24px}
   .stats-grid{grid-template-columns:repeat(2,1fr);gap:10px}
   .creators-grid{grid-template-columns:1fr}
@@ -750,15 +746,6 @@ service cloud.firestore {
     </div><!-- /content -->
   </div><!-- /main -->
 
-  <!-- BOTTOM TAB -->
-  <div id="bottom-tab">
-    <div class="tab-item active" data-page="dashboard"><div class="tab-icon">📊</div>Dash</div>
-    <div class="tab-item" data-page="bookings"><div class="tab-icon">📋</div>Book</div>
-    <div class="tab-item" data-page="creators"><div class="tab-icon">👥</div>Crew</div>
-    <div class="tab-item" data-page="applications"><div class="tab-icon">📝</div>Apps</div>
-    <div class="tab-item" data-page="shoots"><div class="tab-icon">🎬</div>Shoots</div>
-    <div class="tab-item" data-page="payments"><div class="tab-icon">💰</div>Pay</div>
-  </div>
 </div>
 
 <!-- ===== MODALS ===== -->
