@@ -854,6 +854,18 @@ service cloud.firestore {
       <div class="form-grid">
         <div class="form-group"><label>Full Name *</label><input type="text" id="cr-name"><div class="field-err" id="err-cr-name"></div></div>
         <div class="form-group"><label>Phone (WhatsApp) *</label><input type="text" id="cr-phone" maxlength="10"><div class="field-err" id="err-cr-phone"></div></div>
+        <div class="form-group">
+          <label>Email Address *</label>
+          <input type="email" id="cr-email" placeholder="creator@gmail.com">
+          <div class="field-err" id="err-cr-email"></div>
+        </div>
+        <div class="form-group">
+          <label>Portal Password</label>
+          <div style="position:relative">
+            <input type="text" id="cr-portal-password" placeholder="Set a password for portal login" autocomplete="off">
+          </div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:4px">Share this password with the creator via WhatsApp for portal login</div>
+        </div>
         <div class="form-group"><label>City *</label>
           <select id="cr-city">
             <option value="">Select City</option>
@@ -2352,6 +2364,10 @@ function renderCreators(){
         <span class="city-pill">${sanitize(c.city||'')}</span>${flexBadge}
       </div>
       <div class="creator-phone">📱 <a href="https://wa.me/91${encodeURIComponent(c.phone||'')}" target="_blank">+91 ${maskedPhone}</a> <span style="font-size:10px;color:var(--text-muted)">(${sanitize(c.phone||'')})</span></div>
+      ${c.portalPassword ?
+        `<div style="font-size:11px;color:var(--text-muted);margin-top:2px;display:flex;align-items:center;gap:6px"><span>🔑 Portal Pass:</span><span style="font-family:monospace;color:var(--gold);letter-spacing:0.05em">${sanitize(c.portalPassword)}</span></div>` :
+        `<div style="font-size:11px;color:var(--red);margin-top:2px">⚠️ No portal password set</div>`
+      }
       <div class="spec-pills">${specs}</div>
       <div class="creator-status">
         <div class="status-dot ${dotCls}"></div>
@@ -2583,8 +2599,8 @@ window.checkPendingApps = checkPendingApps;
 
 let _notifyCreatorPhone = '';
 
-function buildNotifyMsg(name, phone) {
-  return `Hi ${name}! 👋\n\nYou're now part of STVR Hands creator team! 🎬\n\nAccess your Creator Portal here:\nhttps://creator.stvrhands.com\n\nLogin with your phone number: ${phone}\n\nHere you can:\n✅ View assigned shoots\n✅ Accept or reject shoots\n✅ Submit your edited reels\n✅ Track your earnings\n\nAny questions? Reply here.\n— STVR Hands`;
+function buildNotifyMsg(name, phone, email, password) {
+  return `Hi ${name}! 👋\n\nYou're now part of STVR Hands creator team! 🎬\n\nAccess your Creator Portal:\nhttps://creator.stvrhands.com\n\nYour login credentials:\n📧 Email: ${email || 'Not set'}\n🔑 Password: ${password || 'Contact admin'}\n\nHere you can:\n✅ View assigned shoots\n✅ Accept or reject shoots\n✅ Submit your edited reels\n✅ Track your earnings\n\n— STVR Hands`;
 }
 
 function openNotifyModal(creatorId) {
@@ -2592,7 +2608,7 @@ function openNotifyModal(creatorId) {
   if (!c) return;
   _notifyCreatorPhone = c.phone || '';
   $('notify-modal-title').textContent = `Notify — ${c.name}`;
-  $('notify-msg-text').value = buildNotifyMsg(c.name, c.phone);
+  $('notify-msg-text').value = buildNotifyMsg(c.name, c.phone, c.email, c.portalPassword);
   openModal('notify-modal-overlay');
 }
 
@@ -2602,7 +2618,7 @@ function openNotifyAllModal() {
   const first = creators[0];
   _notifyCreatorPhone = first.phone || '';
   $('notify-modal-title').textContent = `Send Portal Link to All (${creators.length} creators)`;
-  $('notify-msg-text').value = buildNotifyMsg(first.name, first.phone) + '\n\n─────────────────────\nNote: Edit name/number above for each creator before sending.';
+  $('notify-msg-text').value = buildNotifyMsg(first.name, first.phone, first.email, first.portalPassword) + '\n\n─────────────────────\nNote: Edit name/number above for each creator before sending.';
   openModal('notify-modal-overlay');
 }
 
@@ -2621,6 +2637,8 @@ function openCreatorModal(id=null){
   editingCreatorId=id;
   $('creator-modal-title').textContent=id?'Edit Creator':'Add Creator';
   $('cr-name').value='';$('cr-phone').value='';$('cr-city').selectedIndex=0;$('cr-notes').value='';
+  if($('cr-email')) $('cr-email').value='';
+  if($('cr-portal-password')) $('cr-portal-password').value='';
   qsa('input[name="cr-spec"]').forEach(c=>c.checked=false);
   qsa('input[name="cr-status"]')[0].checked=true;
   qsa('.field-err').forEach(e=>e.textContent='');
@@ -2632,6 +2650,8 @@ function openCreatorModal(id=null){
       $('cr-phone').value=c.phone||'';
       $('cr-city').value=c.city||'';
       $('cr-notes').value=c.notes||'';
+      if($('cr-email')) $('cr-email').value=c.email||'';
+      if($('cr-portal-password')) $('cr-portal-password').value=c.portalPassword||'';
       (c.specialities||[]).forEach(s=>{
         const el=qs(`input[name="cr-spec"][value="${s}"]`);
         if(el)el.checked=true;
@@ -2661,7 +2681,10 @@ async function saveCreator(){
 
   const specialities=qsa('input[name="cr-spec"]:checked').map(c=>c.value);
   const status=qs('input[name="cr-status"]:checked').value;
-  const data={name,phone,city,specialities,status,notes:$('cr-notes').value.trim(),updatedAt:serverTimestamp()};
+  const creatorEmail = ($('cr-email')?.value || '').trim().toLowerCase();
+  const creatorPass  = $('cr-portal-password')?.value || '';
+  const data={name,phone,city,specialities,status,notes:$('cr-notes').value.trim(),
+    email:creatorEmail,portalPassword:creatorPass,updatedAt:serverTimestamp()};
 
   try {
     if(editingCreatorId){
@@ -2670,6 +2693,29 @@ async function saveCreator(){
     } else {
       await addDoc(collection(db,'creators'), {...data, totalShoots:0, createdAt:serverTimestamp()});
       showToast('Creator added','success');
+
+      // Create Firebase Auth account for new creator
+      if(creatorEmail && creatorPass) {
+        try {
+          const { createUserWithEmailAndPassword, getAuth: getAuthFn } = await import(
+            'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js'
+          );
+          const { initializeApp } = await import(
+            'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js'
+          );
+          const secondaryApp = initializeApp(firebaseConfig, 'creator-setup-' + Date.now());
+          const secondaryAuth = getAuthFn(secondaryApp);
+          await createUserWithEmailAndPassword(secondaryAuth, creatorEmail, creatorPass);
+          showToast('Creator account created! ✅', 'success');
+        } catch(authErr) {
+          if(authErr.code === 'auth/email-already-in-use') {
+            showToast('Email already registered — creator can use existing password', 'info');
+          } else {
+            devLog('Auth create error:', authErr.code);
+            showToast('Saved but auth account creation failed: ' + authErr.code, 'error');
+          }
+        }
+      }
     }
     closeModal('creator-modal-overlay');
     // onSnapshot auto-re-renders

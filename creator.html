@@ -81,9 +81,22 @@ input,select,textarea{font-size:16px}
 .phone-input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(56,189,248,.1)}
 .phone-input.shake{animation:shake .4s ease;border-color:var(--red)}
 .login-error{font-size:13px;color:var(--red);text-align:center;min-height:16px;line-height:1.4}
-.btn-google-creator{width:100%;padding:13px 16px;background:#fff;color:#3c4043;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all 0.2s;letter-spacing:0.01em;box-shadow:0 1px 4px rgba(0,0,0,0.2)}
-.btn-google-creator:hover{background:#f8f9fa;box-shadow:0 3px 10px rgba(0,0,0,0.25)}
-.btn-google-creator:disabled{opacity:.6;cursor:not-allowed}
+.login-logo{display:flex;align-items:stretch;gap:10px}
+.login-logo-text{display:flex;flex-direction:column;line-height:1}
+.login-stvr{font-family:'Orbitron',sans-serif;font-weight:900;font-size:28px;color:#fff;letter-spacing:2px}
+.login-stvr span{color:var(--cyan)}
+.login-hands{font-family:'Caveat',cursive;font-size:14px;color:var(--text-dim);margin-top:2px}
+.login-title{font-family:'Rajdhani',sans-serif;font-size:13px;letter-spacing:3px;color:var(--cyan);font-weight:700;text-transform:uppercase}
+.login-subtitle{font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text-muted);text-align:center}
+.creator-login-form{width:100%;display:flex;flex-direction:column;gap:16px}
+.creator-field-group{display:flex;flex-direction:column;gap:6px;width:100%}
+.creator-field-label{font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.2em;color:var(--text-muted);text-transform:uppercase}
+.creator-login-input{width:100%;padding:13px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(56,189,248,0.2);border-radius:10px;color:#e8f0f7;font-family:'DM Sans',sans-serif;font-size:15px;outline:none;transition:border 0.2s;-webkit-appearance:none}
+.creator-login-input:focus{border-color:#38bdf8;background:rgba(56,189,248,0.05)}
+.creator-login-input::placeholder{color:rgba(138,160,176,0.5)}
+.creator-login-btn{width:100%;padding:14px;background:#38bdf8;color:#05080f;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:15px;letter-spacing:0.12em;border:none;border-radius:10px;cursor:pointer;transition:all 0.2s;margin-top:4px}
+.creator-login-btn:hover{filter:brightness(1.1)}
+.creator-login-btn:disabled{opacity:0.6;cursor:not-allowed}
 .login-note{font-size:12px;color:var(--text-muted);text-align:center;line-height:1.5;padding:0 8px}
 .btn-login{
   width:100%;padding:14px;
@@ -397,21 +410,53 @@ button,a,[role="button"],.card,.btn,.nav-tab,.sub-tab,.f-btn{touch-action:manipu
 <!-- ===== LOGIN ===== -->
 <div id="login-screen">
   <div class="login-card">
-    <div class="logo-mark">
+    <div class="login-logo">
       <div class="logo-bar"></div>
-      <div class="logo-text-wrap">
-        <div class="logo-stvr">ST<span>V</span>R</div>
-        <div class="logo-hands">HANDS</div>
+      <div class="login-logo-text">
+        <div class="login-stvr">ST<span>V</span>R</div>
+        <div class="login-hands">HANDS</div>
       </div>
     </div>
-    <div class="portal-label">Creator Portal</div>
-    <div class="portal-tagline">Hands Behind Viral Reels</div>
-    <button class="btn-google-creator" id="creator-google-btn">
-      <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615Z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18Z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332Z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58Z"/></svg>
-      Continue with Google
-    </button>
-    <div class="login-note">Use the Google account registered with STVR Hands</div>
-    <div class="login-error" id="login-error"></div>
+
+    <div class="login-title">Creator Portal</div>
+    <div class="login-subtitle">Sign in to access your shoots and earnings</div>
+
+    <div class="creator-login-form">
+      <div class="creator-field-group">
+        <label class="creator-field-label">EMAIL ADDRESS</label>
+        <input
+          type="email"
+          id="creator-email-input"
+          class="creator-login-input"
+          placeholder="your@gmail.com"
+          autocomplete="email"
+          inputmode="email">
+      </div>
+
+      <div class="creator-field-group">
+        <label class="creator-field-label">PASSWORD</label>
+        <div style="position:relative">
+          <input
+            type="password"
+            id="creator-pass-input"
+            class="creator-login-input"
+            placeholder="Enter your password"
+            autocomplete="current-password">
+          <button
+            type="button"
+            id="toggle-pass-vis"
+            style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:16px;padding:4px;line-height:1">
+            👁
+          </button>
+        </div>
+      </div>
+
+      <div class="login-error" id="login-error"></div>
+
+      <button class="creator-login-btn" id="creator-login-btn">SIGN IN</button>
+    </div>
+
+    <div class="login-note">Contact STVR Hands admin if you don't have login credentials</div>
   </div>
 </div>
 
@@ -663,10 +708,10 @@ import {
   serverTimestamp, where, limit
 } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
 import {
-  getAuth, signInWithPopup,
-  signInWithRedirect, getRedirectResult,
-  signOut, onAuthStateChanged,
-  GoogleAuthProvider
+  getAuth,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged
 } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
 
 /*
@@ -711,11 +756,6 @@ const firebaseConfig = {
 const _fbApp = initializeApp(firebaseConfig);
 const db     = getFirestore(_fbApp);
 const auth   = getAuth(_fbApp);
-const googleProvider = new GoogleAuthProvider();
-googleProvider.setCustomParameters({ prompt: 'select_account' });
-
-const _isMobile = () => /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-
 /* ============================================================
    DEV / SECURITY UTILITIES
 ============================================================ */
@@ -852,125 +892,114 @@ function showToast(msg, type = 'info') {
 /* ============================================================
    LOGIN
 ============================================================ */
-async function doGoogleCreatorLogin() {
-  const btn   = $('creator-google-btn');
-  const errEl = $('login-error');
-  errEl.textContent = '';
-  btn.disabled = true;
+async function doCreatorEmailLogin() {
+  const emailInput = $('creator-email-input');
+  const passInput  = $('creator-pass-input');
+  const btn        = $('creator-login-btn');
+  const errEl      = $('login-error');
 
-  try {
-    if (_isMobile()) {
-      // Mobile: use redirect — popup blocked by Safari/Chrome
-      sessionStorage.setItem('stvr_creator_google_pending', '1');
-      await signInWithRedirect(auth, googleProvider);
-      // Page redirects — stops here
-      return;
-    }
+  const email = (emailInput?.value || '').trim();
+  const pass  = passInput?.value || '';
 
-    // Desktop: use popup
-    const result = await signInWithPopup(auth, googleProvider);
-    await _handleGoogleUser(result.user);
+  if(errEl) errEl.textContent = '';
 
-  } catch(err) {
-    devLog('Google login error:', err.code, err.message);
-    if (err.code === 'auth/popup-closed-by-user' ||
-        err.code === 'auth/cancelled-popup-request') {
-      btn.disabled = false;
-      return;
-    }
-    errEl.textContent =
-      err.code === 'auth/popup-blocked' ?
-        'Popup blocked. Trying redirect...' :
-      err.code === 'auth/unauthorized-domain' ?
-        'Domain not authorized. Contact support.' :
-      'Sign-in failed. Please try again.';
-    btn.disabled = false;
-  }
-}
-
-// Shared handler for both popup and redirect results
-async function _handleGoogleUser(user) {
-  const btn   = $('creator-google-btn');
-  const errEl = $('login-error');
-
-  if (!user || !user.email) {
-    errEl.textContent = 'Could not get account info.';
-    btn.disabled = false;
+  if(!email || !pass) {
+    if(errEl) errEl.textContent = 'Please enter email and password.';
     return;
   }
 
+  if(btn) { btn.disabled = true; btn.textContent = 'Signing in...'; }
+
   try {
+    // Sign in with Firebase Auth
+    const userCred = await signInWithEmailAndPassword(auth, email, pass);
+    const user = userCred.user;
+
+    // Look up creator by email in Firestore
     const snap = await getDocs(
-      query(collection(db, 'creators'), where('email', '==', user.email), limit(1))
+      query(collection(db, 'creators'), where('email', '==', user.email.toLowerCase()), limit(1))
     );
 
-    if (snap.empty) {
+    // Also try original case
+    let creatorSnap = snap;
+    if(snap.empty) {
+      creatorSnap = await getDocs(
+        query(collection(db, 'creators'), where('email', '==', user.email), limit(1))
+      );
+    }
+
+    if(creatorSnap.empty) {
       await signOut(auth);
-      errEl.textContent = user.email + ' is not registered as a creator. Contact STVR Hands.';
-      btn.disabled = false;
+      if(errEl) errEl.textContent = 'Account not found in creator list. Contact STVR Hands admin.';
+      if(btn) { btn.disabled = false; btn.textContent = 'SIGN IN'; }
       return;
     }
 
-    const creator = { id: snap.docs[0].id, ...snap.docs[0].data() };
+    const creator = { id: creatorSnap.docs[0].id, ...creatorSnap.docs[0].data() };
     _creator = creator;
     sessionStorage.setItem(SESSION_KEY, JSON.stringify(creator));
-    sessionStorage.removeItem('stvr_creator_google_pending');
 
-    $('login-screen').classList.add('fade-out');
+    if($('login-screen')) $('login-screen').classList.add('fade-out');
     const firstName = (creator.name || 'Creator').split(' ')[0];
     setTimeout(() => {
-      $('login-screen').style.display = 'none';
+      if($('login-screen')) $('login-screen').style.display = 'none';
       startApp();
       showToast(`Welcome back, ${firstName}! 🎬`, 'success');
     }, 480);
 
   } catch(err) {
-    devLog('Creator lookup error:', err);
-    errEl.textContent = 'Error verifying account. Try again.';
-    btn.disabled = false;
+    devLog('Creator login error:', err.code, err.message);
+    const errorMessages = {
+      'auth/user-not-found':        'No account found with this email.',
+      'auth/wrong-password':        'Incorrect password.',
+      'auth/invalid-email':         'Invalid email address.',
+      'auth/invalid-credential':    'Incorrect email or password.',
+      'auth/too-many-requests':     'Too many attempts. Try again later.',
+      'auth/user-disabled':         'This account has been disabled.',
+      'auth/network-request-failed':'Network error. Check your connection.'
+    };
+    if(errEl) errEl.textContent = errorMessages[err.code] || 'Sign-in failed. Try again.';
+    if(btn) { btn.disabled = false; btn.textContent = 'SIGN IN'; }
   }
 }
 
 /* ============================================================
    SESSION
 ============================================================ */
-// Handle Google redirect result when returning from mobile auth
-(async () => {
-  try {
-    const pending = sessionStorage.getItem('stvr_creator_google_pending');
-    if (!pending) return;
-
-    const result = await getRedirectResult(auth);
-    if (result && result.user) {
-      await _handleGoogleUser(result.user);
-    } else {
-      // Redirect returned but no user — clear flag
-      sessionStorage.removeItem('stvr_creator_google_pending');
-    }
-  } catch(err) {
-    devLog('Redirect result error:', err.code, err.message);
-    sessionStorage.removeItem('stvr_creator_google_pending');
-    if (err.code !== 'auth/no-current-user' && err.code !== 'auth/null-user') {
-      const errEl = $('login-error');
-      if (errEl) errEl.textContent = 'Sign-in failed: ' + err.code;
-    }
-  }
-})();
 
 // Resume session on page refresh via Firebase Auth state
 onAuthStateChanged(auth, async user => {
-  if (user && !_creator) {
-    // User is signed into Google but app state was lost (page refresh)
-    try {
-      const snap = await getDocs(query(collection(db, 'creators'), where('email', '==', user.email), limit(1)));
-      if (!snap.empty) {
-        _creator = { id: snap.docs[0].id, ...snap.docs[0].data() };
-        sessionStorage.setItem(SESSION_KEY, JSON.stringify(_creator));
-        $('login-screen').style.display = 'none';
-        if (!$('app').classList.contains('active')) startApp();
+  if(!user) return;
+
+  // Already have session
+  if(_creator) return;
+
+  // Check sessionStorage cache first
+  try {
+    const raw = sessionStorage.getItem(SESSION_KEY);
+    if(raw) {
+      const cached = JSON.parse(raw);
+      if(cached && cached.id) {
+        _creator = cached;
+        if($('login-screen')) $('login-screen').style.display = 'none';
+        if(!$('app').classList.contains('active')) startApp();
+        return;
       }
-    } catch(e) { devLog('Auth state creator lookup failed:', e); }
-  }
+    }
+  } catch(e) {}
+
+  // Lookup creator by email
+  try {
+    const snap = await getDocs(
+      query(collection(db, 'creators'), where('email', '==', user.email), limit(1))
+    );
+    if(!snap.empty) {
+      _creator = { id: snap.docs[0].id, ...snap.docs[0].data() };
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify(_creator));
+      if($('login-screen')) $('login-screen').style.display = 'none';
+      if(!$('app').classList.contains('active')) startApp();
+    }
+  } catch(e) { devLog('Auth state lookup failed:', e); }
 });
 
 function checkSession() {
@@ -983,19 +1012,26 @@ function checkSession() {
 }
 
 async function doLogout() {
-  if (_unsub) _unsub();
-  if (_unsubProfile) _unsubProfile();
+  if(_unsub) _unsub();
+  if(_unsubProfile) _unsubProfile();
   sessionStorage.removeItem(SESSION_KEY);
-  sessionStorage.removeItem('stvr_creator_google_pending');
-  _creator = null; _bookings = []; _notifs = [];
+  _creator = null;
+  _bookings = [];
+  _notifs = [];
   try { await signOut(auth); } catch(e) { devLog('Sign out error:', e); }
-  $('app').classList.remove('active');
-  $('app').style.display = 'none';
-  $('login-screen').style.display = 'flex';
-  $('login-screen').style.opacity = '1';
-  $('login-screen').classList.remove('fade-out');
-  $('login-error').textContent = '';
-  $('creator-google-btn').disabled = false;
+  if($('app')) {
+    $('app').classList.remove('active');
+    $('app').style.display = 'none';
+  }
+  if($('login-screen')) {
+    $('login-screen').style.display = 'flex';
+    $('login-screen').style.opacity = '1';
+    $('login-screen').classList.remove('fade-out');
+  }
+  const errEl = $('login-error');
+  if(errEl) errEl.textContent = '';
+  const btn = $('creator-login-btn');
+  if(btn) { btn.disabled = false; btn.textContent = 'SIGN IN'; }
 }
 
 /* ============================================================
@@ -1574,7 +1610,14 @@ async function seedTestData() {
 /* ============================================================
    BOOTSTRAP
 ============================================================ */
-$('creator-google-btn').addEventListener('click', doGoogleCreatorLogin);
+$('creator-login-btn')?.addEventListener('click', doCreatorEmailLogin);
+$('creator-pass-input')?.addEventListener('keydown', e => { if(e.key === 'Enter') doCreatorEmailLogin(); });
+$('creator-email-input')?.addEventListener('keydown', e => { if(e.key === 'Enter') $('creator-pass-input')?.focus(); });
+$('toggle-pass-vis')?.addEventListener('click', () => {
+  const inp = $('creator-pass-input');
+  if(!inp) return;
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+});
 $('logout-btn').addEventListener('click', doLogout);
 $('refresh-shoots').addEventListener('click', () => startBookingsListener());
 $('notif-btn').addEventListener('click', e => {
