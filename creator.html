@@ -663,7 +663,10 @@ import {
   serverTimestamp, where, limit
 } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
 import {
-  getAuth, signInWithPopup, signOut, onAuthStateChanged, GoogleAuthProvider
+  getAuth, signInWithPopup,
+  signInWithRedirect, getRedirectResult,
+  signOut, onAuthStateChanged,
+  GoogleAuthProvider
 } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
 
 /*
@@ -709,6 +712,9 @@ const _fbApp = initializeApp(firebaseConfig);
 const db     = getFirestore(_fbApp);
 const auth   = getAuth(_fbApp);
 const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({ prompt: 'select_account' });
+
+const _isMobile = () => /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
 /* ============================================================
    DEV / SECURITY UTILITIES
@@ -853,14 +859,54 @@ async function doGoogleCreatorLogin() {
   btn.disabled = true;
 
   try {
-    const result = await signInWithPopup(auth, googleProvider);
-    const email  = result.user.email;
+    if (_isMobile()) {
+      // Mobile: use redirect — popup blocked by Safari/Chrome
+      sessionStorage.setItem('stvr_creator_google_pending', '1');
+      await signInWithRedirect(auth, googleProvider);
+      // Page redirects — stops here
+      return;
+    }
 
-    // Look up creator by email field in Firestore
-    const snap = await getDocs(query(collection(db, 'creators'), where('email', '==', email), limit(1)));
+    // Desktop: use popup
+    const result = await signInWithPopup(auth, googleProvider);
+    await _handleGoogleUser(result.user);
+
+  } catch(err) {
+    devLog('Google login error:', err.code, err.message);
+    if (err.code === 'auth/popup-closed-by-user' ||
+        err.code === 'auth/cancelled-popup-request') {
+      btn.disabled = false;
+      return;
+    }
+    errEl.textContent =
+      err.code === 'auth/popup-blocked' ?
+        'Popup blocked. Trying redirect...' :
+      err.code === 'auth/unauthorized-domain' ?
+        'Domain not authorized. Contact support.' :
+      'Sign-in failed. Please try again.';
+    btn.disabled = false;
+  }
+}
+
+// Shared handler for both popup and redirect results
+async function _handleGoogleUser(user) {
+  const btn   = $('creator-google-btn');
+  const errEl = $('login-error');
+
+  if (!user || !user.email) {
+    errEl.textContent = 'Could not get account info.';
+    btn.disabled = false;
+    return;
+  }
+
+  try {
+    const snap = await getDocs(
+      query(collection(db, 'creators'), where('email', '==', user.email), limit(1))
+    );
+
     if (snap.empty) {
       await signOut(auth);
-      errEl.textContent = 'This Google account is not registered as a creator. Contact Bharath.';
+      errEl.textContent = user.email + ' is not registered as a creator. Contact STVR Hands.';
       btn.disabled = false;
       return;
     }
@@ -868,13 +914,19 @@ async function doGoogleCreatorLogin() {
     const creator = { id: snap.docs[0].id, ...snap.docs[0].data() };
     _creator = creator;
     sessionStorage.setItem(SESSION_KEY, JSON.stringify(creator));
+    sessionStorage.removeItem('stvr_creator_google_pending');
+
     $('login-screen').classList.add('fade-out');
     const firstName = (creator.name || 'Creator').split(' ')[0];
-    setTimeout(() => { $('login-screen').style.display = 'none'; startApp(); showToast(`Welcome back, ${firstName}! 🎬`, 'success'); }, 480);
+    setTimeout(() => {
+      $('login-screen').style.display = 'none';
+      startApp();
+      showToast(`Welcome back, ${firstName}! 🎬`, 'success');
+    }, 480);
+
   } catch(err) {
-    devLog('Google creator login error:', err.code, err.message);
-    if (err.code === 'auth/popup-closed-by-user') { btn.disabled = false; return; }
-    errEl.textContent = 'Sign-in failed. Please try again.';
+    devLog('Creator lookup error:', err);
+    errEl.textContent = 'Error verifying account. Try again.';
     btn.disabled = false;
   }
 }
@@ -882,6 +934,29 @@ async function doGoogleCreatorLogin() {
 /* ============================================================
    SESSION
 ============================================================ */
+// Handle Google redirect result when returning from mobile auth
+(async () => {
+  try {
+    const pending = sessionStorage.getItem('stvr_creator_google_pending');
+    if (!pending) return;
+
+    const result = await getRedirectResult(auth);
+    if (result && result.user) {
+      await _handleGoogleUser(result.user);
+    } else {
+      // Redirect returned but no user — clear flag
+      sessionStorage.removeItem('stvr_creator_google_pending');
+    }
+  } catch(err) {
+    devLog('Redirect result error:', err.code, err.message);
+    sessionStorage.removeItem('stvr_creator_google_pending');
+    if (err.code !== 'auth/no-current-user' && err.code !== 'auth/null-user') {
+      const errEl = $('login-error');
+      if (errEl) errEl.textContent = 'Sign-in failed: ' + err.code;
+    }
+  }
+})();
+
 // Resume session on page refresh via Firebase Auth state
 onAuthStateChanged(auth, async user => {
   if (user && !_creator) {
@@ -911,6 +986,7 @@ async function doLogout() {
   if (_unsub) _unsub();
   if (_unsubProfile) _unsubProfile();
   sessionStorage.removeItem(SESSION_KEY);
+  sessionStorage.removeItem('stvr_creator_google_pending');
   _creator = null; _bookings = []; _notifs = [];
   try { await signOut(auth); } catch(e) { devLog('Sign out error:', e); }
   $('app').classList.remove('active');
