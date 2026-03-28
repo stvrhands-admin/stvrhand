@@ -283,7 +283,7 @@ textarea{resize:vertical;min-height:80px}
 /* ===== ASSIGN MODAL ===== */
 .shoot-info-box{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:13px}
 .creator-assign-item{display:flex;align-items:center;justify-content:space-between;padding:12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;margin-bottom:8px}
-.wa-msg-box{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px;font-size:12px;line-height:1.7;color:var(--text-dim);white-space:pre-wrap;margin-bottom:12px;max-height:200px;overflow-y:auto}
+.wa-msg-box{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px;font-size:12px;line-height:1.7;color:var(--text-dim);white-space:pre-wrap;margin-bottom:12px;max-height:200px;overflow-y:auto;font-family:'DM Sans','Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif}
 
 /* ===== TOAST ===== */
 #toast-container{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:10px;pointer-events:none}
@@ -492,7 +492,7 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(56,189,248,0.1
       <div class="nav-item" data-page="settings"><span class="nav-icon">⚙️</span>Settings</div>
     </nav>
     <div class="sidebar-bottom">
-      <button class="btn-logout" id="logout-btn">⏻ Logout</button>
+      <button class="btn-logout" id="logout-btn">🚪 Logout</button>
     </div>
   </aside>
 
@@ -913,7 +913,7 @@ service cloud.firestore {
     </div>
     <div class="modal-body">
       <div style="font-family:Rajdhani,sans-serif;font-size:11px;letter-spacing:.5px;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase">Message Preview</div>
-      <textarea id="notify-msg-text" rows="12" style="width:100%;background:rgba(8,14,26,0.8);border:1px solid rgba(56,189,248,0.2);border-radius:8px;padding:12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.6;resize:vertical"></textarea>
+      <textarea id="notify-msg-text" rows="12" style="width:100%;background:rgba(8,14,26,0.8);border:1px solid rgba(56,189,248,0.2);border-radius:8px;padding:12px;color:var(--text);font-family:'DM Sans','Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif;font-size:13px;line-height:1.6;resize:vertical"></textarea>
     </div>
     <div class="modal-footer" style="gap:8px;flex-wrap:wrap">
       <button class="btn btn-ghost" onclick="copyNotifyMsg()" style="flex:1">📋 Copy Message</button>
@@ -2227,7 +2227,7 @@ function viewBooking(id){
         `Thank you for choosing STVR Hands! 🙏\n`+
         `— STVR Hands`;
       const reelWaUrl=`https://wa.me/91${(b.phone||'').replace(/\D/g,'')}?text=${encodeURIComponent(reelPayMsg)}`;
-      actionButtons.push(`<div style="width:100%;background:rgba(56,189,248,0.05);border:1px solid rgba(56,189,248,0.2);border-radius:10px;padding:14px 16px;margin-bottom:4px"><div style="font-family:'Rajdhani',sans-serif;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">💬 Payment Request Message</div><div style="font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text-dim);background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:10px;white-space:pre-line;line-height:1.6;max-height:140px;overflow-y:auto">${sanitize(reelPayMsg)}</div><div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-cyan" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px" href="${reelWaUrl}" target="_blank">📲 Send on WhatsApp</a><button class="btn btn-ghost" onclick="moveStatus('${id}','Payment Pending')">💰 Mark Payment Pending</button></div></div>`);
+      actionButtons.push(`<div style="width:100%;background:rgba(56,189,248,0.05);border:1px solid rgba(56,189,248,0.2);border-radius:10px;padding:14px 16px;margin-bottom:4px"><div style="font-family:'Rajdhani',sans-serif;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">💬 Payment Request Message</div><div style="font-family:'DM Sans','Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif;font-size:12px;color:var(--text-dim);background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:10px;white-space:pre-line;line-height:1.6;max-height:140px;overflow-y:auto">${sanitize(reelPayMsg)}</div><div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-cyan" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px" href="${reelWaUrl}" target="_blank">📲 Send on WhatsApp</a><button class="btn btn-ghost" onclick="moveStatus('${id}','Payment Pending')">💰 Mark Payment Pending</button></div></div>`);
       break;
     }
     case 'Payment Pending':{
@@ -2479,9 +2479,15 @@ async function renderApplications() {
 
   try {
     const snap = await getDocs(
-      query(collection(db,'creator_applications'), orderBy('createdAt','desc'), limit(100))
+      query(collection(db,'creator_applications'), limit(100))
     );
     const apps = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    // Sort by createdAt descending in JS so docs without createdAt are still included
+    apps.sort((a, b) => {
+      const ta = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const tb = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return tb - ta;
+    });
 
     // Update badge count
     const pending = apps.filter(a => !a.status || a.status === 'pending').length;
@@ -2572,8 +2578,8 @@ async function addCreatorFromApp(appId) {
 
 async function checkPendingApps() {
   try {
-    const snap = await getDocs(query(collection(db,'creator_applications'), where('status','==','pending'), limit(20)));
-    const count = snap.size;
+    const snap = await getDocs(query(collection(db,'creator_applications'), limit(100)));
+    const count = snap.docs.filter(d => { const s = d.data().status; return !s || s === 'pending'; }).length;
     const badge = $('app-nav-badge');
     if(badge) { badge.textContent = count; badge.style.display = count > 0 ? 'inline' : 'none'; }
   } catch(e) {}
