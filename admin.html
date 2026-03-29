@@ -1015,6 +1015,64 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(56,189,248,0.1
 ::-webkit-scrollbar-thumb{background:rgba(56,189,248,0.25);border-radius:4px}
 ::-webkit-scrollbar-thumb:hover{background:rgba(56,189,248,0.4)}
 
+/* ── DASHBOARD RANGE BAR ── */
+.dash-range-bar {
+  margin-bottom: 20px;
+  padding: 14px 16px;
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
+}
+.dash-range-tabs {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.dash-tab {
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.dash-tab:hover {
+  border-color: var(--cyan);
+  color: var(--text);
+}
+.dash-tab.active {
+  background: var(--cyan);
+  border-color: var(--cyan);
+  color: #05080f;
+}
+@media(max-width:768px) {
+  .dash-range-tabs { gap: 4px; }
+  .dash-tab { padding: 5px 10px; font-size: 11px; }
+  .dash-range-bar { padding: 10px 12px; }
+}
+
+/* ── BOOKING FILTERS MOBILE ── */
+@media(max-width:768px) {
+  .bk-filters-row {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px !important;
+  }
+  .bk-filters-row .filter-select {
+    width: 100% !important;
+  }
+  #bk-clear-filters {
+    grid-column: 1 / -1;
+  }
+}
+
 /* ── TOUCH ACTIVE STATES ── */
 @media (hover: none) {
   .btn:active {
@@ -1129,6 +1187,25 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(56,189,248,0.1
 
       <!-- PAGE: DASHBOARD -->
       <div class="page active" id="page-dashboard">
+
+        <!-- Dashboard date range -->
+        <div class="dash-range-bar">
+          <div class="dash-range-tabs">
+            <button class="dash-tab active" data-range="this-month" onclick="setDashRange('this-month', this)">This Month</button>
+            <button class="dash-tab" data-range="last-month" onclick="setDashRange('last-month', this)">Last Month</button>
+            <button class="dash-tab" data-range="this-year" onclick="setDashRange('this-year', this)">This Year</button>
+            <button class="dash-tab" data-range="all-time" onclick="setDashRange('all-time', this)">All Time</button>
+            <button class="dash-tab" data-range="custom" onclick="setDashRange('custom', this)">Custom</button>
+          </div>
+          <div id="dash-custom-range" style="display:none;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap">
+            <input type="date" id="dash-date-from" class="filter-select" style="width:auto">
+            <span style="color:var(--text-muted);font-size:12px">to</span>
+            <input type="date" id="dash-date-to" class="filter-select" style="width:auto">
+            <button class="btn btn-cyan btn-sm" onclick="applyCustomDashRange()">Apply</button>
+          </div>
+          <div id="dash-range-label" style="font-family:'Rajdhani',sans-serif;font-size:11px;color:var(--text-muted);letter-spacing:0.1em;margin-top:4px"></div>
+        </div>
+
         <div class="stats-grid" id="dash-stats"></div>
         <div class="section-header">
           <div class="section-title">Recent Bookings</div>
@@ -1146,18 +1223,61 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(56,189,248,0.1
 
       <!-- PAGE: BOOKINGS -->
       <div class="page" id="page-bookings">
-        <div class="controls-bar">
-          <input type="text" class="search-input" id="bk-search" placeholder="Search name or phone…">
-          <select class="filter-select" id="bk-status-filter">
-            <option value="">All Status</option>
-            <option>New</option><option>Confirmed</option><option>Assigned</option>
-            <option>Shoot Done</option><option>Reel Ready</option><option>Delivered</option>
-          </select>
-          <select class="filter-select" id="bk-loc-filter">
-            <option value="">All Locations</option>
-            <option>Hyderabad</option><option>Vizag</option><option>Vijayawada</option><option>Rajahmundry</option>
-          </select>
-          <button class="btn btn-cyan" onclick="openBookingModal()">+ Add Booking</button>
+        <div class="bk-controls-wrap">
+
+          <!-- Row 1: Search + Add -->
+          <div class="controls-bar" style="margin-bottom:8px">
+            <input type="text" class="search-input" id="bk-search" placeholder="Search name, phone, location…">
+            <button class="btn btn-cyan" onclick="openBookingModal()">+ Add Booking</button>
+          </div>
+
+          <!-- Row 2: Filters + Sort -->
+          <div class="controls-bar bk-filters-row">
+
+            <select class="filter-select" id="bk-status-filter">
+              <option value="">All Status</option>
+              <option>New</option>
+              <option>Confirmed</option>
+              <option>Assigned</option>
+              <option>Creator Confirmed</option>
+              <option>Shoot Done</option>
+              <option>Reel Ready</option>
+              <option>Payment Pending</option>
+              <option>Delivered</option>
+            </select>
+
+            <select class="filter-select" id="bk-loc-filter">
+              <option value="">All Locations</option>
+              <option>Hyderabad</option>
+              <option>Vizag</option>
+              <option>Vijayawada</option>
+              <option>Rajahmundry</option>
+            </select>
+
+            <select class="filter-select" id="bk-creator-filter">
+              <option value="">All Creators</option>
+            </select>
+
+            <select class="filter-select" id="bk-sort-by">
+              <option value="date-desc">Date — Newest First</option>
+              <option value="date-asc">Date — Oldest First</option>
+              <option value="name-asc">Name — A to Z</option>
+              <option value="name-desc">Name — Z to A</option>
+              <option value="location-asc">Location — A to Z</option>
+              <option value="status-asc">Status — By Stage</option>
+              <option value="package-asc">Package — A to Z</option>
+              <option value="creator-asc">Creator — A to Z</option>
+              <option value="amount-desc">Amount — High to Low</option>
+              <option value="amount-asc">Amount — Low to High</option>
+            </select>
+
+            <button class="btn btn-ghost btn-sm" id="bk-clear-filters" onclick="clearBookingFilters()" title="Clear all filters" style="flex-shrink:0">✕ Clear</button>
+
+          </div>
+
+          <!-- Active filters indicator -->
+          <div id="bk-active-filters" style="display:none;font-family:'Rajdhani',sans-serif;font-size:11px;color:var(--text-muted);letter-spacing:0.08em;margin-bottom:8px"></div>
+
         </div>
         <div class="table-wrap">
           <table id="bk-table">
@@ -1812,6 +1932,11 @@ Thank you SO MUCH for trusting STVR Hands with your content. This is just the be
 // ── PAGINATION CONSTANTS ──
 const PAGE_SIZE = 20; let currentPage = 0; let _lastVisible = null;
 
+// ── DASHBOARD RANGE STATE ──
+let _dashRange = 'this-month';
+let _dashCustomFrom = null;
+let _dashCustomTo = null;
+
 // ── FIRESTORE READ COUNTER ──
 let _firestoreReads = 0;
 function trackRead(count) { _firestoreReads += (count || 1); if (_firestoreReads > 5000) console.warn('High Firestore read count:', _firestoreReads); }
@@ -1894,16 +2019,74 @@ function nextPage() {
   if ((currentPage + 1) * PAGE_SIZE < filtered.length) { currentPage++; renderBookings(); }
 }
 function getFilteredBookings() {
-  const search = $('bk-search') ? $('bk-search').value.toLowerCase() : '';
-  const statusF = $('bk-status-filter') ? $('bk-status-filter').value : '';
-  const locF = $('bk-loc-filter') ? $('bk-loc-filter').value : '';
+  const search    = $('bk-search')        ? $('bk-search').value.toLowerCase() : '';
+  const statusF   = $('bk-status-filter') ? $('bk-status-filter').value : '';
+  const locF      = $('bk-loc-filter')    ? $('bk-loc-filter').value : '';
+  const creatorF  = $('bk-creator-filter')? $('bk-creator-filter').value : '';
+  const sortBy    = $('bk-sort-by')       ? $('bk-sort-by').value : 'date-desc';
+
   let bookings = getBookings();
-  if (search) bookings = searchBookings(search, bookings);
-  if (statusF) bookings = bookings.filter(b => (b.status || '') === statusF);
-  if (locF) bookings = bookings.filter(b => (b.location || '') === locF);
-  bookings.sort((a, b) => new Date(b.date || '') - new Date(a.date || ''));
+
+  if(search)   bookings = searchBookings(search, bookings);
+  if(statusF)  bookings = bookings.filter(b => (b.status||'') === statusF);
+  if(locF)     bookings = bookings.filter(b => (b.location||'') === locF);
+  if(creatorF) bookings = bookings.filter(b =>
+    b.assignedCreator === creatorF ||
+    (b.assignedCreatorName||'').toLowerCase().includes(creatorF.toLowerCase())
+  );
+
+  const statusOrder = ['New','Confirmed','Assigned','Creator Confirmed','Shoot Done','Reel Ready','Payment Pending','Delivered'];
+
+  bookings.sort((a, b) => {
+    switch(sortBy) {
+      case 'date-asc':       return new Date(a.date||'') - new Date(b.date||'');
+      case 'date-desc':      return new Date(b.date||'') - new Date(a.date||'');
+      case 'name-asc':       return (a.name||'').localeCompare(b.name||'');
+      case 'name-desc':      return (b.name||'').localeCompare(a.name||'');
+      case 'location-asc':   return (a.location||'').localeCompare(b.location||'');
+      case 'status-asc':     return statusOrder.indexOf(a.status||'New') - statusOrder.indexOf(b.status||'New');
+      case 'package-asc':    return (a.package||'').localeCompare(b.package||'');
+      case 'creator-asc':    return (a.assignedCreatorName||'—').localeCompare(b.assignedCreatorName||'—');
+      case 'amount-desc':    return (b.totalAmount||0) - (a.totalAmount||0);
+      case 'amount-asc':     return (a.totalAmount||0) - (b.totalAmount||0);
+      default:               return new Date(b.date||'') - new Date(a.date||'');
+    }
+  });
+
+  updateBookingFiltersIndicator(search, statusF, locF, creatorF, sortBy, bookings.length);
   return bookings;
 }
+
+function updateBookingFiltersIndicator(search, status, loc, creator, sort, count) {
+  const el = $('bk-active-filters');
+  if(!el) return;
+  const parts = [];
+  if(search)  parts.push(`Search: "${search}"`);
+  if(status)  parts.push(`Status: ${status}`);
+  if(loc)     parts.push(`Location: ${loc}`);
+  if(creator) parts.push(`Creator: filtered`);
+  if(sort !== 'date-desc') parts.push(`Sorted by: ${$('bk-sort-by')?.selectedOptions[0]?.text || sort}`);
+  if(parts.length) {
+    el.style.display = 'block';
+    el.textContent = `${count} result${count!==1?'s':''} — ${parts.join(' · ')}`;
+  } else {
+    el.style.display = 'none';
+  }
+}
+
+function clearBookingFilters() {
+  ['bk-search','bk-status-filter','bk-loc-filter','bk-creator-filter'].forEach(id => {
+    const el = $(id);
+    if(!el) return;
+    if(el.tagName === 'INPUT') el.value = '';
+    else el.selectedIndex = 0;
+  });
+  const sort = $('bk-sort-by');
+  if(sort) sort.value = 'date-desc';
+  currentPage = 0;
+  renderBookings();
+}
+window.clearBookingFilters = clearBookingFilters;
 
 // ── UNSUBSCRIBERS ──
 const _unsubscribers = [];
@@ -2404,6 +2587,8 @@ function initApp(){
   $('bk-search').addEventListener('input', debouncedBookingSearch);
   $('bk-status-filter').addEventListener('change', ()=>{ currentPage=0; renderBookings(); });
   $('bk-loc-filter').addEventListener('change', ()=>{ currentPage=0; renderBookings(); });
+  $('bk-creator-filter')?.addEventListener('change', ()=>{ currentPage=0; renderBookings(); });
+  $('bk-sort-by')?.addEventListener('change', ()=>{ currentPage=0; renderBookings(); });
 
   // Hamburger
   $('hamburger').addEventListener('click',()=>{
@@ -2587,6 +2772,58 @@ function renderAll(){
 }
 
 // ============================================================
+// DASHBOARD RANGE
+// ============================================================
+function setDashRange(range, btn) {
+  _dashRange = range;
+  qsa('.dash-tab').forEach(t => t.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  const customEl = $('dash-custom-range');
+  if(customEl) customEl.style.display = range === 'custom' ? 'flex' : 'none';
+  if(range !== 'custom') renderDashboard();
+}
+
+function applyCustomDashRange() {
+  _dashCustomFrom = $('dash-date-from')?.value || null;
+  _dashCustomTo   = $('dash-date-to')?.value   || null;
+  if(!_dashCustomFrom || !_dashCustomTo) {
+    showToast('Please select both dates', 'error');
+    return;
+  }
+  renderDashboard();
+}
+
+function getDashDateRange() {
+  const today = todayStr();
+  const now   = new Date();
+  switch(_dashRange) {
+    case 'this-month': {
+      return { from: today.slice(0,7) + '-01', to: today };
+    }
+    case 'last-month': {
+      const d = new Date(now);
+      d.setMonth(d.getMonth() - 1);
+      const y = d.getFullYear();
+      const m = String(d.getMonth()+1).padStart(2,'0');
+      const last = new Date(y, d.getMonth()+1, 0).getDate();
+      return { from: `${y}-${m}-01`, to: `${y}-${m}-${String(last).padStart(2,'0')}` };
+    }
+    case 'this-year': {
+      return { from: `${now.getFullYear()}-01-01`, to: today };
+    }
+    case 'all-time':
+      return { from: null, to: null };
+    case 'custom':
+      return { from: _dashCustomFrom, to: _dashCustomTo };
+    default:
+      return { from: today.slice(0,7) + '-01', to: today };
+  }
+}
+
+window.setDashRange = setDashRange;
+window.applyCustomDashRange = applyCustomDashRange;
+
+// ============================================================
 // DASHBOARD
 // ============================================================
 function renderDashboard(){
@@ -2602,44 +2839,55 @@ function renderDashboard(){
   `);
 
   requestAnimationFrame(() => {
-  const bookings=getBookings();
-  const creators=getCreators();
-  const today=todayStr();
-  const thisMonth=monthStr();
+  const bookings = getBookings();
+  const creators = getCreators();
+  const today    = todayStr();
+  const range    = getDashDateRange();
 
-  const total=bookings.length;
-  const pending=bookings.filter(b=>['New','Confirmed','Assigned'].includes(b.status)).length;
-  const todayS=bookings.filter(b=>b.date===today).length;
-  const completed=bookings.filter(b=>['Delivered'].includes(b.status)&&b.date&&b.date.startsWith(thisMonth)).length;
-  const pendingPay=bookings.filter(b=>!b.finalPaid).length;
-  const activeC=creators.filter(c=>c.status==='Available').length;
-  const pendingCreatorPay=bookings
-    .filter(b=>b.assignedCreator&&!b.creatorPaid&&b.reelReceived)
-    .reduce((sum,b)=>sum+(b.creatorEarnings||0),0);
+  // Filter bookings by date range
+  const rangeBookings = range.from
+    ? bookings.filter(b => b.date && b.date >= range.from && b.date <= range.to)
+    : bookings;
 
-  $('dash-stats').innerHTML=`
+  // Update range label
+  const label = $('dash-range-label');
+  if(label) {
+    label.textContent = range.from
+      ? `Showing: ${fmtDate(range.from)} — ${fmtDate(range.to)} (${rangeBookings.length} booking${rangeBookings.length!==1?'s':''})`
+      : `Showing all time — ${rangeBookings.length} total`;
+  }
+
+  const total      = rangeBookings.length;
+  const pending    = rangeBookings.filter(b => ['New','Confirmed','Assigned'].includes(b.status)).length;
+  const todayS     = bookings.filter(b => b.date === today).length;
+  const completed  = rangeBookings.filter(b => b.status === 'Delivered').length;
+  const revenue    = rangeBookings.filter(b => b.finalPaid).reduce((sum,b) => sum + (b.totalAmount||0), 0);
+  const pendingPay = rangeBookings.filter(b => !b.finalPaid && b.status !== 'New').length;
+  const activeC    = creators.filter(c => c.status === 'Available').length;
+
+  $('dash-stats').innerHTML = `
     ${statCard('📋','Total Bookings',total,'blue')}
     ${statCard('⏳','Pending Shoots',pending,'gold')}
     ${statCard('📅','Shoots Today',todayS,'orange')}
-    ${statCard('✅','Completed This Month',completed,'green')}
-    ${statCard('💰','Pending Payments',pendingPay,'red')}
-    ${statCard('👥','Active Creators',activeC,'purple')}
-    ${statCard('🧾','Pending Creator Pay',rupees(pendingCreatorPay),'orange')}
+    ${statCard('✅','Completed',completed,'green')}
+    ${statCard('💰','Revenue',rupees(revenue),'green')}
+    ${statCard('⚡','Pending Payments',pendingPay,'red')}
   `;
 
-  const recent=bookings.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,5);
-  const tbody=$('dash-tbody');
-  if(!recent.length){
-    tbody.innerHTML=`<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">No bookings yet</div></div></td></tr>`;
+  // Recent bookings — always show latest 5 regardless of range
+  const recent = bookings.slice().sort((a,b) => (b.createdAt||0) - (a.createdAt||0)).slice(0,5);
+  const tbody  = $('dash-tbody');
+  if(!recent.length) {
+    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">No bookings yet</div></div></td></tr>`;
     return;
   }
-  tbody.innerHTML=recent.map(b=>`
+  tbody.innerHTML = recent.map(b => `
     <tr>
       <td data-label="Name">${sanitize(b.name || 'Unknown')}</td>
       <td data-label="Package">${sanitize(getPackageName(b.package))}</td>
       <td data-label="Location">${sanitize(b.location || 'TBD')}</td>
       <td data-label="Date">${fmtDate(b.date)}</td>
-      <td data-label="Status"><span class="badge ${badgeClass(b.status || 'New')}">${sanitize(b.status || 'New')}</span></td>
+      <td data-label="Status"><span class="badge ${badgeClass(b.status||'New')}">${sanitize(b.status||'New')}</span></td>
       <td data-label="Action"><button class="btn btn-ghost btn-sm" onclick="viewBooking('${b.id}')">👁 View</button></td>
     </tr>
   `).join('');
@@ -2660,6 +2908,19 @@ function statCard(icon,label,num,color){
 let editingBookingId=null;
 
 function renderBookings(){
+  // Populate creator filter dropdown on first render
+  const crFilter = $('bk-creator-filter');
+  if(crFilter && crFilter.options.length <= 1) {
+    getCreators()
+      .slice().sort((a,b) => (a.name||'').localeCompare(b.name||''))
+      .forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = c.name || '';
+        crFilter.appendChild(opt);
+      });
+  }
+
   const allFiltered = getFilteredBookings();
   const startIdx = currentPage * PAGE_SIZE;
   const bookings = allFiltered.slice(startIdx, startIdx + PAGE_SIZE);
