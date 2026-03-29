@@ -1339,6 +1339,14 @@ service cloud.firestore {
       allow read: if true;
       allow write: if request.auth != null;
     }
+    match /admins/{email} {
+      // Only the admin themselves can read their own doc
+      allow read: if request.auth != null
+        && request.auth.token.email == email;
+      // Only existing admins can write
+      allow write: if request.auth != null
+        && exists(/databases/$(database)/documents/admins/$(request.auth.token.email));
+    }
   }
 }
 -->
@@ -1645,6 +1653,31 @@ if (!firebaseConfig.apiKey || firebaseConfig.apiKey === 'YOUR_API_KEY') {
 }
 const db     = getFirestore(_fbApp);
 const auth   = getAuth(_fbApp);
+
+// ── ADMIN SEEDING ──
+async function seedAdminIfNeeded() {
+  const ADMIN_EMAILS = [
+    'stvrhands@gmail.com'
+    // Add more admin emails here if needed in future
+  ];
+  try {
+    for(const email of ADMIN_EMAILS) {
+      const ref = doc(db, 'admins', email.toLowerCase().trim());
+      const snap = await getDoc(ref);
+      if(!snap.exists()) {
+        await setDoc(ref, {
+          email: email.toLowerCase().trim(),
+          isAdmin: true,
+          addedAt: serverTimestamp(),
+          addedBy: 'system'
+        });
+        devLog('Admin seeded:', email);
+      }
+    }
+  } catch(e) {
+    devLog('Admin seed error:', e);
+  }
+}
 
 // Handle Google redirect result on page load (mobile flow)
 (async () => {
@@ -2082,6 +2115,22 @@ function initLogin(){
         $('login-error').textContent = 'Session expired. Please sign in again.';
         return;
       }
+      // Verify admin on every page load
+      try {
+        const adminCheck = await getDoc(doc(db, 'admins', user.email.toLowerCase().trim()));
+        if(!adminCheck.exists() || !adminCheck.data().isAdmin) {
+          // Not admin — force logout
+          await signOut(auth);
+          localStorage.removeItem('stvr_admin_login_time');
+          $('login-error').textContent = 'Access denied.';
+          return;
+        }
+      } catch(e) {
+        // If Firestore check fails, allow if session is valid
+        // (prevents lockout on bad network)
+        devLog('Admin check failed:', e);
+      }
+
       $('login-screen').classList.add('hidden');
       if($('app').classList.contains('hidden')) showApp();
 
@@ -2134,8 +2183,26 @@ async function doLogin(){
   try {
     await signInWithEmailAndPassword(auth, email, pass);
     _loginAttempts = 0; // reset on success
+
+    // Verify this email is in Firestore admins collection
+    const adminSnap = await getDoc(doc(db, 'admins', email.toLowerCase().trim()));
+    if(!adminSnap.exists() || !adminSnap.data().isAdmin) {
+      // Not an admin — sign out immediately
+      await signOut(auth);
+      _loginAttempts++;
+      const inp = $('login-pass');
+      if(inp) {
+        inp.classList.add('shake');
+        inp.value = '';
+        setTimeout(() => inp.classList.remove('shake'), 500);
+      }
+      $('login-error').textContent = 'Access denied. This account is not authorized as admin.';
+      return;
+    }
+
+    // Admin verified ✅
     localStorage.setItem('stvr_admin_login_time', String(Date.now()));
-    // onAuthStateChanged above handles showing the app
+    // onAuthStateChanged handles UI
   } catch(err) {
     _loginAttempts++;
     const inp = $('login-pass');
@@ -3909,6 +3976,7 @@ window.markFinalPaidAndDeliver = markFinalPaidAndDeliver;
 // BOOTSTRAP
 // ============================================================
 document.addEventListener('DOMContentLoaded',()=>{
+  seedAdminIfNeeded();
   initLogin();
   // Wire up app-status-filter once DOM is ready
   const appFilter = $('app-status-filter');
