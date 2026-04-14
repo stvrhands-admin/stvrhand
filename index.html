@@ -14,10 +14,10 @@
   <meta name="theme-color" content="#05080f">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="icon" type="image/png" sizes="32x32" href="/assets/stvr-logo.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/assets/stvr-logo.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="/assets/stvr-logo.png">
-  <link rel="shortcut icon" href="/assets/stvr-logo.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/stvr-og-image.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/stvr-og-image.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/stvr-og-image.png">
+  <link rel="shortcut icon" href="/assets/stvr-og-image.png">
   <!-- Primary SEO -->
   <title>STVR Hands — Shoot Today. Viral Tomorrow.</title>
   <meta name="description"
@@ -63,7 +63,7 @@
     "name": "STVR Hands",
     "description": "Cinematic reel studio crafting viral content for brands, influencers, weddings and events across Hyderabad, Vizag, Vijayawada and Rajahmundry. Shot on iPhone, delivered in 24 hours.",
     "url": "https://www.stvrhands.com",
-    "logo": "https://www.stvrhands.com/assets/stvr-logo.png",
+    "logo": "https://www.stvrhands.com/assets/stvr-og-image.png",
     "image": "https://www.stvrhands.com/assets/og-preview.jpg",
     "telephone": "+917989079432",
     "email": "stvrhands@gmail.com",
@@ -83,7 +83,7 @@
     "openingHours": "Mo-Su 07:00-21:00",
     "sameAs": [
       "https://instagram.com/stvr__hands",
-      "https://youtube.com/@stvr__bharath"
+      "https://www.youtube.com/@stvr__hands"
     ],
     "hasOfferCatalog": {
       "@type": "OfferCatalog",
@@ -294,12 +294,11 @@
 
 
     /* ============================================================
-       STVR LOGO (CSS — no image)
+       STVR LOGO (image-based)
     ============================================================ */
     .stvr-logo {
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 0;
       text-decoration: none;
       cursor: pointer;
       transition: opacity .25s ease;
@@ -309,92 +308,29 @@
       opacity: .85;
     }
 
-    .logo-bar {
-      width: 4px;
-      height: 2.2em;
-      background: #E63232;
-      border-radius: 2px;
-      margin-right: 14px;
-      flex-shrink: 0;
+    .stvr-logo-img {
+      display: block;
+      object-fit: contain;
     }
 
-    .logo-text {
-      font-family: 'Caveat', cursive;
-      font-weight: 700;
-      font-size: 1.6rem;
-      letter-spacing: 0.12em;
-      line-height: 1;
-      color: #ffffff;
-      display: flex;
-      align-items: baseline;
+    /* Navbar */
+    #nav .stvr-logo-img {
+      height: 64px;
+      width: auto;
     }
 
-    .logo-text span {
-      color: #ffffff;
-    }
-
-    .logo-v {
-      color: #4A90D9 !important;
-    }
-
-    .logo-space {
-      width: 0.45em;
-      display: inline-block;
-    }
-
-    /* Navbar (small) */
-    #nav .stvr-logo .logo-text {
-      font-size: 1.55rem;
-    }
-
-    #nav .stvr-logo .logo-bar {
-      height: 2.2em;
-    }
-
-    /* Intro overlay (large) */
-    #intro .stvr-logo {
-      opacity: 0;
-      animation: fadeUp .6s ease 1.1s forwards;
-      margin-bottom: .8rem;
-    }
-
-    #intro .stvr-logo .logo-text {
-      font-size: 2.6rem;
-    }
-
-    #intro .stvr-logo .logo-bar {
-      height: 2.4em;
-      width: 5px;
-      margin-right: 18px;
-    }
-
-    /* Founder card (medium-small) */
-    .founder-card .stvr-logo {
+    /* Founder card */
+    .founder-card .stvr-logo-img {
+      height: 80px;
+      width: auto;
       margin-bottom: 1.6rem;
     }
 
-    .founder-card .stvr-logo .logo-text {
-      font-size: 1.35rem;
-    }
-
-    .founder-card .stvr-logo .logo-bar {
-      height: 2.2em;
-      width: 4px;
-      margin-right: 12px;
-    }
-
-    /* Footer (medium) */
-    footer .stvr-logo {
-      justify-content: center;
+    /* Footer */
+    footer .stvr-logo-img {
+      height: 90px;
+      width: auto;
       margin-bottom: .5rem;
-    }
-
-    footer .stvr-logo .logo-text {
-      font-size: 1.9rem;
-    }
-
-    footer .stvr-logo .logo-bar {
-      height: 2.2em;
     }
 
     /* ============================================================
@@ -607,19 +543,17 @@
 
     /* ---- Hero logo component ---- */
     .hero-logo-img {
-      width: clamp(320px, 62vw, 720px);
-      max-width: 92%;
+      width: clamp(360px, 68vw, 800px);
+      max-width: 88%;
       height: auto;
       object-fit: contain;
-      image-rendering: -webkit-optimize-contrast;
-      image-rendering: crisp-edges;
       transform: translateZ(0);
       backface-visibility: hidden;
-      margin-bottom: .8rem;
+      margin-bottom: 0;
       opacity: 0;
       animation: fadeUp .9s ease .4s forwards;
       filter:
-        drop-shadow(0 0 40px rgba(56, 189, 248, .18)) drop-shadow(0 0 80px rgba(56, 189, 248, .10)) drop-shadow(0 24px 48px rgba(0, 0, 0, .65));
+        drop-shadow(0 0 40px rgba(56, 189, 248, .25)) drop-shadow(0 0 80px rgba(56, 189, 248, .12)) drop-shadow(0 24px 48px rgba(0, 0, 0, .65));
     }
 
 
@@ -919,12 +853,10 @@
       padding: 2.2rem;
     }
 
-    .founder-card-logo {
-      height: 52px;
-      object-fit: contain;
-      border-radius: 8px;
+    .founder-card-img {
+      height: 48px;
+      width: auto;
       margin-bottom: 1.6rem;
-      border: 1px solid rgba(56, 189, 248, .18);
     }
 
     .founder-badge {
@@ -2037,6 +1969,19 @@
       border-color: rgba(225, 48, 108, .55);
       box-shadow: 0 0 16px rgba(225, 48, 108, .25);
       background: rgba(225, 48, 108, .12);
+    }
+
+    .s-btn[title="Facebook"] {
+      color: #1877f2;
+      border-color: rgba(24, 119, 242, .25);
+      background: rgba(24, 119, 242, .06);
+    }
+
+    .s-btn[title="Facebook"]:hover {
+      color: #1877f2;
+      border-color: rgba(24, 119, 242, .55);
+      box-shadow: 0 0 16px rgba(24, 119, 242, .2);
+      background: rgba(24, 119, 242, .12);
     }
 
     .s-btn[title="YouTube"] {
@@ -3245,15 +3190,8 @@
      NAVBAR
 ============================================================ -->
   <nav id="nav">
-    <a href="#hero" aria-label="STVR Hands Home" style="text-decoration:none;">
-      <div class="stvr-logo">
-        <div class="logo-bar"></div>
-        <div class="logo-text">
-          <span>S</span><span>T</span><span class="logo-v">V</span><span>R</span>
-          <span class="logo-space"> </span>
-          <span>H</span><span>A</span><span>N</span><span>D</span><span>S</span>
-        </div>
-      </div>
+    <a href="#hero" aria-label="STVR Hands Home" class="stvr-logo">
+      <img src="assets/stvr-og-image.png" alt="STVR Hands" class="stvr-logo-img">
     </a>
     <ul class="nav-links" id="navLinks">
       <li><a href="#hero">Home</a></li>
@@ -3362,14 +3300,7 @@
 
         <div class="reveal" style="transition-delay:.16s">
           <div class="founder-card glass">
-            <div class="stvr-logo" aria-label="STVR Hands">
-              <div class="logo-bar"></div>
-              <div class="logo-text">
-                <span>S</span><span>T</span><span class="logo-v">V</span><span>R</span>
-                <span class="logo-space"> </span>
-                <span>H</span><span>A</span><span>N</span><span>D</span><span>S</span>
-              </div>
-            </div>
+            <img src="assets/stvr-logo.png" alt="STVR Hands" class="stvr-logo-img founder-card-img">
             <span class="founder-badge">Founder</span>
             <h3 class="founder-name chrome-deep">Bharath</h3>
             <p class="founder-handle">@stvr__bharath</p>
@@ -3393,7 +3324,7 @@
                 </svg>
                 Instagram
               </a>
-              <a href="https://www.youtube.com/@stvr__bharath" target="_blank" rel="noopener"
+              <a href="https://www.youtube.com/@stvr__hands" target="_blank" rel="noopener"
                 class="founder-social-btn fsb-yt">
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
                   style="flex-shrink:0">
@@ -3700,7 +3631,7 @@
                 <span class="cir-value">@stvr__hands</span>
               </div>
             </a>
-            <a href="https://www.youtube.com/@stvr__bharath" target="_blank" rel="noopener" class="contact-info-row">
+            <a href="https://www.youtube.com/@stvr__hands" target="_blank" rel="noopener" class="contact-info-row">
               <div class="cir-icon cir-yt"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"
                   aria-hidden="true">
                   <path
@@ -3895,14 +3826,7 @@
   <footer>
     <div class="footer-inner">
       <div class="footer-logo-wrap">
-        <div class="stvr-logo" aria-label="STVR Hands">
-          <div class="logo-bar"></div>
-          <div class="logo-text">
-            <span>S</span><span>T</span><span class="logo-v">V</span><span>R</span>
-            <span class="logo-space"> </span>
-            <span>H</span><span>A</span><span>N</span><span>D</span><span>S</span>
-          </div>
-        </div>
+        <img src="assets/stvr-og-image.png" alt="STVR Hands" class="stvr-logo-img">
         <div class="footer-tagline"><span class="hbvr-text"><span class="hbvr-blue">HANDS </span><span
               class="hbvr-white">BEHIND </span><span class="hbvr-blue">VIRAL </span><span
               class="hbvr-white">REELS</span></span></div>
@@ -3916,7 +3840,14 @@
               d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
           </svg>
         </a>
-        <a href="https://www.youtube.com/@stvr__bharath" target="_blank" rel="noopener" class="s-btn" title="YouTube">
+        <a href="https://www.facebook.com/profile.php?id=61586525687446" target="_blank" rel="noopener" class="s-btn"
+          title="Facebook">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path
+              d="M24 12.073C24 5.404 18.627 0 12 0S0 5.404 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047v-2.66c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.886v2.265h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z" />
+          </svg>
+        </a>
+        <a href="https://www.youtube.com/@stvr__hands" target="_blank" rel="noopener" class="s-btn" title="YouTube">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path
               d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
@@ -5054,6 +4985,80 @@
         });
       }, { threshold: 0.3 });
       waObserver.observe(bookingSection);
+    }
+  </script>
+
+  <!-- Remove white background from logo PNGs using flood-fill from edges -->
+  <script>
+    function knockOutWhiteBackground(img) {
+      var threshold = 236;
+      var canvas = document.createElement('canvas');
+      var w = img.naturalWidth, h = img.naturalHeight;
+      canvas.width = w;
+      canvas.height = h;
+      var ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      var imageData = ctx.getImageData(0, 0, w, h);
+      var d = imageData.data;
+      var visited = new Uint8Array(w * h);
+      var queue = [];
+
+      // Seed queue from all edge pixels that are white/near-white
+      function isWhite(idx) {
+        var p = idx * 4;
+        return d[p] >= threshold && d[p + 1] >= threshold && d[p + 2] >= threshold;
+      }
+
+      for (var x = 0; x < w; x++) {
+        [x, (h - 1) * w + x].forEach(function (idx) {
+          if (!visited[idx] && isWhite(idx)) { visited[idx] = 1; queue.push(idx); }
+        });
+      }
+      for (var y = 1; y < h - 1; y++) {
+        [y * w, y * w + w - 1].forEach(function (idx) {
+          if (!visited[idx] && isWhite(idx)) { visited[idx] = 1; queue.push(idx); }
+        });
+      }
+
+      // BFS — flood fill outward from edges, marking background pixels transparent
+      var i = 0;
+      while (i < queue.length) {
+        var curr = queue[i++];
+        var p = curr * 4;
+        // Soft fade on anti-aliased edges
+        var whiteness = (d[p] + d[p + 1] + d[p + 2]) / 3;
+        d[p + 3] = whiteness >= 252 ? 0 : Math.round((255 - whiteness) * 1.5);
+
+        var cx = curr % w, cy = (curr / w) | 0;
+        var neighbors = [];
+        if (cx > 0) neighbors.push(curr - 1);
+        if (cx < w - 1) neighbors.push(curr + 1);
+        if (cy > 0) neighbors.push(curr - w);
+        if (cy < h - 1) neighbors.push(curr + w);
+
+        neighbors.forEach(function (n) {
+          if (!visited[n] && isWhite(n)) { visited[n] = 1; queue.push(n); }
+        });
+      }
+
+      ctx.putImageData(imageData, 0, 0);
+      img.src = canvas.toDataURL('image/png');
+    }
+
+    function processLogos() {
+      document.querySelectorAll('.stvr-logo-img, .hero-logo-img').forEach(function (img) {
+        if (img.complete && img.naturalWidth) {
+          knockOutWhiteBackground(img);
+        } else {
+          img.addEventListener('load', function () { knockOutWhiteBackground(img); });
+        }
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', processLogos);
+    } else {
+      processLogos();
     }
   </script>
 
