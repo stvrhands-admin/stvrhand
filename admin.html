@@ -2956,7 +2956,7 @@ function renderBookings(){
         <button class="btn btn-ghost btn-icon btn-sm" onclick="viewBooking('${b.id}')" title="View">👁</button>
         <button class="btn btn-ghost btn-icon btn-sm" onclick="editBooking('${b.id}')" title="Edit">✏️</button>
         <button class="btn btn-ghost btn-icon btn-sm" onclick="openAssign('${b.id}')" title="Assign">🎬</button>
-        <a class="btn btn-ghost btn-icon btn-sm" href="https://wa.me/91${(b.phone||'').replace(/\D/g,'')}?text=Hi+${encodeURIComponent(b.name || '')}%2C+this+is+STVR+Hands" target="_blank" title="WhatsApp">💬</a>
+        <a class="btn btn-ghost btn-icon btn-sm" href="https://wa.me/91${(b.phone||'').replace(/\D/g,'')}?text=${encodeURIComponent('Hi ' + (b.name||'') + ', this is STVR Hands! 👋')}" target="_blank" title="WhatsApp">💬</a>
         <button class="btn btn-red btn-icon btn-sm" onclick="deleteBooking('${b.id}')" title="Delete">🗑</button>
       </td>
     `;
