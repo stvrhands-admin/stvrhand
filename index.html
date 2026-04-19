@@ -3557,9 +3557,12 @@
       <div class="portfolio-filters">
         <button class="pf-tab active" data-filter="all">All</button>
         <button class="pf-tab" data-filter="cars">Cars</button>
+        <button class="pf-tab" data-filter="delivery">Vehicle Delivery</button>
+        <button class="pf-tab" data-filter="bikes">Bikes</button>
+        <button class="pf-tab" data-filter="influencer">Influencers</button>
+        <button class="pf-tab" data-filter="festivals">Festivals</button>
         <button class="pf-tab" data-filter="events">Events</button>
-        <button class="pf-tab" data-filter="influencer">Influencer</button>
-        <button class="pf-tab" data-filter="weddings">Weddings</button>
+        <button class="pf-tab" data-filter="weddings">Wedding</button>
       </div>
 
       <div class="portfolio-grid" id="portfolioGrid"></div>
@@ -5019,14 +5022,65 @@
     6. If no thumbnail provided, a dark placeholder shows — cards still work perfectly.
     */
     const reels = [
-      { id: 1, url: 'https://www.instagram.com/reel/DVFPiSWD91T/', thumbnail: 'assets/reels/reel1.jpg', category: 'cars', categoryLabel: '&#x1F697; Cars', title: 'Car Delivery Reel' },
-      { id: 2, url: 'https://www.instagram.com/reel/DV52lW5vSOZ/', thumbnail: 'assets/reels/reel2.jpg', category: 'events', categoryLabel: '&#x1F389; Events', title: 'Event Coverage' },
-      { id: 3, url: 'https://www.instagram.com/reel/DWTu1HGj4jG/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==', thumbnail: 'assets/reels/reel3.jpg', category: 'influencer', categoryLabel: '&#x1F4F8; Influencer', title: 'Influencer Reel' },
-      { id: 4, url: 'https://www.instagram.com/reel/DUcJUdVj5R4/', thumbnail: 'assets/reels/reel4.jpg', category: 'weddings', categoryLabel: '&#x1F48D; Wedding', title: 'Pre-Wedding Reel' },
-      { id: 5, url: 'https://www.instagram.com/reel/DSESsUKD5TD/', thumbnail: 'assets/reels/reel5.jpg', category: 'cars', categoryLabel: '&#x1F697; Cars', title: 'Bike Delivery' },
-      { id: 6, url: 'https://www.instagram.com/reel/DU8wUGyiIbJ/', thumbnail: 'assets/reels/reel6.jpg', category: 'events', categoryLabel: '&#x1F389; Events', title: 'Birthday Reel' },
-      { id: 7, url: 'https://www.instagram.com/reel/DO8Zj0bj9cT/', thumbnail: 'assets/reels/reel7.jpg', category: 'influencer', categoryLabel: '&#x1F4F8; Influencer', title: 'Brand Shoot' },
-      { id: 8, url: 'https://www.instagram.com/reel/DV3RQQcvSk4/', thumbnail: 'assets/reels/reel8.jpg', category: 'weddings', categoryLabel: '&#x1F48D; Wedding', title: 'Wedding Reel' }
+      // ── Cars ──
+      { url: 'https://www.instagram.com/reel/DUxHyxCCP29/', thumbnail: 'assets/reels/cars/car1.jpg', category: 'cars', categoryLabel: '&#x1F697; Cars', title: 'Car Reel' },
+      { url: 'https://www.instagram.com/reel/DSESsUKD5TD/', thumbnail: 'assets/reels/cars/car2.jpg', category: 'cars', categoryLabel: '&#x1F697; Cars', title: 'Car Reel' },
+      { url: 'https://www.instagram.com/reel/DOFw4S3Dytn/', thumbnail: 'assets/reels/cars/car3.jpg', category: 'cars', categoryLabel: '&#x1F697; Cars', title: 'Car Reel' },
+      { url: 'https://www.instagram.com/reel/DN8FGTDD1nA/', thumbnail: 'assets/reels/cars/car4.jpg', category: 'cars', categoryLabel: '&#x1F697; Cars', title: 'Car Reel' },
+
+      // ── Vehicle Delivery ──
+      { url: 'https://www.instagram.com/reel/DPLDEVijy98/', thumbnail: 'assets/reels/delivery/delivery1.jpg', category: 'delivery', categoryLabel: '&#x1F6F5; Delivery', title: 'Vehicle Delivery' },
+      { url: 'https://www.instagram.com/reel/DSjthq5j6Sz/', thumbnail: 'assets/reels/delivery/delivery2.jpg', category: 'delivery', categoryLabel: '&#x1F6F5; Delivery', title: 'Vehicle Delivery' },
+      { url: 'https://www.instagram.com/reel/DTEu_dOj8vO/', thumbnail: 'assets/reels/delivery/delivery3.jpg', category: 'delivery', categoryLabel: '&#x1F6F5; Delivery', title: 'Vehicle Delivery' },
+      { url: 'https://www.instagram.com/reel/DVFPiSWD91T/', thumbnail: 'assets/reels/delivery/delivery4.jpg', category: 'delivery', categoryLabel: '&#x1F6F5; Delivery', title: 'Vehicle Delivery' },
+      { url: 'https://www.instagram.com/reel/DWZQH_Cj93U/', thumbnail: 'assets/reels/delivery/delivery5.jpg', category: 'delivery', categoryLabel: '&#x1F6F5; Delivery', title: 'Vehicle Delivery' },
+      { url: 'https://www.instagram.com/reel/DWx6OyCjuKn/', thumbnail: 'assets/reels/delivery/delivery6.jpg', category: 'delivery', categoryLabel: '&#x1F6F5; Delivery', title: 'Vehicle Delivery' },
+
+      // ── Bikes ──
+      { url: 'https://www.instagram.com/reel/DSKjlsQiMEE/', thumbnail: 'assets/reels/bikes/bike1.jpg', category: 'bikes', categoryLabel: '&#x1F3CD; Bikes', title: 'Bike Reel' },
+      { url: 'https://www.instagram.com/reel/DScXaSyD9gp/', thumbnail: 'assets/reels/bikes/bike2.jpg', category: 'bikes', categoryLabel: '&#x1F3CD; Bikes', title: 'Bike Reel' },
+      { url: 'https://www.instagram.com/reel/DTpDoMuj018/', thumbnail: 'assets/reels/bikes/bike3.jpg', category: 'bikes', categoryLabel: '&#x1F3CD; Bikes', title: 'Bike Reel' },
+
+      // ── Influencers ──
+      { url: 'https://www.instagram.com/reel/DWTu1HGj4jG/', thumbnail: 'assets/reels/influencers/inf1.jpg', category: 'influencer', categoryLabel: '&#x1F4F8; Influencer', title: 'Influencer Reel' },
+      { url: 'https://www.instagram.com/reel/DO8Zj0bj9cT/', thumbnail: 'assets/reels/influencers/inf2.jpg', category: 'influencer', categoryLabel: '&#x1F4F8; Influencer', title: 'Influencer Reel' },
+      { url: 'https://www.instagram.com/reel/DTSaappDw1d/', thumbnail: 'assets/reels/influencers/inf3.jpg', category: 'influencer', categoryLabel: '&#x1F4F8; Influencer', title: 'Influencer Reel' },
+      { url: 'https://www.instagram.com/reel/DQ1mQmxkvgC/', thumbnail: 'assets/reels/influencers/inf4.jpg', category: 'influencer', categoryLabel: '&#x1F4F8; Influencer', title: 'Influencer Reel' },
+      { url: 'https://www.instagram.com/reel/DRuEg64ib4v/', thumbnail: 'assets/reels/influencers/inf5.jpg', category: 'influencer', categoryLabel: '&#x1F4F8; Influencer', title: 'Influencer Reel' },
+      { url: 'https://www.instagram.com/reel/DOTRVLniBws/', thumbnail: 'assets/reels/influencers/inf6.jpg', category: 'influencer', categoryLabel: '&#x1F4F8; Influencer', title: 'Influencer Reel' },
+      { url: 'https://www.instagram.com/reel/DNj-SH7yCtg/', thumbnail: 'assets/reels/influencers/inf7.jpg', category: 'influencer', categoryLabel: '&#x1F4F8; Influencer', title: 'Influencer Reel' },
+      { url: 'https://www.instagram.com/reel/DRCOqNhEmmG/', thumbnail: 'assets/reels/influencers/inf8.jpg', category: 'influencer', categoryLabel: '&#x1F4F8; Influencer', title: 'Influencer Reel' },
+
+      // ── Festivals ──
+      { url: 'https://www.instagram.com/reel/DNS9Hhsv0Lj/', thumbnail: 'assets/reels/festivals/fest1.jpg', category: 'festivals', categoryLabel: '&#x1F386; Festivals', title: 'Festival Reel' },
+      { url: 'https://www.instagram.com/reel/DN5aq9oj97e/', thumbnail: 'assets/reels/festivals/fest2.jpg', category: 'festivals', categoryLabel: '&#x1F386; Festivals', title: 'Festival Reel' },
+      { url: 'https://www.instagram.com/reel/DO0lDWaD6gP/', thumbnail: 'assets/reels/festivals/fest3.jpg', category: 'festivals', categoryLabel: '&#x1F386; Festivals', title: 'Festival Reel' },
+      { url: 'https://www.instagram.com/reel/DO--hq-j709/', thumbnail: 'assets/reels/festivals/fest4.jpg', category: 'festivals', categoryLabel: '&#x1F386; Festivals', title: 'Festival Reel' },
+      { url: 'https://www.instagram.com/reel/DQx3hMRj1Ye/', thumbnail: 'assets/reels/festivals/fest5.jpg', category: 'festivals', categoryLabel: '&#x1F386; Festivals', title: 'Festival Reel' },
+      { url: 'https://www.instagram.com/reel/DR6MCKIj-Pw/', thumbnail: 'assets/reels/festivals/fest6.jpg', category: 'festivals', categoryLabel: '&#x1F386; Festivals', title: 'Festival Reel' },
+
+      // ── Events ──
+      { url: 'https://www.instagram.com/reel/DV52lW5vSOZ/', thumbnail: 'assets/reels/events/event1.jpg', category: 'events', categoryLabel: '&#x1F389; Events', title: 'Event Reel' },
+      { url: 'https://www.instagram.com/reel/DU8wUGyiIbJ/', thumbnail: 'assets/reels/events/event2.jpg', category: 'events', categoryLabel: '&#x1F389; Events', title: 'Event Reel' },
+      { url: 'https://www.instagram.com/reel/DSaQsBqDwhe/', thumbnail: 'assets/reels/events/event3.jpg', category: 'events', categoryLabel: '&#x1F389; Events', title: 'Event Reel' },
+      { url: 'https://www.instagram.com/reel/DSaUSm9Dydl/', thumbnail: 'assets/reels/events/event4.jpg', category: 'events', categoryLabel: '&#x1F389; Events', title: 'Event Reel' },
+      { url: 'https://www.instagram.com/reel/DSfQyV2j8Wr/', thumbnail: 'assets/reels/events/event5.jpg', category: 'events', categoryLabel: '&#x1F389; Events', title: 'Event Reel' },
+      { url: 'https://www.instagram.com/reel/DUvxAWfD3Pd/', thumbnail: 'assets/reels/events/event6.jpg', category: 'events', categoryLabel: '&#x1F389; Events', title: 'Event Reel' },
+      { url: 'https://www.instagram.com/reel/DS1XeW-kfLt/', thumbnail: 'assets/reels/events/event7.jpg', category: 'events', categoryLabel: '&#x1F389; Events', title: 'Event Reel' },
+      { url: 'https://www.instagram.com/reel/DVSbi7xjxLA/', thumbnail: 'assets/reels/events/event8.jpg', category: 'events', categoryLabel: '&#x1F389; Events', title: 'Event Reel' },
+      { url: 'https://www.instagram.com/reel/DVYdh4Lj7eK/', thumbnail: 'assets/reels/events/event9.jpg', category: 'events', categoryLabel: '&#x1F389; Events', title: 'Event Reel' },
+      { url: 'https://www.instagram.com/reel/DS2R4DCDNFl/', thumbnail: 'assets/reels/events/event10.jpg', category: 'events', categoryLabel: '&#x1F389; Events', title: 'Event Reel' },
+      { url: 'https://www.instagram.com/reel/DWb18eEjy7Q/', thumbnail: 'assets/reels/events/event11.jpg', category: 'events', categoryLabel: '&#x1F389; Events', title: 'Event Reel' },
+
+      // ── Wedding ──
+      { url: 'https://www.instagram.com/reel/DUcJUdVj5R4/', thumbnail: 'assets/reels/weddings/wed1.jpg', category: 'weddings', categoryLabel: '&#x1F48D; Wedding', title: 'Wedding Reel' },
+      { url: 'https://www.instagram.com/reel/DQoiXzRD_-D/', thumbnail: 'assets/reels/weddings/wed2.jpg', category: 'weddings', categoryLabel: '&#x1F48D; Wedding', title: 'Wedding Reel' },
+      { url: 'https://www.instagram.com/reel/DWLkzfMD0BP/', thumbnail: 'assets/reels/weddings/wed3.jpg', category: 'weddings', categoryLabel: '&#x1F48D; Wedding', title: 'Wedding Reel' },
+      { url: 'https://www.instagram.com/reel/DUQa9r3k7jK/', thumbnail: 'assets/reels/weddings/wed4.jpg', category: 'weddings', categoryLabel: '&#x1F48D; Wedding', title: 'Wedding Reel' },
+      { url: 'https://www.instagram.com/reel/DXLDFNND6G_/', thumbnail: 'assets/reels/weddings/wed5.jpg', category: 'weddings', categoryLabel: '&#x1F48D; Wedding', title: 'Wedding Reel' },
+      { url: 'https://www.instagram.com/reel/DVdePYHD9vp/', thumbnail: 'assets/reels/weddings/wed6.jpg', category: 'weddings', categoryLabel: '&#x1F48D; Wedding', title: 'Wedding Reel' },
+      { url: 'https://www.instagram.com/reel/DVlNUrCPeKq/', thumbnail: 'assets/reels/weddings/wed7.jpg', category: 'weddings', categoryLabel: '&#x1F48D; Wedding', title: 'Wedding Reel' },
+      { url: 'https://www.instagram.com/reel/DV3RQQcvSk4/', thumbnail: 'assets/reels/weddings/wed8.jpg', category: 'weddings', categoryLabel: '&#x1F48D; Wedding', title: 'Wedding Reel' },
     ];
 
     const IG_SVG = `<svg viewBox="0 0 24 24" fill="white" width="14" height="14"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>`;
