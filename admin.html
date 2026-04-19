@@ -1627,6 +1627,11 @@ service cloud.firestore {
             <label class="form-check"><input type="checkbox" name="cr-spec" value="Influencer Content"> Influencer Content</label>
           </div>
         </div>
+        <div class="form-group">
+          <label>Telegram Chat ID</label>
+          <input type="text" id="cr-telegram-id" placeholder="e.g. 123456789">
+          <div style="font-size:11px;color:var(--text-muted);margin-top:4px">Creator's personal Telegram user ID — for auto shoot notifications</div>
+        </div>
         <div class="form-group full"><label>Notes</label><textarea id="cr-notes" rows="2"></textarea></div>
       </div>
     </div>
@@ -3654,6 +3659,7 @@ function openCreatorModal(id=null){
   $('cr-name').value='';$('cr-phone').value='';$('cr-city').selectedIndex=0;$('cr-notes').value='';
   if($('cr-email')) $('cr-email').value='';
   if($('cr-portal-password')) $('cr-portal-password').value='';
+  if($('cr-telegram-id')) $('cr-telegram-id').value='';
   qsa('input[name="cr-spec"]').forEach(c=>c.checked=false);
   qsa('input[name="cr-status"]')[0].checked=true;
   qsa('.field-err').forEach(e=>e.textContent='');
@@ -3667,6 +3673,7 @@ function openCreatorModal(id=null){
       $('cr-notes').value=c.notes||'';
       if($('cr-email')) $('cr-email').value=c.email||'';
       if($('cr-portal-password')) $('cr-portal-password').value=c.portalPassword||'';
+      if($('cr-telegram-id')) $('cr-telegram-id').value=c.telegramId||'';
       (c.specialities||[]).forEach(s=>{
         const el=qs(`input[name="cr-spec"][value="${s}"]`);
         if(el)el.checked=true;
@@ -3696,10 +3703,12 @@ async function saveCreator(){
 
   const specialities=qsa('input[name="cr-spec"]:checked').map(c=>c.value);
   const status=qs('input[name="cr-status"]:checked').value;
-  const creatorEmail = ($('cr-email')?.value || '').trim().toLowerCase();
-  const creatorPass  = $('cr-portal-password')?.value || '';
+  const creatorEmail    = ($('cr-email')?.value || '').trim().toLowerCase();
+  const creatorPass     = $('cr-portal-password')?.value || '';
+  const creatorTgramId  = ($('cr-telegram-id')?.value || '').trim();
   const data={name,phone,city,specialities,status,notes:$('cr-notes').value.trim(),
-    email:creatorEmail,portalPassword:creatorPass,updatedAt:serverTimestamp()};
+    email:creatorEmail,portalPassword:creatorPass,
+    telegramId:creatorTgramId,updatedAt:serverTimestamp()};
 
   try {
     if(editingCreatorId){
