@@ -276,9 +276,6 @@ textarea{resize:vertical;min-height:80px}
 .vd-item label{font-family:'Rajdhani',sans-serif;font-size:11px;letter-spacing:.8px;color:var(--text-muted);text-transform:uppercase;display:block;margin-bottom:4px}
 .vd-item .vd-val{font-size:14px;color:var(--text)}
 
-/* ===== REEL LINK ===== */
-.reel-input-wrap{display:flex;gap:8px;align-items:center;margin-top:4px}
-.reel-link-input{flex:1;padding:5px 10px;font-size:12px;border-radius:6px}
 
 /* ===== ASSIGN MODAL ===== */
 .shoot-info-box{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:13px}
@@ -3100,7 +3097,7 @@ function viewBooking(id){
       <div class="vd-item"><label>Balance</label><div class="vd-val">${rupees(balance)}</div></div>
       <div class="vd-item"><label>Final Paid</label><div class="vd-val">${b.finalPaid?'✅ Paid':'❌ Pending'}</div></div>
       ${cr?`<div class="vd-item"><label>Assigned Creator</label><div class="vd-val">${sanitize(cr.name)} · ${sanitize(cr.phone)}</div></div>`:''}
-      ${b.reelLink?`<div class="vd-item full"><label>Reel Link</label><div class="vd-val"><a href="${sanitize(b.reelLink)}" target="_blank" style="color:var(--cyan)">${sanitize(b.reelLink)}</a></div></div>`:''}
+
     </div>
     <div class="form-group">
       <label>Internal Notes</label>
@@ -3818,7 +3815,7 @@ function renderShootList(){
             <input type="checkbox" id="${reelToggleId}" ${b.reelReceived?'checked':''} onchange="toggleReel('${b.id}',this.checked)">
             <span class="toggle-slider"></span>
           </label>
-          ${b.reelReceived?`<input type="text" class="reel-link-input" placeholder="Drive link" value="${sanitize(b.reelLink||'')}" onchange="saveReelLink('${b.id}',this.value)">`:''}
+
         </div>
       </td>
       <td data-label="Actions">
@@ -3838,11 +3835,6 @@ async function toggleReel(id,checked){
   } catch(err){ showToast('Error updating reel status','error'); console.error(err); }
 }
 
-async function saveReelLink(id,val){
-  try {
-    await updateDoc(doc(db,'bookings',id), { reelLink:val, updatedAt:serverTimestamp() });
-  } catch(err){ console.error('saveReelLink:',err); }
-}
 
 // ============================================================
 // CALENDAR
@@ -4226,7 +4218,7 @@ window.renderNotifications = renderNotifications;
 window.prevPage          = prevPage;
 window.nextPage          = nextPage;
 window.toggleReel        = toggleReel;
-window.saveReelLink      = saveReelLink;
+
 window.copyNotifyMsg     = copyNotifyMsg;
 window.openNotifyWA      = openNotifyWA;
 window.searchBookings        = searchBookings;

@@ -500,11 +500,6 @@ input,select,textarea{font-size:16px}
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    REEL SECTION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-.reel-section{background:rgba(56,189,248,0.04);border:1px dashed rgba(56,189,248,0.25);border-radius:var(--radius-md);padding:14px;margin-top:10px}
-.reel-title{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.8px;color:var(--cyan);margin-bottom:10px;display:flex;align-items:center;gap:6px}
-.reel-input{width:100%;padding:12px 14px;background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:var(--radius-sm);font-size:14px;outline:none;transition:border 0.2s;-webkit-appearance:none}
-.reel-input:focus{border-color:var(--cyan)}
-.reel-note{font-size:11px;color:var(--text-muted);margin-top:6px;line-height:1.5}
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    MISC
@@ -894,26 +889,6 @@ button,a,[role="button"],.card,.btn,.nav-tab,.sub-tab,.f-btn{touch-action:manipu
   </div>
 </div>
 
-<!-- ===== REEL MODAL ===== -->
-<div class="modal-overlay" id="modal-reel">
-  <div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-header">
-      <div class="modal-title">Submit Your Reel</div>
-      <button class="modal-x" onclick="closeModal('modal-reel')">&#x00D7;</button>
-    </div>
-    <div class="modal-body">
-      <div class="confirm-box" id="reel-info"></div>
-      <span class="form-label-sm">Google Drive Link</span>
-      <input type="url" id="reel-url" class="reel-input" placeholder="https://drive.google.com/..." inputmode="url" autocomplete="off">
-      <p class="reel-note">&#x2139;&#xFE0F; Set the link to &quot;Anyone with link can view&quot; before submitting.</p>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-cyan" id="reel-ok-btn">&#x1F4E4; Submit Reel</button>
-      <button class="btn btn-ghost" onclick="closeModal('modal-reel')">Cancel</button>
-    </div>
-  </div>
-</div>
 
 <!-- ===== NOTIFICATION PANEL ===== -->
 <div id="notif-panel">
@@ -1451,7 +1426,7 @@ function buildShootTimeline(b) {
   let cur = 0;
   if(b.creatorStatus==='accepted' || b.status==='Creator Confirmed') cur=1;
   if(b.date && b.date<=todayStr()) cur=Math.max(cur,2);
-  if(b.reelReceived||b.reelLink) cur=Math.max(cur,3);
+  if(b.reelReceived) cur=Math.max(cur,3);
   if(b.status==='Reel Ready'||b.status==='Delivered') cur=Math.max(cur,4);
   if(b.creatorPaid) cur=5;
   return `<div class="shoot-timeline">${steps.map((s,i)=>`
@@ -1468,7 +1443,7 @@ function shootCard(b, type) {
   const loc   = sanitize(b.location || '\u2014');
   const notes = sanitize(b.notes || '');
   const isPast = b.date && b.date <= todayStr();
-  const reelDone = b.reelReceived || !!b.reelLink;
+  const reelDone = b.reelReceived;
   const earned = rupees(b.creatorEarnings || DEFAULT_CUT);
   // CHECK 3.4: PII fields (name, phone, email, totalAmount, bookingAmount,
   //            balanceAmount, bookingPaid, finalPaid) are intentionally NOT shown.
@@ -1488,10 +1463,8 @@ function shootCard(b, type) {
   } else if (type === 'accepted') {
     if (reelDone) {
       foot = `<div style="text-align:center;font-size:13px;color:var(--green);padding:4px 0">&#x2705; Reel submitted &#x2014; Bharath is reviewing!</div>`;
-    } else if (isPast) {
-      foot = `<button class="btn btn-cyan" onclick="openReelModal('${b.id}')">&#x1F4E4; Submit Reel</button>`;
     } else {
-      foot = `<div style="text-align:center;font-size:12px;color:var(--text-muted);padding:4px 0">Reel submit button appears on shoot day.</div>`;
+      foot = `<div style="text-align:center;font-size:12px;color:var(--text-muted);padding:4px 0">Send your reel to Bharath via WhatsApp once ready.</div>`;
     }
   } else if (type === 'done') {
     foot = `
@@ -1602,61 +1575,6 @@ async function confirmReject(id) {
   btn.textContent = 'Confirm Rejection';
 }
 
-/* ============================================================
-   REEL SUBMISSION
-============================================================ */
-window.openReelModal = function(id) {
-  const b = _bookings.find(x => x.id === id);
-  if (!b) return;
-  _actionId = id;
-  $('reel-info').innerHTML = `
-    <div class="confirm-row"><span>&#x1F4C5;</span><strong>${fmtDate(b.date)}</strong></div>
-    <div class="confirm-row"><span>&#x1F3A5;</span>${sanitize(getPackageName(b.package))}</div>`;
-  $('reel-url').value = b.reelLink || '';
-  $('reel-ok-btn').onclick = () => submitReel(id);
-  openModal('modal-reel');
-};
-
-async function submitReel(id) {
-  const url = $('reel-url').value.trim();
-  const allowedHosts = ['drive.google.com', 'drive.usercontent.google.com', 'docs.google.com'];
-  let parsedUrl;
-  try {
-    parsedUrl = new URL(url);
-  } catch {
-    showToast('Please paste a valid Google Drive link.', 'error');
-    return;
-  }
-  if (parsedUrl.protocol !== 'https:' || !allowedHosts.includes(parsedUrl.hostname)) {
-    showToast('Please paste a valid Google Drive link.', 'error');
-    return;
-  }
-  const safeUrl = parsedUrl.toString();
-  const b   = _bookings.find(x => x.id === id);
-  if (!b) return;
-  const btn = $('reel-ok-btn');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span> Submitting\u2026';
-  // Instant feedback before network call
-  showToast('Reel submitted! Bharath will review and process payment.', 'success');
-  closeModal('modal-reel');
-  addNotif('Your reel has been submitted successfully!');
-  const msg = `Hi Bharath! I\u2019ve submitted the reel for the ${fmtDate(b.date)} shoot.\nDrive Link: ${safeUrl}\nPlease review!\n\u2014 ${_creator.name}`;
-  window.open(`https://wa.me/${BHARATH_WA}?text=${encodeURIComponent(msg)}`, '_blank');
-  try {
-    await updateDoc(doc(db, 'bookings', id), {
-      reelLink: safeUrl, reelReceived: true,
-      reelSubmittedAt: serverTimestamp(),
-      status: 'Reel Ready', updatedAt: serverTimestamp()
-    });
-  } catch (e) {
-    localStorage.setItem('stvr_pending_reel_' + id, JSON.stringify({ link: safeUrl, bookingId: id }));
-    localStorage.setItem('stvr_pending_sync', 'true');
-    console.error('Reel save failed:', e);
-  }
-  btn.disabled = false;
-  btn.innerHTML = '&#x1F4E4; Submit Reel';
-}
 
 /* ============================================================
    HISTORY
