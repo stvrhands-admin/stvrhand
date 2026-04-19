@@ -1397,6 +1397,30 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(56,189,248,0.1
         </div>
 
         <div class="settings-section">
+          <h3>Telegram Notifications</h3>
+          <p style="font-size:12px;color:var(--text-muted);margin-bottom:16px;line-height:1.6">
+            Creators with a Telegram ID set on their profile will receive automatic messages when assigned a shoot. Others get WhatsApp only.
+          </p>
+          <div class="form-grid">
+            <div class="form-group full">
+              <label>Bot Token</label>
+              <input type="text" id="tg-bot-token" placeholder="7123456789:AAFxxx...">
+              <div style="font-size:11px;color:var(--text-muted);margin-top:4px">Get from @BotFather on Telegram</div>
+            </div>
+            <div class="form-group full">
+              <label>Group Chat ID</label>
+              <input type="text" id="tg-group-id" placeholder="-1001234567890">
+              <div style="font-size:11px;color:var(--text-muted);margin-top:4px">Optional — group notification for creators who have Telegram</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap">
+            <button class="btn btn-cyan" style="width:auto;padding:10px 20px" onclick="saveTelegramSettings()">💾 Save</button>
+            <button class="btn btn-ghost" style="width:auto;padding:10px 20px" onclick="testTelegramBot()">🧪 Send Test</button>
+          </div>
+          <div id="tg-test-result" style="font-size:12px;margin-top:8px;min-height:16px"></div>
+        </div>
+
+        <div class="settings-section">
           <h3>WhatsApp Message Templates</h3>
           <div style="display:flex;flex-direction:column;gap:16px">
             <div class="form-group"><label>Booking Confirmation</label><textarea id="tpl-confirmation" rows="4"></textarea></div>
@@ -1771,6 +1795,11 @@ if (!firebaseConfig.apiKey || firebaseConfig.apiKey === 'YOUR_API_KEY') {
 const db     = getFirestore(_fbApp);
 const auth   = getAuth(_fbApp);
 
+// ── TELEGRAM BOT CONFIG ──
+// Set these in Settings page or hardcode your token below
+let TELEGRAM_BOT_TOKEN = '';
+let TELEGRAM_GROUP_ID  = '';
+
 // ── ADMIN SEEDING ──
 async function seedAdminIfNeeded() {
   const ADMIN_EMAILS = [
@@ -1823,6 +1852,72 @@ async function seedAdminIfNeeded() {
 // ============================================================
 const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 function devLog(...args) { if (isDev) console.log(...args); }
+
+// ============================================================
+// TELEGRAM
+// ============================================================
+async function sendTelegramMessage(chatId, message) {
+  if(!TELEGRAM_BOT_TOKEN || !chatId) return false;
+  try {
+    const res = await fetch(
+      `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: chatId, text: message, parse_mode: 'HTML' })
+      }
+    );
+    const data = await res.json();
+    devLog('Telegram:', data.ok ? 'sent' : data.description);
+    return data.ok;
+  } catch(err) {
+    devLog('Telegram error:', err);
+    return false;
+  }
+}
+
+async function notifyCreatorTelegram(creator, booking) {
+  if(!creator?.telegramId) {
+    devLog((creator?.name || 'Creator') + ' — no Telegram ID, skipping');
+    return false;
+  }
+
+  const date     = fmtDate(booking.date);
+  const time     = fmtTime(booking.startTime);
+  const location = booking.location || 'TBD';
+  const pkg      = booking.package  || 'TBD';
+  const notes    = booking.notes    || 'None';
+  const earnings = booking.creatorEarnings ? rupees(booking.creatorEarnings) : 'TBD';
+
+  const message =
+    `🎬 <b>New Shoot Assigned!</b>\n\n` +
+    `Hi ${creator.name}!\n\n` +
+    `📅 <b>Date:</b> ${date}\n` +
+    `⏰ <b>Time:</b> ${time}\n` +
+    `📍 <b>Location:</b> ${location}\n` +
+    `🎥 <b>Package:</b> ${pkg}\n` +
+    `💰 <b>Earnings:</b> ${earnings}\n` +
+    `📝 <b>Notes:</b> ${notes}\n\n` +
+    `Login to confirm:\n` +
+    `👉 creator.stvrhands.com\n\n` +
+    `— STVR Hands`;
+
+  const sent = await sendTelegramMessage(creator.telegramId, message);
+
+  if(sent && TELEGRAM_GROUP_ID) {
+    const groupMsg =
+      `🔔 <b>Shoot Assigned</b>\n` +
+      `<b>${creator.name}</b>\n` +
+      `📅 ${date} ⏰ ${time}\n` +
+      `📍 ${location} | 🎥 ${pkg}`;
+    await sendTelegramMessage(TELEGRAM_GROUP_ID, groupMsg);
+  }
+
+  return sent;
+}
+
+window.sendTelegramMessage    = sendTelegramMessage;
+window.notifyCreatorTelegram  = notifyCreatorTelegram;
 
 // ============================================================
 // SANITIZE (XSS prevention)
@@ -3732,6 +3827,11 @@ async function assignCreator(bookingId,creatorId){
     await updateDoc(doc(db,'creators',creatorId), { status:'Busy', updatedAt:serverTimestamp() });
     showToast(`${cr.name} assigned! Earnings: ${rupees(creatorEarnings)}`,'success');
 
+    // Telegram notification — only fires if creator has telegramId
+    notifyCreatorTelegram(cr, { ...b, creatorEarnings }).then(sent => {
+      if(cr.telegramId && sent) showToast(`Telegram sent to ${cr.name} ✅`, 'success');
+    }).catch(e => devLog('Telegram notify error:', e));
+
     // Show WA message
     const msg = `Hi ${cr.name}! 🎬\n` +
       `New shoot assigned from STVR Hands.\n\n` +
@@ -4062,6 +4162,9 @@ async function initSettings(){
       } catch(err){ showToast('Error updating hiring status','error'); console.error(err); }
     };
   }
+
+  // Load Telegram config
+  loadTelegramSettings();
 }
 
 function updateHiringStatus(on){
@@ -4104,6 +4207,68 @@ function resetTemplates(){
   if($('tpl-delivered'))    $('tpl-delivered').value    = DEFAULT_TEMPLATES.delivered;
   showToast('Defaults loaded — click Save to apply','success');
 }
+
+async function saveTelegramSettings() {
+  const token   = $('tg-bot-token')?.value.trim();
+  const groupId = $('tg-group-id')?.value.trim();
+  if(!token) { showToast('Enter bot token', 'error'); return; }
+  try {
+    await setDoc(doc(db, 'settings', 'telegram'), {
+      botToken: token,
+      groupId:  groupId || '',
+      updatedAt: serverTimestamp()
+    });
+    TELEGRAM_BOT_TOKEN = token;
+    TELEGRAM_GROUP_ID  = groupId || '';
+    showToast('Telegram settings saved ✅', 'success');
+  } catch(err) { showToast('Error saving', 'error'); console.error(err); }
+}
+
+async function testTelegramBot() {
+  const result  = $('tg-test-result');
+  const token   = $('tg-bot-token')?.value.trim() || TELEGRAM_BOT_TOKEN;
+  const groupId = $('tg-group-id')?.value.trim()  || TELEGRAM_GROUP_ID;
+  if(!token) { if(result) result.textContent = '⚠️ Enter bot token first'; return; }
+  if(!groupId) { if(result) result.textContent = '⚠️ Enter group chat ID to test'; return; }
+  if(result) result.textContent = 'Sending...';
+  const msg =
+    `✅ <b>STVR Hands Bot Connected!</b>\n` +
+    `Telegram notifications are working.\n` +
+    `Creators with Telegram ID will receive shoot assignments here.\n` +
+    `— STVR Hands Admin`;
+  try {
+    const res  = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: groupId, text: msg, parse_mode: 'HTML' })
+    });
+    const data = await res.json();
+    if(data.ok) {
+      if(result) { result.style.color = 'var(--green)'; result.textContent = '✅ Test sent! Check Telegram.'; }
+      showToast('Test message sent!', 'success');
+    } else {
+      if(result) { result.style.color = 'var(--red)'; result.textContent = '❌ ' + data.description; }
+    }
+  } catch(err) {
+    if(result) { result.style.color = 'var(--red)'; result.textContent = '❌ Network error'; }
+  }
+}
+
+async function loadTelegramSettings() {
+  try {
+    const snap = await getDoc(doc(db, 'settings', 'telegram'));
+    if(snap.exists()) {
+      const d = snap.data();
+      TELEGRAM_BOT_TOKEN = d.botToken || '';
+      TELEGRAM_GROUP_ID  = d.groupId  || '';
+      if($('tg-bot-token')) $('tg-bot-token').value = TELEGRAM_BOT_TOKEN;
+      if($('tg-group-id'))  $('tg-group-id').value  = TELEGRAM_GROUP_ID;
+    }
+  } catch(e) { devLog('Telegram settings load:', e); }
+}
+
+window.saveTelegramSettings = saveTelegramSettings;
+window.testTelegramBot      = testTelegramBot;
 
 async function changePassword(){
   const curr=$('pw-current').value;
